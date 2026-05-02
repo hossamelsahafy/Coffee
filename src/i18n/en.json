@@ -1,0 +1,94 @@
+{
+  "try": {
+    "hello": "Hello",
+    "welcome": "Welcome to our website"
+  },
+  "nav": {
+    "aboutUs": "About us",
+    "contactUs": "Contact Us",
+    "products": "Products",
+    "collection": "Coffee Collection",
+    "item": "Items",
+    "capsulatedCoffee": "Capsulated Coffee",
+    "brewingTools": "Brewing Tools",
+    "roastGrinders": "Roast & Grinders",
+    "coffee": "Coffee"
+  },
+  "footer": {
+    "coffeeCup": "A cup of coffee, a",
+    "momentOfTime": "moment of your time",
+    "coffeeMarketText": "As the coffee shop market becomes more popular, the number of cafe websites is growing. The internet and social media play an important role in finding new customers.",
+    "shopLinks": [
+      { "id": 1, "label": "Search", "href": "/search" },
+      { "id": 2, "label": "All collections", "href": "/collections" },
+      { "id": 3, "label": "All products", "href": "/products" },
+      { "id": 4, "label": "My Cart", "href": "/cart" },
+      { "id": 5, "label": "Compare", "href": "/compare" },
+      { "id": 6, "label": "Wishlist", "href": "/wishlist" }
+    ],
+    "accountLinks": [
+      { "id": 1, "label": "About Us", "href": "/about-us" },
+      { "id": 2, "label": "Contact with us", "href": "/contact-us" },
+      { "id": 3, "label": "Faq's", "href": "/faq" },
+      { "id": 4, "label": "Privacy Policy", "href": "/privacy-policy" },
+      { "id": 5, "label": "Shipping & Delivery", "href": "/shipping-delivery" },
+      { "id": 6, "label": "Terms & Conditions", "href": "/terms-conditions" }
+    ],
+    "shop": "Shop",
+    "account": "Account",
+    "share": "Share"
+  },
+  "header": {
+    "title": "Coffee",
+    "subtitle": "Coffee that fuels your dreams. Life is short, stay awake for it. Coffee, Art, and Vintage. Fuel for your creativity.",
+    "fresh": "Fresh roasted coffee",
+    "freshSpan": "with 24h delivery",
+    "partners": "partners"
+  },
+  "headerTwo": {
+    "title": "Coffee",
+    "subtitle": "The Best Coffee",
+    "description": "As the coffee shop market becomes more popular, the number of cafe websites is growing. The internet and social media play an important role in finding new customers.",
+    "showProducts": "Show Products"
+  },
+  "reviews": {
+    "coffee": "Coffee",
+    "span": "Fresh roasted coffee",
+    "fresh_roasted_coffee": "with 24h delivery blogs",
+    "denver_biscuit_cafe": "Denver Biscuit cafe knows how to entice future customers. A video takes viewers all the way from the preparation of one of their desserts to the service.",
+    "show_products": "Show Products",
+    "secondTitle": "Choose the origin of the coffee:"
+  },
+  "discountSection": {
+    "coffee": "Coffee",
+    "coffeeShopBestDiscountProducts": "Best Discount Products in Our Coffee Shop",
+    "showMoreProducts": "Show more products",
+    "new": "New"
+  },
+  "BestSeller": {
+    "title": "Coffee",
+    "description": "Shop Best Seller Product",
+    "longDescription": "Coffee is a drink prepared from roasted coffee beans. Darkly colored, bitter, and slightly acidic, coffee has a stimulating effect on humans, primarily due to its caffeine content.",
+    "showProducts": "Show Products"
+  },
+  "supscripe": {
+    "coffee": "Coffee",
+    "subscribeNewsletter": "Subscribe to our newsletter",
+    "discountOffer": "and get -20% off",
+    "coffeeDescription": "It is the most popular hot drink in the world. Seeds of the Coffea plant's fruits are separated to produce unroasted green coffee beans.",
+    "subscripe": "Subscripe",
+    "placeholder": "Enter Email Address..."
+  },
+  "SubscripeForm": {
+    "emailRequired": "Email is required",
+    "invalidEmail": "Invalid email address",
+    "success": "Subscribed successfully",
+    "error": "Something went wrong"
+  },
+  "BlogSection": {
+    "title": "Coffee",
+    "subtitle": "Fresh roasted coffee Blogs",
+    "description": "Coffee is a beverage brewed from the roasted and ground seeds of the tropical evergreen coffee plant.",
+    "cta": "Show Blogs"
+  }
+}

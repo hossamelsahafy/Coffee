@@ -1,0 +1,81 @@
+@import 'tailwindcss';
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+html,
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  background-color: black;
+  color: white;
+
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.container {
+  @apply max-w-7xl mx-auto p-6;
+}
+
+:root {
+  --color-base-light: white;
+  --color-base-dark: black;
+  --color-base-coffe: #a7897b;
+  --color-base-nav: #262626;
+  --color-base-border: #272727;
+  --color-coffeText: #a7897b;
+  --color-forTra: #a7897b61;
+  --color-highlightedProductsbg: #40342f;
+  --color-base-borderTwo: #423826;
+}
+@theme {
+  --color-base-light: white;
+  --color-base-dark: black;
+  --color-base-coffe: #a7897b;
+  --color-base-nav: #262626;
+  --color-base-border: #272727;
+  --color-coffeText: #a7897b;
+  --color-forTra: #a7897b61;
+  --color-highlightedProductsbg: #40342f;
+  --color-base-borderTwo: #423826;
+}
+/* Original styling adjusted for custom container */
+.swiper-pagination-bullet {
+  width: 10px !important;
+  height: 10px !important;
+  background: #d1d5db !important;
+  opacity: 1;
+  border-radius: 100%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.swiper-pagination-bullet-active {
+  background: #a7897b !important;
+  border-radius: 100%;
+}
+
+.container-custom {
+  @apply w-full md:max-w-7xl md:mx-auto flex flex-col text-base-light relative p-4 justify-center items-center;
+}
+
+.Coffetitle {
+  @apply lg:text-xl font-bold tracking-tighter text-lg;
+}
+
+.CoffeDiscription {
+  @apply lg:text-3xl md:block flex gap-2 text-2xl text-base-coffe;
+}
+
+.priceAfter {
+  @apply whitespace-nowrap  sm:text-sm lg:text-base;
+}
+
+.priceBefore {
+  @apply relative text-gray-400 whitespace-nowrap  sm:text-sm lg:text-base before:absolute before:left-0 before:right-0 before:top-1/2 before:border-t-2 before:border-gray-400;
+}
+
+.SelectStyle {
+  @apply w-full flex justify-between items-center bg-inherit text-base-light border px-3 py-2 rounded-lg cursor-pointer appearance-none focus:outline-0 focus:ring-0;
+}
