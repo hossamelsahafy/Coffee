@@ -1,16 +1,14 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
-import Links from "@/components/shared/Links/Links";
 import NormalSwiper from "@/components/shared/Swiper/NormalSwiper";
-import ProductCardAsColomns from "@/components/shared/Products/ProductsCardAsColomns";
-import ProductModal from "@/components/shared/Model/ProductModal";
-import { useParams } from "next/navigation";
+import ProductsCardAsColomns from "@/components/shared/Products/ProductsCardAsColomns";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
+import ProductModal from "@/components/shared/Model/ProductModal";
 
-const DisCountSection = ({ data }) => {
-  const t = useTranslations("discountSection");
-  const { locale } = useParams();
+const RecentlyProducts = ({ products, locale }) => {
+  const t = useTranslations("RecentlySection");
+
   const [openModel, setOpenModel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -33,26 +31,17 @@ const DisCountSection = ({ data }) => {
     },
   };
   useLockBodyScroll(openModel);
-
   return (
-    <>
-      <div className="container-custom">
-        <div className="flex w-full md:flex-row flex-col md:justify-between items-center">
-          <div className="flex flex-col gap-2">
-            <p className="Coffetitle">{t("coffee")}</p>
-            <p className="CoffeDiscription font-bold">
-              {t("coffeeShopBestDiscountProducts")}
-            </p>
-          </div>
-          <Links text={t("showMoreProducts")} />
-        </div>
+    <div className="container-custom">
+      <h2 className="text-4xl font-bold text-center mt-10">{t("H2")}</h2>
+      <div className="w-full overflow-hidden">
         <NormalSwiper
           breakpoints={defaultBreakpoints}
           px="px-0"
-          data={data}
+          data={products}
           ItemComponent={({ item }) => (
             <div className="flex flex-col justify-center items-center gap-4 w-full">
-              <ProductCardAsColomns
+              <ProductsCardAsColomns
                 product={item}
                 locale={locale}
                 setOpenModel={setOpenModel}
@@ -68,8 +57,8 @@ const DisCountSection = ({ data }) => {
         setOpenModel={setOpenModel}
         openModel={openModel}
       />
-    </>
+    </div>
   );
 };
 
-export default DisCountSection;
+export default RecentlyProducts;

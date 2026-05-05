@@ -1,5 +1,5 @@
-import React from 'react'
-import Image from 'next/image'
+import React from "react";
+import Image from "next/image";
 
 const BlogCard = ({ blog, locale }) => {
   return (
@@ -7,8 +7,8 @@ const BlogCard = ({ blog, locale }) => {
       {/* Image */}
       <div className="">
         <Image
-          src={blog.ImageUrl.imageUrl}
-          alt={locale === 'en' ? blog.title : blog.titleAr}
+          src={blog.ImageSource === "Url" ? blog.ImageUrl : blog.image.url}
+          alt={locale === "en" ? blog.title : blog.titleAr}
           width={100}
           height={100}
           className="object-contain"
@@ -16,17 +16,17 @@ const BlogCard = ({ blog, locale }) => {
       </div>
 
       <div className="flex flex-col font-bold justify-center items-start flex-1">
-        <p>{locale === 'en' ? blog.title : blog.titleAr}</p>
+        <p>{locale === "en" ? blog.title : blog.titleAr}</p>
 
         <p className="font-semibold line-clamp-1">
-          {locale === 'en' ? blog.subtitle : blog.subtitleAr}
+          {locale === "en" ? blog.subtitle : blog.subtitleAr}
         </p>
 
         <p className="line-clamp-2 max-w-xs text-base-coffe">
-          {locale === 'en' ? blog.des : blog.desAr}
+          {locale === "en" ? blog.des : blog.desAr}
         </p>
 
-        <p>{locale === 'en' ? blog.clientName : blog.clientNameAr}</p>
+        <p>{locale === "en" ? blog.clientName : blog.clientNameAr}</p>
         <div className="flex md:flex-row flex-col gap-2 justify-center">
           <div className="flex items-center gap-1">
             {[...Array(5)].map((_, idx) => (
@@ -34,8 +34,8 @@ const BlogCard = ({ blog, locale }) => {
                 key={idx}
                 src={
                   idx < blog.rate
-                    ? '/assets/icons8-star-filled-30.png'
-                    : '/assets/icons8-star-filled-30 (1).png'
+                    ? "/assets/icons8-star-filled-30.png"
+                    : "/assets/icons8-star-filled-30 (1).png"
                 }
                 alt="star"
                 width={20}
@@ -47,7 +47,7 @@ const BlogCard = ({ blog, locale }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BlogCard
+export default BlogCard;

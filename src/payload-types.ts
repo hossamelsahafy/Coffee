@@ -161,11 +161,17 @@ export interface User {
 export interface Media {
   id: string;
   alt: string;
-  sourceType: 'upload' | 'url';
-  uploadedImage?: (string | null) | Media;
-  imageUrl?: string | null;
   updatedAt: string;
   createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -175,6 +181,11 @@ export interface Category {
   id: string;
   title: string;
   titleAr: string;
+  slug: string;
+  slugAr: string;
+  ImageSource?: ('Url' | 'upload') | null;
+  ImageUrl?: string | null;
+  uploadImage?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -188,6 +199,10 @@ export interface Product {
   titleAr?: string | null;
   subtitle?: string | null;
   subtitleAr?: string | null;
+  longDes?: string | null;
+  longDesAr?: string | null;
+  slug: string;
+  slugAr: string;
   isNewest: boolean;
   ShowInDiscountSection: boolean;
   important?: boolean | null;
@@ -195,32 +210,23 @@ export interface Product {
   category: string | Category;
   type?: string | null;
   typeAr?: string | null;
-  optionsType: 'choices' | 'colors';
-  choices?:
-    | {
-        options?:
-          | {
-              value: string;
-              valueAr: string;
-              image: string | Media;
-              priceAfter: number;
-              priceBefore: number;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  colors?:
-    | {
-        en: string;
-        ar: string;
-        priceAfter: number;
-        priceBefore: number;
-        image: string | Media;
-        id?: string | null;
-      }[]
-    | null;
+  choices: {
+    choiceType: 'color' | 'quantity' | 'types' | 'size';
+    choiceTypeAr: 'لون' | 'كمية' | 'نوع' | 'حجم';
+    options?:
+      | {
+          value: string;
+          valueAr: string;
+          availability?: ('inStock' | 'outOfStock') | null;
+          ImageSource?: ('Url' | 'upload') | null;
+          image?: (string | null) | Media;
+          imageUrl?: string | null;
+          priceAfter: number;
+          priceBefore: number;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -248,7 +254,9 @@ export interface Blog {
   des: string;
   desAr: string;
   OriginsOfCoffee?: (string | null) | OriginsOfCoffee;
-  ImageUrl?: (string | null) | Media;
+  ImageSource: 'Url' | 'Upload';
+  image?: (string | null) | Media;
+  ImageUrl?: string | null;
   rate?: number | null;
   clientName?: string | null;
   clientNameAr?: string | null;
@@ -410,11 +418,17 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
-  sourceType?: T;
-  uploadedImage?: T;
-  imageUrl?: T;
   updatedAt?: T;
   createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -423,6 +437,11 @@ export interface MediaSelect<T extends boolean = true> {
 export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  slug?: T;
+  slugAr?: T;
+  ImageSource?: T;
+  ImageUrl?: T;
+  uploadImage?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -435,6 +454,10 @@ export interface ProductsSelect<T extends boolean = true> {
   titleAr?: T;
   subtitle?: T;
   subtitleAr?: T;
+  longDes?: T;
+  longDesAr?: T;
+  slug?: T;
+  slugAr?: T;
   isNewest?: T;
   ShowInDiscountSection?: T;
   important?: T;
@@ -442,31 +465,24 @@ export interface ProductsSelect<T extends boolean = true> {
   category?: T;
   type?: T;
   typeAr?: T;
-  optionsType?: T;
   choices?:
     | T
     | {
+        choiceType?: T;
+        choiceTypeAr?: T;
         options?:
           | T
           | {
               value?: T;
               valueAr?: T;
+              availability?: T;
+              ImageSource?: T;
               image?: T;
+              imageUrl?: T;
               priceAfter?: T;
               priceBefore?: T;
               id?: T;
             };
-        id?: T;
-      };
-  colors?:
-    | T
-    | {
-        en?: T;
-        ar?: T;
-        priceAfter?: T;
-        priceBefore?: T;
-        image?: T;
-        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -493,6 +509,8 @@ export interface BlogsSelect<T extends boolean = true> {
   des?: T;
   desAr?: T;
   OriginsOfCoffee?: T;
+  ImageSource?: T;
+  image?: T;
   ImageUrl?: T;
   rate?: T;
   clientName?: T;

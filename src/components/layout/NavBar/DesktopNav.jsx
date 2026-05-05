@@ -1,10 +1,10 @@
-import React from 'react'
-import { Tally1 } from 'lucide-react'
-import Link from 'next/link'
-import LocaleSwitcher from '@/components/shared/Buttons/LocaleSwitcher'
-import Image from 'next/image'
-import CartButton from '@/components/ui/CartButton/CartButton'
-import DropDown from '@/components/shared/dropMenue/DropMenu'
+import React from "react";
+import { Tally1 } from "lucide-react";
+import Link from "next/link";
+import LocaleSwitcher from "@/components/shared/Buttons/LocaleSwitcher";
+import Image from "next/image";
+import CartButton from "@/components/ui/CartButton/CartButton";
+import DropDown from "@/components/shared/dropMenue/DropMenu";
 const DesktopNav = ({
   locale,
   navLinks,
@@ -17,7 +17,7 @@ const DesktopNav = ({
   icons,
 }) => {
   return (
-    <div className="absolute inset-0 max-w-6xl mx-auto p-4 mt-4 text-base-light ">
+    <div className="absolute inset-0 max-w-7xl mx-auto p-4 mt-4 text-base-light ">
       <div className="flex flex-row justify-between  w-full items-center">
         <Link href="/">
           <Image
@@ -42,7 +42,7 @@ const DesktopNav = ({
                     style="nav"
                   />
                 </div>
-              )
+              );
             }
 
             return (
@@ -56,7 +56,7 @@ const DesktopNav = ({
                   </span>
                 </Link>
               </div>
-            )
+            );
           })}
           <div className="flex gap-2">
             {icons.map((Icon, index) => (
@@ -70,15 +70,23 @@ const DesktopNav = ({
               </div>
             ))}
           </div>
-          <LocaleSwitcher locale={locale} otherLocale={otherLocale} localesData={localesData} />
-          <DropDown selectedValue={currency} options={currenciesData} onChange={onChangecurrency} />
+          <LocaleSwitcher
+            locale={locale}
+            otherLocale={otherLocale}
+            localesData={localesData}
+          />
+          <DropDown
+            selectedValue={currency}
+            options={currenciesData}
+            onChange={onChangecurrency}
+          />
           <Link href={`${locale}/cart`}>
             <CartButton itemslength={1} item={item} />
           </Link>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DesktopNav
+export default DesktopNav;

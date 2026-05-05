@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none;
@@ -10,6 +10,7 @@ body {
   scrollbar-width: none;
   background-color: black;
   color: white;
+  scroll-behavior: smooth;
 
   overflow-y: scroll;
   overflow-x: hidden;
@@ -26,6 +27,7 @@ body {
   --color-base-border: #272727;
   --color-coffeText: #a7897b;
   --color-forTra: #a7897b61;
+  --color-base-lighter: #bbb1ad;
   --color-highlightedProductsbg: #40342f;
   --color-base-borderTwo: #423826;
 }
@@ -35,6 +37,7 @@ body {
   --color-base-coffe: #a7897b;
   --color-base-nav: #262626;
   --color-base-border: #272727;
+  --color-base-lighter: #bbb1ad;
   --color-coffeText: #a7897b;
   --color-forTra: #a7897b61;
   --color-highlightedProductsbg: #40342f;

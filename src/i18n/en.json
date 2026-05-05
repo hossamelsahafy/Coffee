@@ -90,5 +90,31 @@
     "subtitle": "Fresh roasted coffee Blogs",
     "description": "Coffee is a beverage brewed from the roasted and ground seeds of the tropical evergreen coffee plant.",
     "cta": "Show Blogs"
+  },
+  "productSlug": {
+    "button": "Back To Home",
+    "write": "Write a Review",
+    "Quantity": "Quantity",
+    "AddToCart": "Add To Cart",
+    "BuyItNow": "Buy It Now"
+  },
+
+  "DetailsSection": {
+    "Coffee": "Coffee",
+    "Des": "Description",
+    "longDes": "Coffee, a beloved global beverage, is brewed from roasted coffee beans, which are seeds of the Coffea plant. Known for its rich aroma and diverse flavors, it offers a perfect balance of bitterness and sweetness. Coffee is cherished for its energizing properties, thanks to caffeine, and its versatility, from espresso shots to creamy lattes.",
+    "sku": "SKU",
+    "category": "Category",
+    "type": "Type",
+    "availability": "Availability",
+    "inStock": "In Stock"
+  },
+  "RecentlySection": {
+    "H2": "Recently Released Products"
+  },
+  "ReviewsSection": {
+    "H2": "Customer Reviews",
+    "BeFirst": "Be the first to write a review",
+    "Write": "Write A Review"
   }
 }
