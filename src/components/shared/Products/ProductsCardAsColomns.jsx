@@ -65,7 +65,7 @@ const ProductsCardAsColomns = ({
         </div>
       </div>
       <Link
-        href={`${locale}/products/${locale === "en" ? product.slug : product.slugAr}`}
+        href={`/${locale}/products/${locale === "en" ? product.slug : product.slugAr}`}
       >
         <p className="font-bold text-2xl line-clamp-1 hover:text-base-light/70 duration-300 transition-all">
           {locale === "en" ? product.title : product.titleAr}
