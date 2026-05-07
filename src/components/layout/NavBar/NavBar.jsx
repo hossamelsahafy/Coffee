@@ -6,7 +6,7 @@ import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 import { CiSearch } from "react-icons/ci";
 import { IoPerson } from "react-icons/io5";
-const NavBar = ({ locale, data }) => {
+const NavBar = ({ locale }) => {
   const t = useTranslations("nav");
   const otherLocale = locale === "en" ? "ar" : "en";
   const [menuOpen, setMenuOpen] = useState(false);
@@ -23,20 +23,14 @@ const NavBar = ({ locale, data }) => {
     },
   };
   const navLinks = [
-    { id: 4, name: t("products"), href: "/products" },
+    { id: 4, name: t("products"), href: "products" },
     {
       id: 1,
       name: t("collection"),
-      children: data?.length
-        ? data.map((cat) => ({
-            id: cat.id,
-            name: locale === "ar" ? cat.titleAr : cat.title,
-            href: `/collection/${locale === "en" ? cat.slug : cat.slugAr}`,
-          }))
-        : [],
+      href: `collections`,
     },
-    { id: 2, name: t("aboutUs"), href: "/about-us" },
-    { id: 6, name: t("contactUs"), href: "/contact-us" },
+    { id: 2, name: t("aboutUs"), href: "about-us" },
+    { id: 6, name: t("contactUs"), href: "contact-us" },
   ];
   const currenciesData = [
     { value: "USD", label: "USD", symbol: "$", flag: "/assets/usa.png" },

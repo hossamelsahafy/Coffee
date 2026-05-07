@@ -53,6 +53,7 @@ export const Categories: CollectionConfig = {
         return true;
       },
     },
+
     {
       name: "ImageSource",
       type: "radio",
@@ -81,4 +82,37 @@ export const Categories: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterRead: [
+      async ({ doc, req }) => {
+        try {
+          const products = await req.payload.find({
+            collection: "products",
+            where: {
+              category: {
+                equals: doc.id,
+              },
+            },
+            limit: 0,
+            depth: 0,
+          });
+
+          return {
+            ...doc,
+            productsCount: products.totalDocs,
+          };
+        } catch (error) {
+          console.error(
+            `Error fetching product count for category ${doc.id}:`,
+            error,
+          );
+          // Return the doc without productsCount to avoid breaking the request
+          return {
+            ...doc,
+            productsCount: 0,
+          };
+        }
+      },
+    ],
+  },
 };

@@ -2,7 +2,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Cairo } from "next/font/google";
-import NavBarServer from "@/components/layout/NavBar/NavBarServer";
+import NavBar from "@/components/layout/NavBar/NavBar";
 import Footer from "@/components/layout/Footer/Footer";
 import "@/styles/globals.css";
 
@@ -26,7 +26,7 @@ export default async function LocaleLayout({
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body className={`${cairo.className} flex flex-col min-h-screen`}>
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <NavBarServer locale={locale} />
+          <NavBar locale={locale} />
           <main className="flex-1">{children}</main>
           <Footer locale={locale} />
         </NextIntlClientProvider>

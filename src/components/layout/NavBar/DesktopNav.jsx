@@ -30,21 +30,6 @@ const DesktopNav = ({
         </Link>
         <div className="flex gap-5 items-center">
           {navLinks.map((link) => {
-            if (link.children) {
-              return (
-                <div key={link.id} className="relative group">
-                  <DropDown
-                    label={link.name}
-                    options={link.children}
-                    isLink
-                    locale={locale}
-                    variant="nav"
-                    style="nav"
-                  />
-                </div>
-              );
-            }
-
             return (
               <div key={link.id} className="relative group">
                 <Link
