@@ -65,7 +65,7 @@ const DesktopNav = ({
             options={currenciesData}
             onChange={onChangecurrency}
           />
-          <Link href={`/${locale}/cart`}>
+          <Link href={`/${locale}/users/cart`}>
             <CartButton itemslength={itemslength} item={item} />
           </Link>
         </div>

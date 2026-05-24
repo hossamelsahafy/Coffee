@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import React from 'react'
-import NormalSwiper from '@/components/shared/Swiper/NormalSwiper'
-import Image from 'next/image'
+import React from "react";
+import NormalSwiper from "@/components/shared/Swiper/NormalSwiper";
+import Image from "next/image";
 
 const Partners = ({ locale, title, fresh, freshSpan, partners }) => {
   const defaultBreakpoints = {
@@ -22,14 +22,14 @@ const Partners = ({ locale, title, fresh, freshSpan, partners }) => {
       slidesPerView: 4,
       spaceBetween: 20,
     },
-  }
-  const slides = Array.from({ length: 12 }, () => '/assets/Coffee_dark.webp')
+  };
+  const slides = Array.from({ length: 12 }, () => "/assets/coffeedark.webp");
   return (
     <section className="w-full md:mt-22 flex flex-col text-base-light relative p-4 justify-center items-center">
       <div className="flex flex-col md:flex-row w-full md:justify-center items-start md:items-center gap-10">
         <div className="flex flex-col justify-center ">
           <p
-            className={`text-lg ${locale === 'en' ? 'text-left' : 'text-right'} lg:text-xl font-bold tracking-tighter`}
+            className={`text-lg ${locale === "en" ? "text-left" : "text-right"} lg:text-xl font-bold tracking-tighter`}
           >
             {title}
           </p>
@@ -41,7 +41,7 @@ const Partners = ({ locale, title, fresh, freshSpan, partners }) => {
 
         <div className="w-full md:w-1/2 flex flex-col justify-center gap-2 overflow-hidden">
           <p
-            className={`uppercase font-semibold text-lg ${locale === 'en' ? 'text-left' : 'text-right'} `}
+            className={`uppercase font-semibold text-lg ${locale === "en" ? "text-left" : "text-right"} `}
           >
             {partners}
           </p>
@@ -51,14 +51,19 @@ const Partners = ({ locale, title, fresh, freshSpan, partners }) => {
               px="px-12"
               data={slides}
               ItemComponent={({ item, index }) => (
-                <Image src={item} alt={`img-${index}`} width={100} height={100} />
+                <Image
+                  src={item}
+                  alt={`img-${index}`}
+                  width={100}
+                  height={100}
+                />
               )}
             />
           </div>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Partners
+export default Partners;

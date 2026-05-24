@@ -66,7 +66,7 @@ const MobileNav = ({
             </div>
           ))}
         </div>
-        <Link href={`/${locale}/cart`}>
+        <Link href={`/${locale}/users/cart`}>
           <CartButton itemslength={itemslength} item={item} />
         </Link>
         <button onClick={() => setMenuOpen(!menuOpen)} className="z-50">

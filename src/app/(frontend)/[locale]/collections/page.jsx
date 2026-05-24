@@ -1,6 +1,7 @@
 import React from "react";
 import GetAllData from "@/actions/GetAllData";
 import Collection from "@/components/ui/CollectionPage/Collection";
+
 const page = async ({ params }) => {
   const { locale } = await params;
 
