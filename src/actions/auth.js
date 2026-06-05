@@ -13,6 +13,7 @@ export default async function auth(data, endpoint, options = {}) {
   });
 
   const result = await res.json();
+  console.log(result);
 
   if (!res.ok) {
     throw result;

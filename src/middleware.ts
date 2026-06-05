@@ -8,11 +8,12 @@ const intlMiddleware = createMiddleware(routing);
 const authPages = [
   "/users/login",
   "/users/signup",
-  "/users/verify",
-  "/users/forgot-password",
+  "/users/verify-email",
+  "/users/forget-password",
+  "/users/reset-password",
 ];
 
-const protectedPages = ["/users/account", "/users/cart"];
+const protectedPages = ["/users/account", "/users/cart", "/users/checkout"];
 
 export default function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
@@ -31,7 +32,6 @@ export default function middleware(req: NextRequest) {
     pathWithoutLocale.startsWith(p),
   );
 
-  // 🔥 AUTH FIRST (must run before intl)
   if (isLoggedIn && isAuthPage) {
     return NextResponse.redirect(new URL(`/${locale}/users/account`, req.url));
   }
@@ -40,10 +40,9 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(`/${locale}/users/login`, req.url));
   }
 
-  // 🔥 ONLY AFTER AUTH PASS → intl
   return intlMiddleware(req);
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|admin|payload|.*\\..*).*)"],
 };

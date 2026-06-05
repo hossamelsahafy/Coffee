@@ -150,5 +150,19 @@
     "Total": "الاجمالي",
     "Checkout": "اتمام الشراء",
     "Shipping": "تكاليف الشحن"
+  },
+  "Checkout": {
+    "header": "إتمام الطلب",
+    "cartItems": "عناصر السلة",
+    "shipping": "الشحن",
+    "shippingFeeNotice": "ستتم إضافة رسوم الشحن إلى المجموع",
+    "paymentMethod": "طريقة الدفع",
+    "cashOnDelivery": "الدفع عند الاستلام",
+    "onlinePayment": "الدفع عبر الإنترنت (استريب)",
+    "orderSummary": "ملخص الطلب",
+    "subtotal": "المجموع الفرعي",
+    "total": "الإجمالي",
+    "placeOrder": "تأكيد الطلب",
+    "currency": "ر.س"
   }
 }

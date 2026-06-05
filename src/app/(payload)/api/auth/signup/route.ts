@@ -1,6 +1,4 @@
 import { getPayload } from "@/lib/payloadClient";
-import { equal } from "assert";
-import { collectMeta } from "next/dist/build/utils";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

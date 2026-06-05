@@ -145,14 +145,14 @@ const ProductsCardAsColomns = ({
           disabled={isOutOfStock}
           onClick={() => addToCart(product, safeSelectedOption)}
           className={`relative pb-1 whitespace-nowrap
-    after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full 
-    after:bg-base-light after:transition-all after:duration-300 sm:text-sm lg:text-base
+    after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full
+    after:bg-base-light after:transition-all after:duration-300
+    after:pointer-events-none
+    sm:text-sm lg:text-base
     hover:after:bg-base-borderTwo uppercase flex items-center font-bold
-     ${isOutOfStock ? "cursor-not-allowed opacity-50 disabled:opacity-50" : "cursor-pointer"}"
-        `}
+    ${isOutOfStock ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
         >
           <FiPlus />
-
           {isOutOfStock
             ? locale === "en"
               ? "Sold Out"

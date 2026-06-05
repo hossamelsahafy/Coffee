@@ -20,11 +20,11 @@ const Footer = ({ locale }) => {
     { icon: CiInstagram, href: "#" },
   ];
   const paymentIcons = [
-    { icon: "/assets/Visa.png" },
-    { icon: "/assets/Paypal.png" },
-    { icon: "/assets/Card.png" },
-    { icon: "/assets/Paypal.png" },
-    { icon: "/assets/Card.png" },
+    { icon: "/assets/visa.png" },
+    { icon: "/assets/paypal.png" },
+    { icon: "/assets/card.png" },
+    { icon: "/assets/paypal.png" },
+    { icon: "/assets/card.png" },
   ];
 
   return (
@@ -35,7 +35,7 @@ const Footer = ({ locale }) => {
             width={150}
             height={150}
             alt="left image"
-            src={"/assets/Left.webp"}
+            src={"/assets/left.webp"}
           />
         </div>
 
@@ -44,7 +44,7 @@ const Footer = ({ locale }) => {
             width={70}
             height={70}
             alt="Coffee"
-            src={"/assets/coffeedark.webp"}
+            src={"/assets/Coffeedark.webp"}
             className="object-contain"
           />
           <p className="text-3xl font-semibold text-base-light">
@@ -132,7 +132,7 @@ const Footer = ({ locale }) => {
         className={`absolute bottom-0 md:bottom-6 ${locale === "en" ? "right-0" : "left-0"} w-90 h-90 lg:h-full pointer-events-none z-0`}
       >
         <Image
-          src="/assets/Footer-right.webp"
+          src="/assets/FooterRight.webp"
           alt="right image"
           fill
           className="object-contain"

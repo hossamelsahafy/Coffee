@@ -28,6 +28,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       optionValue: selectedOption.value,
       optionValueAr: selectedOption.valueAr,
+      optionType: product.choices.choiceType,
+      optionTypeAr: product.choices.choiceTypeAr,
 
       price: selectedOption.priceAfter,
 
@@ -84,6 +86,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       ),
     );
   };
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("cart");
+  };
 
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
@@ -103,6 +109,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         removeFromCart,
         increaseQuantity,
         decreaseQuantity,
+        clearCart,
         cart,
       }}
     >

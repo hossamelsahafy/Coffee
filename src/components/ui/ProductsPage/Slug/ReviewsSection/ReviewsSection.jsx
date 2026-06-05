@@ -14,7 +14,7 @@ const ReviewsSection = () => {
             {[...Array(5)].map((_, i) => (
               <div key={i}>
                 <Image
-                  src={"/assets/icons8-star-48.png"}
+                  src={"/assets/icons8star48.png"}
                   width={20}
                   height={20}
                   alt="stars image"

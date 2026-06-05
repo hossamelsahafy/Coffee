@@ -75,6 +75,8 @@ export interface Config {
     blogs: Blog;
     Subscripe: Subscripe;
     Notes: Note;
+    'shipping-zones': ShippingZone;
+    orders: Order;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -90,6 +92,8 @@ export interface Config {
     blogs: BlogsSelect<false> | BlogsSelect<true>;
     Subscripe: SubscripeSelect<false> | SubscripeSelect<true>;
     Notes: NotesSelect<false> | NotesSelect<true>;
+    'shipping-zones': ShippingZonesSelect<false> | ShippingZonesSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -303,6 +307,64 @@ export interface Note {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shipping-zones".
+ */
+export interface ShippingZone {
+  id: string;
+  cityName: string;
+  cityNameAr: string;
+  shippingPrice: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: string;
+  user: string | User;
+  orderNumber: string;
+  items: {
+    product: string | Product;
+    title?: string | null;
+    image?: string | null;
+    quantity: number;
+    price?: number | null;
+    total?: number | null;
+    selectedOptions?: string | null;
+    optionType?: string | null;
+    optionValue?: string | null;
+    id?: string | null;
+  }[];
+  subtotal?: number | null;
+  shipping: {
+    zone: string | ShippingZone;
+    city?: string | null;
+    price?: number | null;
+  };
+  total?: number | null;
+  status?: ('pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled') | null;
+  payment: {
+    method: 'cash' | 'stripe';
+    status?: ('pending' | 'paid' | 'failed' | 'refunded') | null;
+    transactionId?: string | null;
+    stripePaymentIntentId?: string | null;
+  };
+  customer?: {
+    firstName?: string | null;
+    lastName?: string | null;
+    phone?: string | null;
+    email?: string | null;
+  };
+  paidAt?: string | null;
+  shippedAt?: string | null;
+  deliveredAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -356,6 +418,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'Notes';
         value: string | Note;
+      } | null)
+    | ({
+        relationTo: 'shipping-zones';
+        value: string | ShippingZone;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: string | Order;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -560,6 +630,70 @@ export interface NotesSelect<T extends boolean = true> {
   ImageUrl?: T;
   ImageUpload?: T;
   isImportant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shipping-zones_select".
+ */
+export interface ShippingZonesSelect<T extends boolean = true> {
+  cityName?: T;
+  cityNameAr?: T;
+  shippingPrice?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  user?: T;
+  orderNumber?: T;
+  items?:
+    | T
+    | {
+        product?: T;
+        title?: T;
+        image?: T;
+        quantity?: T;
+        price?: T;
+        total?: T;
+        selectedOptions?: T;
+        optionType?: T;
+        optionValue?: T;
+        id?: T;
+      };
+  subtotal?: T;
+  shipping?:
+    | T
+    | {
+        zone?: T;
+        city?: T;
+        price?: T;
+      };
+  total?: T;
+  status?: T;
+  payment?:
+    | T
+    | {
+        method?: T;
+        status?: T;
+        transactionId?: T;
+        stripePaymentIntentId?: T;
+      };
+  customer?:
+    | T
+    | {
+        firstName?: T;
+        lastName?: T;
+        phone?: T;
+        email?: T;
+      };
+  paidAt?: T;
+  shippedAt?: T;
+  deliveredAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

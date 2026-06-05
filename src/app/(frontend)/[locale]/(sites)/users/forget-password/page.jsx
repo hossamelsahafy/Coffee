@@ -7,19 +7,10 @@ const page = async ({ params }) => {
       id: 1,
       name: "email",
       type: "email",
-      placeholder: "Email",
-      placeholderAr: "البريد الإلكتروني",
+      placeholder: "Your Account Email",
+      placeholderAr: "البريد الإلكتروني الخاص بحسابك",
       validationType: "email",
       error: "Please enter a valid email address",
-      required: true,
-    },
-
-    {
-      id: 2,
-      name: "password",
-      type: "password",
-      placeholder: "Password",
-      placeholderAr: "كلمة المرور",
       required: true,
     },
   ];
@@ -29,8 +20,8 @@ const page = async ({ params }) => {
       <UserForm
         locale={locale}
         inputFields={signupFields}
-        header={locale === "en" ? "Login" : "تسجيل الدخول"}
-        endpoint={"users/login"}
+        header={locale === "en" ? "Forgot Password" : "نسيت كلمة المرور"}
+        endpoint={"users/forgot-password"}
         options={{ includeHeaders: true }}
       />
     </div>

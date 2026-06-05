@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useCart } from "@/Context/CartContext";
 import Image from "next/image";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-const CartDetails = ({ locale }) => {
+import Link from "next/link";
+const CartDetails = ({ locale, data }) => {
   const { cart, increaseQuantity, decreaseQuantity, removeFromCart } =
     useCart();
-  const shipping = 5;
 
   const total = useMemo(() => {
     const subtotal = cart.reduce(
@@ -16,11 +16,20 @@ const CartDetails = ({ locale }) => {
       0,
     );
 
-    return cart.length ? subtotal + shipping : 0;
+    return cart.length ? subtotal : 0;
   }, [cart]);
   const t = useTranslations("Cart");
+  if (cart.length < 1) {
+    return (
+      <p className="text-center font-semibold text-lg my-4">
+        {locale === "en"
+          ? "No Products Was Added Yet"
+          : "لم يتم اضافة منتجات بعد"}
+      </p>
+    );
+  }
   return (
-    <div className="container-custom p-8">
+    <div className="container-custom p-8 relative">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8">
         <div className="flex flex-col gap-5">
           {cart.map((c) => (
@@ -63,7 +72,7 @@ const CartDetails = ({ locale }) => {
                     <Minus size={16} />
                   </button>
 
-                  <span className="min-w-[20px] text-center font-medium">
+                  <span className="min-w-5 text-center font-medium">
                     {c.quantity}
                   </span>
 
@@ -93,7 +102,6 @@ const CartDetails = ({ locale }) => {
           </h2>
 
           <div className="flex flex-col gap-4">
-            {/* Products */}
             {cart.map((item) => (
               <div
                 key={`${item.productId}-${item.optionId}`}
@@ -110,21 +118,19 @@ const CartDetails = ({ locale }) => {
               </div>
             ))}
 
-            <div className="border-t border-dashed border-[#D8CBB8] pt-4 flex justify-between">
-              <span className="text-[#6B5B4D]">{t("Shipping")}</span>
-
-              <span className="text-[#3E2C23]">${shipping}</span>
-            </div>
-
             <div className="border-t border-[#E8E0D1] pt-4 flex justify-between text-lg font-bold text-[#3E2C23]">
               <span>{t("Total")}</span>
 
               <span>${total}</span>
             </div>
 
-            <button className="mt-4 rounded-full bg-[#6F4E37] py-4 text-white font-semibold hover:opacity-90 transition">
+            <Link
+              href={"/users/checkout"}
+              onClick={""}
+              className="mt-4 text-center rounded-full bg-[#6F4E37] py-4 text-white font-semibold hover:opacity-90 transition cursor-pointer"
+            >
               {t("Checkout")}
-            </button>
+            </Link>
           </div>
         </div>
       </div>

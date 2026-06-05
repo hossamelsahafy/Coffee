@@ -47,7 +47,7 @@ const DetailsSection = ({ data, locale, selectedOption }) => {
         </div>
         <div className="md:max-w-1/2">
           <Image
-            src={"/assets/abt-2.webp"}
+            src={"/assets/abt2.webp"}
             width={400}
             height={400}
             alt="Cover Image"

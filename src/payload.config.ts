@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import sharp from "sharp";
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import nodemailer from "nodemailer";
-
+import { stripeCreatePayment } from "@/app/(payload)/endpoints/payments/stripe";
 import { Users } from "@/app/(payload)/_collections/Users";
 import { Media } from "@/app/(payload)/_collections/Media";
 import { Categories } from "@/app/(payload)/_collections/Categories";
@@ -16,6 +16,8 @@ import { OriginsOfCoffee } from "@/app/(payload)/_collections/OriginsOfCoffee";
 import { Blogs } from "@/app/(payload)/_collections/Blogs";
 import { Subscripe } from "@/app/(payload)/_collections/Subscriped";
 import { Notes } from "@/app/(payload)/_collections/Notes";
+import { ShippingZones } from "@/app/(payload)/_collections/ShippingZones";
+import { Orders } from "@/app/(payload)/_collections/Order";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
@@ -35,6 +37,7 @@ export default buildConfig({
       },
     }),
   }),
+  endpoints: [stripeCreatePayment],
 
   admin: {
     user: Users.slug,
@@ -51,6 +54,8 @@ export default buildConfig({
     Blogs,
     Subscripe,
     Notes,
+    ShippingZones,
+    Orders,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

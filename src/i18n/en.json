@@ -145,5 +145,20 @@
     "Total": "Total",
     "Checkout": "Checkout",
     "Shipping": "Shipping"
+  },
+
+  "Checkout": {
+    "header": "Checkout",
+    "cartItems": "Cart Items",
+    "shipping": "Shipping",
+    "shippingFeeNotice": "Shipping fee will be added to total",
+    "paymentMethod": "Payment Method",
+    "cashOnDelivery": "Cash on Delivery",
+    "onlinePayment": "Online Payment (Stripe)",
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "placeOrder": "Place Order",
+    "currency": "SAR"
   }
 }

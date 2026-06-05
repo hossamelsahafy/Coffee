@@ -15,8 +15,6 @@ body {
   background-color: black;
   color: white;
   scroll-behavior: smooth;
-  overflow-y: scroll;
-  overflow-x: hidden;
 }
 .container {
   @apply max-w-7xl mx-auto p-6;

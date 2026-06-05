@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import auth from "@/actions/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import LoginOptions from "@/components/ui/LoginPage/LoginOptions";
 
 const regexPatterns = {
   name: /^[A-Za-z\u0600-\u06FF\s]{2,30}$/,
@@ -24,6 +25,9 @@ const UserForm = ({
   const [apiError, setApiError] = useState("");
   const [success, setSuccess] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
   const validate = () => {
     const newErrors = {};
 
@@ -59,7 +63,12 @@ const UserForm = ({
     try {
       const payload = { ...formData };
 
-      await auth(payload, endpoint, options);
+      if (token) {
+        payload.token = token;
+      }
+
+      const response = await auth(payload, endpoint, options);
+      console.log(response);
 
       if (endpoint === "users/login") {
         setSuccess(
@@ -69,16 +78,46 @@ const UserForm = ({
         );
 
         setTimeout(() => {
-          router.push(`/${locale}/users/account`);
+          window.location.replace(`/${locale}/users/account`);
         }, 2000);
-      } else {
+      } else if (endpoint === "auth/signup") {
         setSuccess(
           locale === "en"
             ? "Account created successfully! Please check your email to verify your account."
             : "تم إنشاء الحساب بنجاح! يرجى التحقق من البريد الإلكتروني لتفعيل الحساب.",
         );
+
         setTimeout(() => {
           router.push(`/${locale}/users/login`);
+        }, 10000);
+      } else if (endpoint === "users/forgot-password") {
+        setSuccess(
+          locale === "en"
+            ? "If this email exists, a reset password link has been sent."
+            : "إذا كان البريد الإلكتروني موجودًا، فسيتم إرسال رابط إعادة تعيين كلمة المرور.",
+        );
+        setTimeout(() => {
+          router.push(`/${locale}/users/login`);
+        }, 3000);
+      } else if (endpoint === "auth/verify-email") {
+        setSuccess(
+          locale === "en" ? response?.message?.en : response?.message?.ar,
+        );
+
+        setTimeout(() => {
+          router.push(`/${locale}/users/login`);
+        }, 3000);
+      } else if (
+        endpoint === "users/reset-password" &&
+        response?.message === "Password reset successfully."
+      ) {
+        setSuccess(
+          locale === "en"
+            ? "Password reset successfully! Redirecting to account page..."
+            : "تم إعادة تعيين كلمة المرور بنجاح! جاري التحويل لصفحة الحساب...",
+        );
+        setTimeout(() => {
+          window.location.replace(`/${locale}/users/account`);
         }, 10000);
       }
 
@@ -101,6 +140,24 @@ const UserForm = ({
               : "البريد الإلكتروني أو كلمة المرور غير صحيحة",
           );
         }
+      } else if (endpoint === "users/reset-password") {
+        setApiError(
+          locale === "en"
+            ? "Invalid or expired reset token."
+            : "رابط إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية.",
+        );
+      } else if (endpoint === "auth/verify-email") {
+        setApiError(
+          locale === "en"
+            ? err?.error?.en || "Something went wrong"
+            : err?.error?.ar || "حدث خطأ ما",
+        );
+      } else if (endpoint === "users/forgot-password") {
+        setApiError(
+          locale === "en"
+            ? "Something went wrong. Please try again later."
+            : "حدث خطأ ما، حاول مرة أخرى لاحقًا.",
+        );
       } else {
         setApiError(
           locale === "en"
@@ -174,7 +231,7 @@ const UserForm = ({
 
   return (
     <div className="w-full max-w-xl mx-auto mt-10 bg-base-coffe/30 p-6 rounded-lg">
-      <h3 className="text-2xl font-bold text-center text-base-coffe mb-6">
+      <h3 className="text-2xl font-bold text-center text-base-coffe mb-4">
         {header}
       </h3>
 
@@ -190,7 +247,7 @@ const UserForm = ({
           type="submit"
           disabled={loading}
           className="
-    mt-4 py-3 rounded-xl
+    mt-2 py-3 rounded-xl
     bg-base-coffe text-white font-semibold
     transition-all duration-300
     hover:bg-base-coffe/50 cursor-pointer 
@@ -219,6 +276,7 @@ const UserForm = ({
             {success}
           </div>
         )}
+        {endpoint === "users/login" && <LoginOptions locale={locale} />}
       </form>
     </div>
   );

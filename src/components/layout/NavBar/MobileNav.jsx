@@ -48,7 +48,7 @@ const MobileNav = ({
     <div className="w-full flex items-center justify-between gap-5 p-4 bg-base-dark text-base-light overflow-hidden">
       <div className="flex">
         <img
-          src="/assets/Logos.webp"
+          src="/assets/logos.webp"
           className="w-24 object-contain"
           alt="Logo"
         />
@@ -91,7 +91,7 @@ const MobileNav = ({
   `}
       >
         <img
-          src="/assets/Logos.webp"
+          src="/assets/logos.webp"
           className="w-28 object-contain mt-8 mb-6"
           alt="Logo"
         />

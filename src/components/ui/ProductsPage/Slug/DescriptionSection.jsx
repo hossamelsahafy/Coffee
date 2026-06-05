@@ -47,7 +47,7 @@ const DescriptionSection = ({
                 width={40}
                 height={50}
                 key={i}
-                src="/assets/icons8-star-48.png"
+                src="/assets/icons8star48.png"
                 alt="star"
                 className="w-5 h-5"
               />

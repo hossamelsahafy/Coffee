@@ -18,11 +18,11 @@ const NavBar = ({ locale }) => {
   const localesData = {
     en: {
       label: "English",
-      flag: "/assets/usaF.png",
+      flag: "/assets/UsaF.png",
     },
     ar: {
       label: "العربية",
-      flag: "/assets/Flag.png",
+      flag: "/assets/flag.png",
     },
   };
   const navLinks = [
@@ -36,18 +36,18 @@ const NavBar = ({ locale }) => {
     { id: 6, name: t("contactUs"), href: "contact-us" },
   ];
   const currenciesData = [
-    { value: "USD", label: "USD", symbol: "$", flag: "/assets/usaF.png" },
+    { value: "USD", label: "USD", symbol: "$", flag: "/assets/UsaF.png" },
     {
       value: "SAR",
       label: "ريال سعودي",
       symbol: "⃁",
-      flag: "/assets/Flag.png",
+      flag: "/assets/flag.png",
     },
     {
       value: "EGP",
       label: "جنيه مصري",
       symbol: "£",
-      flag: "/assets/Egypt.png",
+      flag: "/assets/egypt.png",
     },
   ];
   const item = t("item");

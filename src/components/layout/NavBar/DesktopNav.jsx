@@ -22,7 +22,7 @@ const DesktopNav = ({
         <Link href="/">
           <Image
             alt="Coffe"
-            src="/assets/Logos.webp"
+            src="/assets/logos.webp"
             className="w-24 object-contain"
             width={400}
             height={400}
