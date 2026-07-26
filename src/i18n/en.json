@@ -1,0 +1,257 @@
+{
+  "try": {
+    "hello": "Hello",
+    "welcome": "Welcome to our website"
+  },
+  "nav": {
+    "aboutUs": "About us",
+    "contactUs": "Contact Us",
+    "products": "Products",
+    "collection": "Coffee Collection",
+    "item": "Items",
+    "capsulatedCoffee": "Capsulated Coffee",
+    "brewingTools": "Brewing Tools",
+    "roastGrinders": "Roast & Grinders",
+    "coffee": "Coffee"
+  },
+  "footer": {
+    "coffeeCup": "A cup of coffee, a",
+    "momentOfTime": "moment of your time",
+    "coffeeMarketText": "As the coffee shop market becomes more popular, the number of cafe websites is growing. The internet and social media play an important role in finding new customers.",
+    "shopLinks": [
+      { "id": 1, "label": "Search", "href": "/search" },
+      { "id": 2, "label": "All collections", "href": "/collections" },
+      { "id": 3, "label": "All products", "href": "/products" },
+      { "id": 4, "label": "My Cart", "href": "/cart" },
+      { "id": 5, "label": "Compare", "href": "/compare" },
+      { "id": 6, "label": "Wishlist", "href": "/wishlist" }
+    ],
+    "accountLinks": [
+      { "id": 1, "label": "About Us", "href": "/about-us" },
+      { "id": 2, "label": "Contact with us", "href": "/contact-us" },
+      { "id": 3, "label": "Faq's", "href": "/faq" },
+      { "id": 4, "label": "Privacy Policy", "href": "/privacy-policy" },
+      { "id": 5, "label": "Shipping & Delivery", "href": "/shipping-delivery" },
+      { "id": 6, "label": "Terms & Conditions", "href": "/terms-conditions" }
+    ],
+    "shop": "Shop",
+    "account": "Account",
+    "share": "Share"
+  },
+  "header": {
+    "title": "Coffee",
+    "subtitle": "Coffee that fuels your dreams. Life is short, stay awake for it. Coffee, Art, and Vintage. Fuel for your creativity.",
+    "fresh": "Fresh roasted coffee",
+    "freshSpan": "with 24h delivery",
+    "partners": "partners"
+  },
+  "headerTwo": {
+    "title": "Coffee",
+    "subtitle": "The Best Coffee",
+    "description": "As the coffee shop market becomes more popular, the number of cafe websites is growing. The internet and social media play an important role in finding new customers.",
+    "showProducts": "Show Products"
+  },
+  "reviews": {
+    "coffee": "Coffee",
+    "span": "Fresh roasted coffee",
+    "fresh_roasted_coffee": "with 24h delivery blogs",
+    "denver_biscuit_cafe": "Denver Biscuit cafe knows how to entice future customers. A video takes viewers all the way from the preparation of one of their desserts to the service.",
+    "show_products": "Show Products",
+    "secondTitle": "Choose the origin of the coffee:"
+  },
+  "discountSection": {
+    "coffee": "Coffee",
+    "coffeeShopBestDiscountProducts": "Best Discount Products in Our Coffee Shop",
+    "showMoreProducts": "Show more products",
+    "new": "New"
+  },
+  "BestSeller": {
+    "title": "Coffee",
+    "description": "Shop Best Seller Product",
+    "longDescription": "Coffee is a drink prepared from roasted coffee beans. Darkly colored, bitter, and slightly acidic, coffee has a stimulating effect on humans, primarily due to its caffeine content.",
+    "showProducts": "Show Products"
+  },
+  "supscripe": {
+    "coffee": "Coffee",
+    "subscribeNewsletter": "Subscribe to our newsletter",
+    "discountOffer": "and get -20% off",
+    "coffeeDescription": "It is the most popular hot drink in the world. Seeds of the Coffea plant's fruits are separated to produce unroasted green coffee beans.",
+    "subscripe": "Subscripe",
+    "placeholder": "Enter Email Address..."
+  },
+  "SubscripeForm": {
+    "emailRequired": "Email is required",
+    "invalidEmail": "Invalid email address",
+    "success": "Subscribed successfully",
+    "error": "Something went wrong"
+  },
+  "BlogSection": {
+    "title": "Coffee",
+    "subtitle": "Fresh roasted coffee Blogs",
+    "description": "Coffee is a beverage brewed from the roasted and ground seeds of the tropical evergreen coffee plant.",
+    "cta": "Show Blogs"
+  },
+  "productSlug": {
+    "button": "Back To Home",
+    "write": "Write a Review",
+    "Quantity": "Quantity",
+    "AddToCart": "Add To Cart",
+    "BuyItNow": "Buy It Now",
+    "soldout": "Sold Out"
+  },
+
+  "DetailsSection": {
+    "Coffee": "Coffee",
+    "Des": "Description",
+    "longDes": "Coffee, a beloved global beverage, is brewed from roasted coffee beans, which are seeds of the Coffea plant. Known for its rich aroma and diverse flavors, it offers a perfect balance of bitterness and sweetness. Coffee is cherished for its energizing properties, thanks to caffeine, and its versatility, from espresso shots to creamy lattes.",
+    "sku": "SKU",
+    "category": "Category",
+    "type": "Type",
+    "availability": "Availability",
+    "inStock": "In Stock"
+  },
+  "RecentlySection": {
+    "H2": "Recently Released Products"
+  },
+  "ReviewsSection": {
+    "H2": "Customer Reviews",
+    "BeFirst": "Be the first to write a review",
+    "Write": "Write A Review"
+  },
+  "Collection": {
+    "Collections": "Collections"
+  },
+  "CollectionElemnts": {
+    "backToHome": "Back To Home Page"
+  },
+  "ProductsMainPage": {
+    "title": "All Products",
+    "des": "Coffee is a drink prepared from roasted coffee beans. Darkly colored, bitter, and slightly acidic, coffee has a stimulating effect on humans, primarily due to its caffeine content. It is the most popular hot drink in the world.",
+    "backToHome": "Back To Home"
+  },
+  "FiltersAndProductsSection": {
+    "Filters": "Filters",
+    "home": "Home",
+    "SortBy": "Sort By",
+    "reset": "Reset",
+    "selected": "selected",
+    "min": "Min price:",
+    "max": "Max price:"
+  },
+  "Cart": {
+    "cart": "Your Cart",
+    "remove": "Remove",
+    "OrderSummary": "Order Summary",
+    "Total": "Total",
+    "Checkout": "Checkout",
+    "Shipping": "Shipping"
+  },
+
+  "Checkout": {
+    "header": "Checkout",
+    "cartItems": "Cart Items",
+    "shipping": "Shipping",
+    "shippingFeeNotice": "Shipping fee will be added to total",
+    "paymentMethod": "Payment Method",
+    "cashOnDelivery": "Cash on Delivery",
+    "onlinePayment": "Online Payment (Stripe)",
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "placeOrder": "Place Order",
+    "currency": "SAR"
+  },
+
+  "logout": {
+    "title": "Logout?",
+    "subtitle": "Are you sure you want to logout?",
+    "cancel": "Cancel",
+    "logout": "Logout",
+    "success": "Logout successful. Redirecting to the home page...",
+    "loadingText": "Logging out"
+  },
+  "Account": {
+    "MyAccount": "My Account",
+    "title": "Welcome Back",
+    "subtitle": "Manage your personal information, update your account details, change your password, and delete your account if you have no active orders."
+  },
+  "CartDashBoard": {
+    "MyCart": "My Cart",
+    "title": "Shopping Cart",
+    "subtitle": "Review your selected items, update quantities, and proceed to checkout whenever you are ready."
+  },
+  "AccountData": {
+    "title": "Logout?",
+    "subtitle": "Are you sure you want to logout?",
+    "deleteTitle": "Delete Account?",
+    "deleteSubtitle": "Are you sure you want to delete your account? This action cannot be undone.",
+    "delete": "Delete Account",
+    "logout": "Logout",
+    "cancel": "Cancel",
+    "deleteLoadingText": "Deleting your account...",
+    "loadingText": "Logging out",
+    "deleteSuccess": "Your account has been deleted successfully.",
+    "deletingError": "Couldn't delete your account because you have active orders.",
+    "logoutSuccess": "You have been logged out successfully.",
+    "UpdateMessageSuccess": "Data Was Updated successfully",
+    "EnterNewPassword": "Change Password If You Need To",
+    "Male": "Male",
+    "Female": "Female",
+    "VerifyModuleTitle": "Verify Your New Email",
+    "VerifyModuleSubtitle": "We've sent a 6-digit verification code to your new email address. Enter it below to complete the email change.",
+    "VerificationCode": "Verification Code",
+    "VerificationCodePlaceholder": "Enter the 6-digit code",
+    "Submit": "Verify",
+    "cancelTitle": "Cancel",
+    "ResendCode": "Resend Code",
+    "ResendCodeIn": "Resend in {seconds}s",
+    "CodeExpired": "The verification code has expired.",
+    "InvalidCode": "The verification code is invalid.",
+    "VerificationSuccess": "Your email has been verified successfully.",
+    "VerificationFailed": "Unable to verify your email.",
+    "CodeRequired": "Please enter the verification code."
+  },
+
+  "Favorites": {
+    "MyAccount": "Favorites",
+    "title": "Favorites",
+    "subtitle": "Browse all the products you've saved. Add them to your cart or remove them from your favorites whenever you like.",
+    "NoData": "No Products Was Added To Favorites Yet"
+  },
+  "Orders": {
+    "MyAccount": "Orders",
+    "title": "Orders",
+    "subtitle": "View all your orders, check their status, track their progress, and complete payment for any unpaid active orders.",
+    "NoData": "You haven't placed any orders yet.",
+    "OrderStatus": "Order status",
+    "subtotal": "Subtotal",
+    "shippingCost": "Shipping Cost",
+    "total": "Total",
+    "ShowDetails": "Show Details",
+    "PayNow": "Pay Now",
+    "Paid": "Paid",
+    "cash": "Cash on Delivery",
+    "orderDetailsTitle": "Order #{order} Details",
+    "orderDetailsSubtitle": "Products included in this order",
+    "quantity": "Quantity",
+    "price": "Price"
+  },
+  "OrderStatus": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "PaymentStatus": {
+    "pending": "Pending Payment",
+    "paid": "Paid",
+    "failed": "Payment Failed",
+    "refunded": "Refunded",
+    "cash_on_delivery": "Cash On Delivery"
+  },
+  "PaymentMethod": {
+    "cash": "Cash on Delivery",
+    "stripe": "Stripe Payment"
+  }
+}

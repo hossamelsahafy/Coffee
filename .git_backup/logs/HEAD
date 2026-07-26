@@ -1,0 +1,7 @@
+0000000000000000000000000000000000000000 dbc5aa0d98f85b509fbbfc11e92baabe07a406f4 hossamelsahafy <hossamelsa7afy54@gmail.com> 1779563084 +0200	commit (initial): Add: Layouts, Landing Pages, Auth System With protected routes
+dbc5aa0d98f85b509fbbfc11e92baabe07a406f4 dbc5aa0d98f85b509fbbfc11e92baabe07a406f4 hossamelsahafy <hossamelsa7afy54@gmail.com> 1779563367 +0200	reset: moving to HEAD
+dbc5aa0d98f85b509fbbfc11e92baabe07a406f4 18f1197eb6c6021d5db1d3f15ae01c5b24c0b6d6 hossamelsahafy <hossamelsa7afy54@gmail.com> 1779642513 +0200	commit: Add: Protected Routes
+18f1197eb6c6021d5db1d3f15ae01c5b24c0b6d6 255cac2307b23c98356a55ab1574642d670b400a hossamelsahafy <hossamelsa7afy54@gmail.com> 1780677386 +0200	commit: Stripe Config && CheckoutPage
+255cac2307b23c98356a55ab1574642d670b400a eebce48fa22672d643019c3504932dd327064476 hossamelsahafy <hossamelsa7afy54@gmail.com> 1784515482 +0200	commit: User DashBoard
+eebce48fa22672d643019c3504932dd327064476 4fa7a77b8b8ca8d34f1078cf1220df379343e55b hossamelsahafy <hossamelsa7afy54@gmail.com> 1784563336 +0200	commit: Fix: UI AND HANDLE ERROR SUCCESS MESSAGES FOR VERIFY NEW EMAIL
+0000000000000000000000000000000000000000 0b55934038012d02a5fbd17b8461e73bfd7d82c3 hossamelsahafy <hossamelsa7afy54@gmail.com> 1785075600 +0200	commit (initial): Feat: Adding Order Page And Allow User Pay For not Paid Orders & Adding Side Bar Context
