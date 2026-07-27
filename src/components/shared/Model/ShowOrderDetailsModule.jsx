@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 import { useTranslations } from "next-intl";
-
+import Link from "next/link";
 export default function ShowOrderDetailsModule({ open, onClose, order }) {
   const t = useTranslations("Orders");
 
@@ -78,7 +78,16 @@ export default function ShowOrderDetailsModule({ open, onClose, order }) {
               </div>
             ))}
           </div>
+          <div className="flex justify-center items-center border-t border-white/10 my-4">
+            <Link
+              href={`/users/dashboard/track-orders?order=${order.orderNumber}`}
+              className="rounded-xl border border-white/20 mt-4 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/20"
+            >
+              {t("trackOrder")}
+            </Link>
+          </div>
         </div>
+        <div />
       </div>
     </div>
   );

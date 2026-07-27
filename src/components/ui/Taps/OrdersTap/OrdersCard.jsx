@@ -19,6 +19,7 @@ const OrderCard = ({
   setStripeOpen,
   setOpenModule,
   setSelectedData,
+  setToast,
   cash,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -40,7 +41,21 @@ const OrderCard = ({
     <div className="flex flex-col w-full h-full justify-between gap-4 rounded-2xl border border-base-nav/50 bg-base-dark/40 p-5 shadow-lg backdrop-blur-xl">
       <div className="flex flex-col gap-4 w-full flex-1">
         <div className="flex md:text-xs lg:text-sm justify-between items-center w-full">
-          <p># {d.orderNumber}</p>
+          <p
+            className="cursor-pointer hover:text-base-lighter transition-all duration-300 ease-in-out"
+            onClick={() => {
+              navigator.clipboard.writeText(d.orderNumber);
+              setToast({
+                message:
+                  locale === "en"
+                    ? "The Order Number Was Copied To Clipboard"
+                    : "لقد تم نسخ رقم الطلب",
+                type: "success",
+              });
+            }}
+          >
+            # {d.orderNumber}
+          </p>
           <p
             className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${status.bg} ${status.color}`}
           >

@@ -234,7 +234,8 @@
     "orderDetailsTitle": "Order #{order} Details",
     "orderDetailsSubtitle": "Products included in this order",
     "quantity": "Quantity",
-    "price": "Price"
+    "price": "Price",
+    "trackOrder": "Track Order"
   },
   "OrderStatus": {
     "pending": "Pending",
@@ -253,5 +254,37 @@
   "PaymentMethod": {
     "cash": "Cash on Delivery",
     "stripe": "Stripe Payment"
+  },
+  "TrackOrder": {
+    "MyAccount": "Track Order",
+    "title": "Track Order",
+    "subtitle": "View your order's current status, shipping progress, and delivery updates. You can search using your order number or open an order directly from your Orders page.",
+    "subtitle2": "Stay updated with your order's current status, shipping progress, and delivery updates.",
+    "NoData": "No order found. Please check your order number and try again.",
+    "searchTitle": "Find Your Order",
+    "searchSubtitle": "Enter the order number to view its current status and shipping progress.",
+    "orderNumber": "Order Number",
+    "placeholder": "e.g. ORD-1789682550319",
+    "trackOrder": "Track Order",
+    "invalidFormatError": "Please enter a valid order number format (e.g., ORD-1785014874925)",
+    "notFoundError": "No order found with this tracking number.",
+    "successMessage": "Order found successfully! Redirecting...",
+    "fetchError": "Failed to fetch order. Please try again.",
+    "searching": "Searching..."
+  },
+  "OrderTimeline": {
+    "progressTitle": "Order Progress",
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "This order has been cancelled."
+  },
+  "TrackOrderData": {
+    "orderNumber": "Order Number",
+    "totalAmount": "Total Amount",
+    "shippingCost": "Shipping Cost",
+    "shippingCountry": "Shipping Country",
+    "notSpecified": "Not Specified"
   }
 }

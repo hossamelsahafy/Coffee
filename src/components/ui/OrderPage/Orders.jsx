@@ -81,6 +81,7 @@ const Orders = ({
                 setStripeOpen={setStripeOpen}
                 cash={cash}
                 setSelectedData={setSelectedData}
+                setToast={setToast}
               />
             );
           }}

@@ -15,7 +15,6 @@ const authPages = [
 
 const protectedPages = [
   "/users/dashboard/account",
-  "/users/dashboard/cart",
   "/users/dashboard/orders",
   "/users/dashboard/favorites",
   "/users/dashboard/track-orders",
