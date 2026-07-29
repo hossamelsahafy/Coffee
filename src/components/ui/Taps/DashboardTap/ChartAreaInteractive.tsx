@@ -90,22 +90,23 @@ export function ChartAreaInteractive({ chartData }: ChartAreaInteractiveProps) {
           >
             <SelectValue placeholder={t("last3Months")} />
           </SelectTrigger>
+
           <SelectContent className="rounded-xl border border-white/10 bg-[#1A120D] text-white shadow-xl">
             <SelectItem
               value="90d"
-              className="rounded-lg focus:bg-[#382418] focus:text-white cursor-pointer"
+              className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B] data-[highlighted]:bg-[#382418] data-[highlighted]:!text-[#D8A46B]"
             >
               {t("last3Months")}
             </SelectItem>
             <SelectItem
               value="30d"
-              className="rounded-lg focus:bg-[#382418] focus:text-white cursor-pointer"
+              className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B] data-[highlighted]:bg-[#382418] data-[highlighted]:!text-[#D8A46B]"
             >
               {t("last30Days")}
             </SelectItem>
             <SelectItem
               value="7d"
-              className="rounded-lg focus:bg-[#382418] focus:text-white cursor-pointer"
+              className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B] data-[highlighted]:bg-[#382418] data-[highlighted]:!text-[#D8A46B]"
             >
               {t("last7Days")}
             </SelectItem>
@@ -114,84 +115,89 @@ export function ChartAreaInteractive({ chartData }: ChartAreaInteractiveProps) {
       </CardHeader>
 
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[280px] w-full"
-        >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillSpent" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#D8A46B" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#D8A46B" stopOpacity={0.05} />
-              </linearGradient>
-              <linearGradient id="fillOrders" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#965015" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#965015" stopOpacity={0.05} />
-              </linearGradient>
-            </defs>
+        {filteredData.length === 0 ? (
+          <div className="flex h-[280px] w-full items-center justify-center text-center text-gray-400">
+            <p className="text-sm font-medium">{t("noOrdersOrSpentYet")}</p>
+          </div>
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-[280px] w-full"
+          >
+            <AreaChart data={filteredData}>
+              <defs>
+                <linearGradient id="fillSpent" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#D8A46B" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#D8A46B" stopOpacity={0.05} />
+                </linearGradient>
+                <linearGradient id="fillOrders" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#965015" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#965015" stopOpacity={0.05} />
+                </linearGradient>
+              </defs>
 
-            <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.08)" />
+              <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.08)" />
 
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              padding={{ left: 16, right: 16 }}
-              stroke="#A38F85"
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
-              }}
-            />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+                padding={{ left: 16, right: 16 }}
+                stroke="#A38F85"
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  return date.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  });
+                }}
+              />
 
-            {/* Separate Y axes to handle currency ($100s) vs count (1-10s) */}
-            <YAxis yAxisId="spent" hide />
-            <YAxis yAxisId="orders" hide />
+              <YAxis yAxisId="spent" hide />
+              <YAxis yAxisId="orders" hide />
 
-            <ChartTooltip
-              cursor={{ stroke: "rgba(255, 255, 255, 0.15)", strokeWidth: 1 }}
-              content={
-                <ChartTooltipContent
-                  className="border border-white/10 bg-[#1A120D]/90 text-white backdrop-blur-md shadow-xl"
-                  labelFormatter={(value) =>
-                    new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })
-                  }
-                  indicator="dot"
-                />
-              }
-            />
+              <ChartTooltip
+                cursor={{ stroke: "rgba(255, 255, 255, 0.15)", strokeWidth: 1 }}
+                content={
+                  <ChartTooltipContent
+                    className="border border-white/10 bg-[#1A120D]/90 text-white backdrop-blur-md shadow-xl"
+                    labelFormatter={(value) =>
+                      new Date(value).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })
+                    }
+                    indicator="dot"
+                  />
+                }
+              />
 
-            <Area
-              yAxisId="orders"
-              dataKey="orders"
-              type="natural"
-              fill="url(#fillOrders)"
-              stroke="#965015"
-              strokeWidth={2}
-            />
-            <Area
-              yAxisId="spent"
-              dataKey="spent"
-              type="natural"
-              fill="url(#fillSpent)"
-              stroke="#D8A46B"
-              strokeWidth={2}
-            />
+              <Area
+                yAxisId="orders"
+                dataKey="orders"
+                type="natural"
+                fill="url(#fillOrders)"
+                stroke="#965015"
+                strokeWidth={2}
+              />
+              <Area
+                yAxisId="spent"
+                dataKey="spent"
+                type="natural"
+                fill="url(#fillSpent)"
+                stroke="#D8A46B"
+                strokeWidth={2}
+              />
 
-            <ChartLegend
-              className="mt-4 text-gray-300"
-              content={<ChartLegendContent />}
-            />
-          </AreaChart>
-        </ChartContainer>
+              <ChartLegend
+                className="mt-4 text-gray-300"
+                content={<ChartLegendContent />}
+              />
+            </AreaChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   );

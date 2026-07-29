@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiChevronsDown } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa6";
@@ -8,7 +8,9 @@ import { FiPlus } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/Context/CartContext";
+import { useUser } from "@/Context/userContext";
 import { CgSpinner } from "react-icons/cg";
+import SlugMethods from "@/actions/SlugMethods";
 const ProductCard = ({
   product,
   locale,
@@ -20,11 +22,24 @@ const ProductCard = ({
 }) => {
   const { addToCart } = useCart();
   const options = product.choices.options;
+  const { user } = useUser();
   const getInitialOption = () => {
     return options.find((o) => o.availability === "inStock") || options[0];
   };
   const [selectedOption, setSelectedOption] = useState(getInitialOption);
   const isIn = selectedOption?.availability === "inStock";
+
+  const handleViewed = async () => {
+    if (user) {
+      try {
+        await SlugMethods("auth/track-products", "POST", {
+          productId: product.id,
+        });
+      } catch (error) {
+        console.error("Failed to track product view:", error);
+      }
+    }
+  };
 
   return (
     <>
@@ -67,6 +82,7 @@ const ProductCard = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  handleViewed();
                   setSelectedProduct?.(product);
                   setOpenModel?.(true);
                 }}
@@ -78,6 +94,7 @@ const ProductCard = ({
         </div>
         <div className="flex flex-col gap-2 min-w-0 w-full">
           <Link
+            onClick={() => handleViewed()}
             href={`${locale}/products/${locale === "en" ? product.slug : product.slugAr}`}
           >
             <p className="font-semiboldtext-lg overflow-hidden">

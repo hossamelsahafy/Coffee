@@ -26,17 +26,14 @@ const FavoritesData = ({ data = [], locale, NotYet }) => {
   const toggleFavorite = async (productId) => {
     if (!productId || loadingProductId === productId) return;
 
-    // 1. Set loading state FIRST so the UI renders the loader spinner
     setLoadingProductId(productId);
 
     try {
-      // 2. Wait for the server deletion to finish while showing spinner
       await SlugMethods(
         `favorites?where[product][equals]=${productId}`,
         "DELETE",
       );
 
-      // 3. Remove item from the viewport ONLY after success
       setFavoritesList((prev) =>
         prev.filter((item) => {
           const pId =
@@ -63,7 +60,6 @@ const FavoritesData = ({ data = [], locale, NotYet }) => {
         type: "error",
       });
     } finally {
-      // 4. Reset loading state
       setLoadingProductId(null);
     }
   };

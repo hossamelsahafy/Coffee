@@ -78,6 +78,7 @@ export interface Config {
     'shipping-zones': ShippingZone;
     orders: Order;
     favorites: Favorite;
+    'product-views': ProductView;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -96,6 +97,7 @@ export interface Config {
     'shipping-zones': ShippingZonesSelect<false> | ShippingZonesSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     favorites: FavoritesSelect<false> | FavoritesSelect<true>;
+    'product-views': ProductViewsSelect<false> | ProductViewsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -386,6 +388,18 @@ export interface Favorite {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-views".
+ */
+export interface ProductView {
+  id: string;
+  user: string | User;
+  product: string | Product;
+  views: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -451,6 +465,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'favorites';
         value: string | Favorite;
+      } | null)
+    | ({
+        relationTo: 'product-views';
+        value: string | ProductView;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -731,6 +749,17 @@ export interface OrdersSelect<T extends boolean = true> {
 export interface FavoritesSelect<T extends boolean = true> {
   user?: T;
   product?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-views_select".
+ */
+export interface ProductViewsSelect<T extends boolean = true> {
+  user?: T;
+  product?: T;
+  views?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -294,7 +294,15 @@
     "last30Days": "Last 30 days",
     "last7Days": "Last 7 days",
     "spent": "Spent",
-    "orders": "Orders"
+    "orders": "Orders",
+    "noOrdersOrSpentYet": "No orders or spend yet",
+    "mostViewedProducts": "Most Viewed Products",
+    "noViewedProductsYet": "No recently viewed products",
+    "views": "views",
+    "topCategories": "Top Spending Categories",
+    "noCategoryData": "No category data available",
+    "MostViewedProducts": "Most Viewed Products",
+    "noProductsFound": "No Products Found"
   },
   "DashboardData": {
     "title": "Dashboard Overview",

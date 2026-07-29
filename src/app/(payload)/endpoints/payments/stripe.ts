@@ -64,6 +64,14 @@ export const stripeCreatePayment = {
           ],
         });
       }
+      if (order.payment.status === "paid") {
+        return Response.json({
+          error: [
+            { en: "Already Paid For That Order" },
+            { ar: "تم الدقع للطلب من قبل" },
+          ],
+        });
+      }
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(Number(order.subtotal) * 100),
         currency: "usd",

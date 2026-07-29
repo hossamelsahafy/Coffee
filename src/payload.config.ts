@@ -21,6 +21,7 @@ import { Orders } from "@/app/(payload)/_collections/Order";
 import { AboutPage } from "@/app/(payload)/_collections/AboutPage";
 import { ContactUsPage } from "@/app/(payload)/_collections/ContactUsPage";
 import { Favorites } from "@/app/(payload)/_collections/Favorites";
+import { ProductViews } from "@/app/(payload)/_collections/ProductsViews";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
@@ -60,6 +61,7 @@ export default buildConfig({
     ShippingZones,
     Orders,
     Favorites,
+    ProductViews,
   ],
   globals: [AboutPage, ContactUsPage],
   editor: lexicalEditor(),

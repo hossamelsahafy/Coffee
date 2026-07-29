@@ -10,6 +10,8 @@ import { FiChevronsDown } from "react-icons/fi";
 import { useCart } from "@/Context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
+import SlugMethods from "@/actions/SlugMethods";
+import { useUser } from "@/Context/userContext";
 const ProductsCardAsColomns = ({
   product,
   locale,
@@ -22,6 +24,7 @@ const ProductsCardAsColomns = ({
   toggleFavorite,
   isLoading,
 }) => {
+  const { user } = useUser();
   const { addToCart } = useCart();
   const t = useTranslations("discountSection");
   const options = product.choices.options;
@@ -55,6 +58,17 @@ const ProductsCardAsColomns = ({
   const getDiscount = (before, after) => {
     if (!before) return 0;
     return ((before - after) / before) * 100;
+  };
+  const handleViewed = async () => {
+    if (user) {
+      try {
+        await SlugMethods("auth/track-products", "POST", {
+          productId: product.id,
+        });
+      } catch (error) {
+        console.error("Failed to track product view:", error);
+      }
+    }
   };
   return (
     <div
@@ -109,6 +123,7 @@ const ProductsCardAsColomns = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              handleViewed();
               setSelectedProduct(product);
               setOpenModel(true);
             }}
@@ -117,6 +132,7 @@ const ProductsCardAsColomns = ({
         </div>
       </div>
       <Link
+        onClick={() => handleViewed()}
         href={`/${locale}/products/${locale === "en" ? product.slug : product.slugAr}`}
       >
         <p className="font-bold text-2xl line-clamp-1 hover:text-base-light/70 duration-300 transition-all">

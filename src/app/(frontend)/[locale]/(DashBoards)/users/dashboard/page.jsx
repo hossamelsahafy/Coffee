@@ -5,9 +5,17 @@ export default async function ({ params }) {
   const { locale } = await params;
   const orderData = await GetDataServerSide("orders?limit=0", "GET");
 
+  const MostViwedProducts = await GetDataServerSide(
+    "product-views?sort=-views&limit=3",
+    "GET",
+  );
   return (
     <div className="relative">
-      <DashboardClient locale={locale} data={orderData.docs} />
+      <DashboardClient
+        locale={locale}
+        data={orderData.docs}
+        MostViwedProducts={MostViwedProducts.docs}
+      />
     </div>
   );
 }

@@ -299,7 +299,15 @@
     "last30Days": "آخر 30 يوم",
     "last7Days": "آخر 7 أيام",
     "spent": "المصروفات",
-    "orders": "الطلبات"
+    "orders": "الطلبات",
+    "noOrdersOrSpentYet": "لا توجد طلبات أو مصروفات حتى الآن",
+    "mostViewedProducts": "المنتجات الأكثر مشاهدة",
+    "noViewedProductsYet": "لا توجد منتجات مشاهَدة مؤخراً",
+    "views": "مشاهدة",
+    "topCategories": "أكثر الفئات إنفاقاً",
+    "noCategoryData": "لا تتوفر بيانات للفئات",
+    "MostViewedProducts": "اكثر المنتجات مشاهدة",
+    "noProductsFound": "لم يتم العثور على منتجات"
   },
   "DashboardData": {
     "title": "نظرة عامة على لوحة التحكم",

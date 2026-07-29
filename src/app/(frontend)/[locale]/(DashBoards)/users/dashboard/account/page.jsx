@@ -10,7 +10,7 @@ export default async function ({ params }) {
   const MyAccount = t("MyAccount");
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="w-full">
       <ContentLayout
         locale={locale}
         title={title}
