@@ -85,6 +85,7 @@ export const stripeCreatePayment = {
             method: "stripe",
             stripePaymentIntentId: paymentIntent.id,
           },
+          paidAt: new Date(),
         },
       });
 

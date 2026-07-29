@@ -286,5 +286,26 @@
     "shippingCost": "Shipping Cost",
     "shippingCountry": "Shipping Country",
     "notSpecified": "Not Specified"
+  },
+  "UserDashboard": {
+    "ordersChartTitle": "Spending & Orders Overview",
+    "ordersChartDescription": "Track your total spending and order volume over time",
+    "last3Months": "Last 3 months",
+    "last30Days": "Last 30 days",
+    "last7Days": "Last 7 days",
+    "spent": "Spent",
+    "orders": "Orders"
+  },
+  "DashboardData": {
+    "title": "Dashboard Overview",
+    "subtitle": "Track your orders, spending, and account activity from one place.",
+    "totalOrders": "Total Orders",
+    "totalSpent": "Total Spent",
+    "cashOrders": "Cash Orders",
+    "stripeOrders": "Stripe Orders",
+    "noOrders": "No orders yet",
+    "noPayments": "No payments yet",
+    "currency": "USD",
+    "MyAccount": "Dashboard"
   }
 }

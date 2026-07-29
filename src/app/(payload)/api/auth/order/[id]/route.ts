@@ -13,12 +13,33 @@ export async function POST(
     const { id } = await params;
     const payload = await getPayload();
 
-    const order = await payload.findByID({
-      collection: "orders",
-
-      id: id,
+    const { user } = await payload.auth({
+      headers: req.headers,
     });
 
+    if (!user) {
+      return Response.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    const result = await payload.find({
+      collection: "orders",
+      where: {
+        and: [
+          {
+            id: {
+              equals: id,
+            },
+          },
+          {
+            user: {
+              equals: user.id,
+            },
+          },
+        ],
+      },
+      limit: 1,
+    });
+
+    const order = result.docs[0];
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }

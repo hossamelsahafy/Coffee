@@ -163,7 +163,7 @@ export const Orders: CollectionConfig = {
 
   hooks: {
     beforeChange: [
-      async ({ req, data }) => {
+      async ({ req, data, operation, originalDoc }) => {
         if (!req.user) return data;
 
         if (req.user.role !== "admin") {
@@ -177,13 +177,26 @@ export const Orders: CollectionConfig = {
           };
         }
 
-        if (!data.orderNumber) {
-          data.orderNumber = `ORD-${Date.now()}`;
+        if (operation === "create") {
+          if (!data.orderNumber) {
+            data.orderNumber = `ORD-${Date.now()}`;
+          }
+
+          if (data.payment?.method === "cash") {
+            data.payment.status = "cash_on_delivery";
+          }
+
+          if (data.payment?.method === "stripe") {
+            data.payment.status = "pending";
+          }
         }
-        if (data.payment?.method === "cash") {
-          data.payment.status = "cash_on_delivery";
-        } else if (data.payment?.method === "stripe") {
-          data.payment.status = "pending";
+
+        if (operation === "update") {
+          data.orderNumber = originalDoc.orderNumber;
+
+          if (!data.payment?.method) {
+            data.payment = originalDoc.payment;
+          }
         }
 
         data.items = await Promise.all(

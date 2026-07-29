@@ -10,15 +10,43 @@ export default async function TrackOrderPage({ params, searchParams }) {
   const { order } = await searchParams;
 
   const t = await getTranslations("TrackOrder");
+  const s = await getTranslations("TrackOrderData");
 
   let data = null;
+  let cards = [];
 
   if (order) {
     try {
       const endpoint = `orders?where[orderNumber][equals]=${encodeURIComponent(order)}`;
       const orderData = await GetDataServerSide(endpoint, "GET");
       data = orderData.docs[0];
-      console.log(data);
+      cards = [
+        {
+          title: s("orderNumber"),
+          value: data.orderNumber,
+          type: "text",
+        },
+        {
+          title: s("totalAmount"),
+          value: data.total,
+          suffix: "USD",
+          type: "money",
+        },
+        {
+          title: s("shippingCost"),
+          value: data.shipping?.price || 0,
+          suffix: "USD",
+          type: "money",
+        },
+        {
+          title: s("shippingCountry"),
+          value:
+            locale === "en"
+              ? data.shipping?.zone?.cityName
+              : data.shipping?.zone?.cityNameAr,
+          type: "text",
+        },
+      ];
     } catch (error) {
       console.error("Failed to fetch order:", error.message);
     }
@@ -35,7 +63,7 @@ export default async function TrackOrderPage({ params, searchParams }) {
       >
         {order && data ? (
           <>
-            <TrackOrderData locale={locale} order={data} />
+            <TrackOrderData locale={locale} order={data} cards={cards} />
             <OrderTimeline currentStatus={data.status} />
           </>
         ) : (

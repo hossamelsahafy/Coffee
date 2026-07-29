@@ -1,18 +1,13 @@
 import React from "react";
-import { redirect } from "next/navigation";
-import { getUser } from "@/actions/getUser";
-import ContentLayout from "@/components/shared/Dashboard/ContentLayout";
+import GetDataServerSide from "@/actions/GetDataServerSide";
+import DashboardClient from "@/components/ui/Taps/DashboardTap/DashboardClient";
 export default async function ({ params }) {
   const { locale } = await params;
+  const orderData = await GetDataServerSide("orders?limit=0", "GET");
 
-  const user = await getUser();
-
-  if (!user) {
-    redirect(`/${locale}/users/login`);
-  }
   return (
     <div className="relative">
-      <ContentLayout locale={locale} user={user} />
+      <DashboardClient locale={locale} data={orderData.docs} />
     </div>
   );
 }

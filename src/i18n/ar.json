@@ -291,5 +291,26 @@
     "shippingCost": "تكلفة الشحن",
     "shippingCountry": "دولة الشحن",
     "notSpecified": "غير محدد"
+  },
+  "UserDashboard": {
+    "ordersChartTitle": "نظرة عامة على الإنفاق والطلبات",
+    "ordersChartDescription": "تتبع إجمالي الإنفاق وحجم الطلبات بمرور الوقت",
+    "last3Months": "آخر 3 أشهر",
+    "last30Days": "آخر 30 يوم",
+    "last7Days": "آخر 7 أيام",
+    "spent": "المصروفات",
+    "orders": "الطلبات"
+  },
+  "DashboardData": {
+    "title": "نظرة عامة على لوحة التحكم",
+    "subtitle": "تابع طلباتك ومشترياتك ونشاط حسابك من مكان واحد.",
+    "totalOrders": "إجمالي الطلبات",
+    "totalSpent": "إجمالي المدفوعات",
+    "cashOrders": "طلبات الدفع عند الاستلام",
+    "stripeOrders": "طلبات الدفع الإلكتروني",
+    "noOrders": "لا توجد طلبات حتى الآن",
+    "noPayments": "لا توجد مدفوعات حتى الآن",
+    "currency": "دولار أمريكي",
+    "MyAccount": "لوحة التحكم"
   }
 }

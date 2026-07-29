@@ -2,6 +2,7 @@
 import React from "react";
 import BreadCrumbs from "./BreadCrumb/BreadCrumb";
 import { useUser } from "@/Context/userContext";
+import { useDashboard } from "@/Context/DashboardContext";
 const ContentLayout = ({
   locale,
   title,
@@ -16,6 +17,7 @@ const ContentLayout = ({
       ? "justify-end flex-row-reverse"
       : "justify-start"
     : "";
+  const { openSidebar } = useDashboard();
 
   return (
     <div
@@ -24,7 +26,9 @@ const ContentLayout = ({
       p-4 md:p-6"
     >
       <div className="relative flex flex-col items-start w-full gap-6">
-        <div className="md:mx-4 mx-5 px-6 mt-4 md:mt-0">
+        <div
+          className={`${!openSidebar ? "md:mx-4 mx-5 px-6 transition-all duration-300" : "transition-all duration-300"} transition-all duration-300 mt-4 md:mt-0`}
+        >
           <BreadCrumbs locale={locale} />
         </div>
 
