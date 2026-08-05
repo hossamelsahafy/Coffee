@@ -35,12 +35,28 @@ export type ChartPoint = {
 
 interface ChartAreaInteractiveProps {
   chartData: ChartPoint[];
+  lines: ChartLine[];
+  title?: string;
+  description?: string;
+  NotFound?: String;
 }
-
-export function ChartAreaInteractive({ chartData }: ChartAreaInteractiveProps) {
+export type ChartLine = {
+  dataKey: string;
+  label: string;
+  color: string;
+  fill: string;
+  stroke: string;
+  strokeWidth?: number;
+};
+export function ChartAreaInteractive({
+  chartData,
+  lines,
+  title,
+  description,
+  NotFound,
+}: ChartAreaInteractiveProps) {
   const t = useTranslations("UserDashboard");
-  const [timeRange, setTimeRange] = React.useState("90d");
-
+  const [timeRange, setTimeRange] = React.useState("all");
   const chartConfig = {
     spent: {
       label: t("spent"),
@@ -50,12 +66,27 @@ export function ChartAreaInteractive({ chartData }: ChartAreaInteractiveProps) {
       label: t("orders"),
       color: "#965015",
     },
+    users: {
+      label: "Users",
+      color: "#D8A46B",
+    },
+    products: {
+      label: "Products",
+      color: "#D8A46B",
+    },
   } satisfies ChartConfig;
 
   const filteredData = React.useMemo(() => {
     if (!Array.isArray(chartData) || chartData.length === 0) return [];
 
+    if (timeRange === "all") {
+      return [...chartData].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+    }
+
     let daysToSubtract = 90;
+
     if (timeRange === "30d") daysToSubtract = 30;
     if (timeRange === "7d") daysToSubtract = 7;
 
@@ -67,19 +98,18 @@ export function ChartAreaInteractive({ chartData }: ChartAreaInteractiveProps) {
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .filter((item) => new Date(item.date) >= startDate);
   }, [chartData, timeRange]);
-
   return (
-    <Card className="relative overflow-hidden pt-0 w-full rounded-3xl border border-white/10 bg-[#1A120D]/70 backdrop-blur-md shadow-2xl text-white">
+    <Card className="relative transition-all ease-in-out duration-300 overflow-hidden pt-0 w-full rounded-3xl border  border-white/10 bg-[#1A120D]/70 backdrop-blur-md shadow-2xl text-white">
       <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#C07A3B]/10 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-10 left-10 h-32 w-32 rounded-full bg-[#965015]/10 blur-3xl pointer-events-none" />
 
       <CardHeader className="flex items-center gap-2 space-y-0 border-b border-white/10 py-5 sm:flex-row">
         <div className="grid flex-1 gap-1">
           <CardTitle className="text-white text-xl font-semibold">
-            {t("ordersChartTitle")}
+            {title ? title : t("ordersChartTitle")}
           </CardTitle>
           <CardDescription className="text-gray-400">
-            {t("ordersChartDescription")}
+            {description ? description : t("ordersChartDescription")}
           </CardDescription>
         </div>
 
@@ -92,6 +122,12 @@ export function ChartAreaInteractive({ chartData }: ChartAreaInteractiveProps) {
           </SelectTrigger>
 
           <SelectContent className="rounded-xl border border-white/10 bg-[#1A120D] text-white shadow-xl">
+            <SelectItem
+              value="all"
+              className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B]"
+            >
+              {t("All-Time")}
+            </SelectItem>
             <SelectItem
               value="90d"
               className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B] data-[highlighted]:bg-[#382418] data-[highlighted]:!text-[#D8A46B]"
@@ -117,7 +153,9 @@ export function ChartAreaInteractive({ chartData }: ChartAreaInteractiveProps) {
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         {filteredData.length === 0 ? (
           <div className="flex h-[280px] w-full items-center justify-center text-center text-gray-400">
-            <p className="text-sm font-medium">{t("noOrdersOrSpentYet")}</p>
+            <p className="text-sm font-medium">
+              {NotFound ? NotFound : t("noOrdersOrSpentYet")}
+            </p>
           </div>
         ) : (
           <ChartContainer
@@ -155,8 +193,9 @@ export function ChartAreaInteractive({ chartData }: ChartAreaInteractiveProps) {
                 }}
               />
 
-              <YAxis yAxisId="spent" hide />
-              <YAxis yAxisId="orders" hide />
+              {lines.map((line) => (
+                <YAxis key={line.dataKey} yAxisId={line.dataKey} hide />
+              ))}
 
               <ChartTooltip
                 cursor={{ stroke: "rgba(255, 255, 255, 0.15)", strokeWidth: 1 }}
@@ -174,22 +213,17 @@ export function ChartAreaInteractive({ chartData }: ChartAreaInteractiveProps) {
                 }
               />
 
-              <Area
-                yAxisId="orders"
-                dataKey="orders"
-                type="natural"
-                fill="url(#fillOrders)"
-                stroke="#965015"
-                strokeWidth={2}
-              />
-              <Area
-                yAxisId="spent"
-                dataKey="spent"
-                type="natural"
-                fill="url(#fillSpent)"
-                stroke="#D8A46B"
-                strokeWidth={2}
-              />
+              {lines.map((line) => (
+                <Area
+                  key={line.dataKey}
+                  yAxisId={line.dataKey}
+                  dataKey={line.dataKey}
+                  type="natural"
+                  fill={line.fill}
+                  stroke={line.stroke}
+                  strokeWidth={line.strokeWidth ?? 2}
+                />
+              ))}
 
               <ChartLegend
                 className="mt-4 text-gray-300"

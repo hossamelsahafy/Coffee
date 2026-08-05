@@ -7,6 +7,13 @@ export const Categories: CollectionConfig = {
   },
   admin: {
     useAsTitle: "title",
+    components: {
+      views: {
+        list: {
+          Component: "@/components/admin/Categories/CategoriesGrid",
+        },
+      },
+    },
   },
   fields: [
     {

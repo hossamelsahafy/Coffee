@@ -307,7 +307,8 @@
     "topCategories": "أكثر الفئات إنفاقاً",
     "noCategoryData": "لا تتوفر بيانات للفئات",
     "MostViewedProducts": "اكثر المنتجات مشاهدة",
-    "noProductsFound": "لم يتم العثور على منتجات"
+    "noProductsFound": "لم يتم العثور على منتجات",
+    "All-Time": "جميع الاوقات"
   },
   "DashboardData": {
     "title": "نظرة عامة على لوحة التحكم",

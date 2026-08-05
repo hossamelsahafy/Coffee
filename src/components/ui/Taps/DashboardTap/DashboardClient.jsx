@@ -228,7 +228,27 @@ const DashboardClient = ({ locale, data, MostViwedProducts }) => {
         <div className="max-w-6xl flex flex-col gap-4">
           <TrackOrderData locale={locale} order={data} cards={cards} />
 
-          <ChartAreaInteractive chartData={chartData} />
+          <ChartAreaInteractive
+            chartData={chartData}
+            lines={[
+              {
+                dataKey: "orders",
+                label: "Orders",
+                color: "#965015",
+                fill: "url(#fillOrders)",
+                stroke: "#965015",
+                strokeWidth: 2,
+              },
+              {
+                dataKey: "spent",
+                label: "Revenue",
+                color: "#D8A46B",
+                fill: "url(#fillSpent)",
+                stroke: "#D8A46B",
+                strokeWidth: 2,
+              },
+            ]}
+          />
           <CategorySpendChart data={categoryData} />
           <MostViewedProducts
             data={productList}

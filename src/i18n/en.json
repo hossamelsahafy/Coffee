@@ -302,7 +302,8 @@
     "topCategories": "Top Spending Categories",
     "noCategoryData": "No category data available",
     "MostViewedProducts": "Most Viewed Products",
-    "noProductsFound": "No Products Found"
+    "noProductsFound": "No Products Found",
+    "All-Time": "All Times"
   },
   "DashboardData": {
     "title": "Dashboard Overview",

@@ -44,10 +44,10 @@ export default buildConfig({
   endpoints: [stripeCreatePayment],
 
   admin: {
-    user: Users.slug,
-    importMap: {
-      baseDir: path.resolve(dirname),
-    },
+    // user: Users.slug,
+    // importMap: {
+    //   baseDir: path.resolve(dirname),
+    // },
   },
   collections: [
     Users,

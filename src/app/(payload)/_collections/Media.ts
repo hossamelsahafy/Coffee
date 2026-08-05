@@ -3,6 +3,16 @@ import type { CollectionConfig } from "payload";
 export const Media: CollectionConfig = {
   slug: "media",
   access: { read: () => true },
+  admin: {
+    components: {
+      views: {
+        list: {
+          Component: "@/components/admin/Media/MediaGrid",
+        },
+      },
+    },
+  },
+
   fields: [
     {
       name: "alt",

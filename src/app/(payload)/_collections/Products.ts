@@ -4,11 +4,21 @@ export const Products: CollectionConfig = {
   slug: "products",
   admin: {
     useAsTitle: "title",
+
+    defaultColumns: ["title", "category", "isBestSeller", "updatedAt"],
+
+    components: {
+      views: {
+        list: {
+          Component: "@/components/admin/Products/ProductsListView",
+        },
+      },
+    },
   },
+
   access: { read: () => true },
 
   fields: [
-    // ===== Basic Info =====
     { name: "title", type: "text", required: true },
     { name: "titleAr", type: "text" },
     { name: "subtitle", type: "text" },

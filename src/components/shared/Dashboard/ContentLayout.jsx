@@ -10,14 +10,18 @@ const ContentLayout = ({
   MyThing,
   children,
   isdiff,
+  adminRoute,
+  adminFirstName,
 }) => {
-  const { user } = useUser();
+  const { user: frontendUser } = useUser();
+  const { openSidebar } = useDashboard();
+
+  const displayUser = adminRoute ? adminFirstName : frontendUser;
   const titleDirection = isdiff
     ? locale === "en"
       ? "justify-end flex-row-reverse"
       : "justify-start"
     : "";
-  const { openSidebar } = useDashboard();
 
   return (
     <div
@@ -26,11 +30,13 @@ const ContentLayout = ({
       p-4 md:p-6"
     >
       <div className="relative flex flex-col items-start w-full gap-6">
-        <div
-          className={`${!openSidebar ? "md:mx-4 mx-5 px-6 transition-all duration-300" : "transition-all duration-300"} transition-all duration-300 mt-4 md:mt-0`}
-        >
-          <BreadCrumbs locale={locale} />
-        </div>
+        {!adminRoute && (
+          <div
+            className={`${!openSidebar ? "md:mx-4 mx-5 px-6 transition-all duration-300" : "transition-all duration-300"} transition-all duration-300 mt-4 md:mt-0`}
+          >
+            <BreadCrumbs locale={locale} />
+          </div>
+        )}
 
         <div className="relative overflow-hidden max-w-6xl rounded-3xl border border-white/10 bg-linear-to-r from-[#6F3F1C] via-[#4B2E1F] to-[#1A120D] px-6 py-8 md:px-8 shadow-2xl">
           <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#C07A3B]/20 blur-3xl" />
@@ -47,9 +53,9 @@ const ContentLayout = ({
             <span className="text-[#D8A46B]">
               {isdiff
                 ? locale === "en"
-                  ? `${user.firstName}'s`
-                  : user.firstName
-                : user.firstName}{" "}
+                  ? `${displayUser?.firstName}'s`
+                  : displayUser?.firstName
+                : displayUser?.firstName}{" "}
               {isdiff ? "" : "👋"}
             </span>
           </h1>

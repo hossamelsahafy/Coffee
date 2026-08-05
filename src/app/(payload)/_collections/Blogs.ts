@@ -7,6 +7,13 @@ export const Blogs: CollectionConfig = {
   },
   admin: {
     useAsTitle: "title",
+    components: {
+      views: {
+        list: {
+          Component: "@/components/admin/Blogs/BlogsGrid",
+        },
+      },
+    },
   },
   fields: [
     {

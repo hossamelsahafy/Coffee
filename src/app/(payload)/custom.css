@@ -1,0 +1,557 @@
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
+
+/* Scope utilities */
+.custom-admin-ui {
+  @layer utilities {
+  }
+}
+
+/* =========================================
+   GPU-ACCELERATED NAVIGATION & LAYOUT
+   ========================================= */
+
+aside,
+header,
+nav {
+  background-color: #000000 !important;
+  color: #f3ece7 !important;
+}
+
+body {
+  background-color: #120c0a !important;
+}
+
+.template-default__wrap {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #18100d !important;
+}
+
+/* =========================================
+   BUTTON & ACTION STYLES
+   ========================================= */
+#action-save,
+.form-submit .btn {
+  background-color: #8c6a51 !important;
+  color: #ffffff !important;
+  transition: background-color 150ms ease;
+}
+
+.form-submit .btn:hover {
+  background-color: #a07b60 !important;
+}
+.form-submit .btn:active {
+  background-color: #72533c !important;
+}
+.form-submit .btn:focus-visible {
+  outline: 2px solid #c89553 !important;
+  outline-offset: 2px;
+}
+
+/* =========================================
+   LIGHT / DARK VARIABLES
+   ========================================= */
+:root {
+  --theme-bg: #f4efe9;
+  --theme-input-bg: #e8dfd5;
+  --theme-elevation-50: #ece4db;
+  --theme-elevation-100: #e0d5c8;
+  --theme-elevation-150: #d2c3b3;
+  --theme-elevation-200: #c1af9c;
+  --theme-elevation-300: #aa9580;
+  --theme-elevation-400: #8c6a51;
+  --theme-elevation-500: #6d503a;
+  --theme-elevation-600: #513a29;
+  --theme-elevation-700: #38271a;
+  --theme-elevation-800: #21160e;
+  --theme-elevation-900: #120c07;
+  --theme-text: #2c2017;
+  --theme-elevation-800-text: #f4efe9;
+  --theme-success-100: #e8f5e9;
+  --theme-success-500: #388e3c;
+  --theme-warning-500: #d97706;
+  --theme-error-500: #d32f2f;
+  --theme-elevation-1000: #c89553;
+
+  --color-base-light: white;
+  --color-base-dark: black;
+  --color-base-coffe: #a7897b;
+  --color-base-nav: #262626;
+  --color-base-border: #272727;
+  --color-coffeText: #a7897b;
+  --color-forTra: #a7897b61;
+  --color-base-lighter: #e6ccb2;
+  --color-base-darker: #301713;
+  --color-highlightedProductsbg: #40342f;
+  --color-base-borderTwo: #423826;
+  --color-base-CopffeeLight: #f3e7df;
+  --color-base-Cards: #6a593d21;
+  --color-base-CardsFilters: #4e381482;
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+}
+
+[data-theme="dark"] {
+  --theme-bg: #1c1410;
+  --theme-input-bg: #271d18;
+  --theme-elevation-50: #231914;
+  --theme-elevation-100: #2e211b;
+  --theme-elevation-150: #3a2b23;
+  --theme-elevation-200: #49372c;
+  --theme-elevation-300: #5e483b;
+  --theme-elevation-400: #d0b8a0;
+  --theme-elevation-500: #dfccb7;
+  --theme-elevation-600: #ede0d0;
+  --theme-elevation-700: #f5ece2;
+  --theme-elevation-800: #faf6f0;
+  --theme-elevation-900: #ffffff;
+  --theme-text: #eae0d5;
+  --theme-elevation-800-text: #1c1410;
+  --theme-elevation-1000: #d97706;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* =========================================
+   TYPOGRAPHY & INPUTS
+   ========================================= */
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] label,
+[data-theme="dark"] th,
+[data-theme="dark"] td,
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] a {
+  color: #eae0d5;
+}
+
+[data-theme="dark"] .field-description,
+[data-theme="dark"] .sub-header {
+  color: #bfa891 !important;
+}
+
+aside .nav__link,
+header .nav__link {
+  color: #9e938c !important;
+  transition: color 150ms ease;
+}
+
+.nav__link--active,
+.nav__link:hover {
+  color: #d99b4e !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid #c89553 !important;
+  outline-offset: 1px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #120e0c;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a201b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3129;
+}
+
+input,
+textarea {
+  background: #271d18 !important;
+  border: 1px solid #423128 !important;
+  color: #eae0d5 !important;
+}
+
+select {
+  background-color: #271d18 !important;
+  border: 1px solid #423128 !important;
+  color: #eae0d5 !important;
+  appearance: none !important;
+  box-shadow: none !important;
+  padding: 0.5rem 2.25rem 0.5rem 0.85rem !important;
+  line-height: 1.4 !important;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23c89553%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 0.65em auto !important;
+}
+
+select option {
+  background-color: #231914 !important;
+  color: #eae0d5 !important;
+  padding: 8px 12px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9e8a78;
+}
+
+/* =========================================
+   LIGHTWEIGHT REACT-SELECT FIX
+   ========================================= */
+.rs__control,
+.rs__value-container,
+.select__control {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.list-header {
+  background-color: transparent !important;
+  margin-top: 2px !important;
+}
+.template-minimal__wrap,
+.login__form__inputWrap,
+.email,
+.field-label {
+  color: #f3ece7 !important;
+}
+
+.login {
+  color: #f3ece7 !important;
+  background-color: #000000 !important;
+}
+/* =========================================
+   KILL GHOST BOX ON CUSTOM SELECT COMPONENTS 
+   ========================================= */
+
+.rs__control,
+.rs__value-container,
+.rs__single-value,
+.select__control,
+.select__value-container,
+.select__single-value,
+[class*="select"],
+.rs__control:focus,
+.rs__control:focus-within,
+.rs__control:focus-visible,
+.select__control:focus,
+.select__control:focus-within,
+.select__control:focus-visible,
+[class*="select"]:focus,
+[class*="select"]:focus-within,
+[class*="select"]:focus-visible {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.rs__single-value *,
+.select__single-value *,
+[class*="single-value"] *,
+[class*="value-container"] *,
+.rs__single-value *:focus,
+.select__single-value *:focus,
+[class*="single-value"] *:focus,
+[class*="value-container"] *:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+[class*="select"]::first-letter,
+[class*="value"]::first-letter,
+[class*="control"]::first-letter,
+span::first-letter {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+#confirm-action {
+  background-color: #72533c !important;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+#confirm-action:hover {
+  background-color: #8a6649 !important;
+  transform: translateY(-1px);
+}
+
+#confirm-action:active {
+  background-color: #5f4432 !important;
+  transform: translateY(0);
+}
+
+/* =========================================================
+   2. FIX GRAY BACKGROUNDS IN LIST ITEMS & INPUT FIELDS
+   ========================================================= */
+
+/* Force array containers & row backgrounds to dark coffee tones */
+
+.array-field__rows,
+.array-field__row,
+.collapsible,
+.collapsible__content {
+  background-color: #120c0a !important;
+  border-color: #3a2a22 !important;
+}
+
+/* Fix gray input field backgrounds (Title, Description, etc.) */
+.input-element input,
+.input-element textarea,
+.rich-text,
+[class*="field-type"] input,
+[class*="field-type"] textarea,
+[class*="field-type"] [class*="input"] {
+  background-color: #1a120d !important;
+  color: #e8d8c3 !important;
+  border-color: #3a2a22 !important;
+}
+
+/* Hover & Focus states for inputs */
+.input-element input:focus,
+.input-element textarea:focus,
+[class*="field-type"] input:focus,
+[class*="field-type"] textarea:focus {
+  border-color: #8b5e3c !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px #8b5e3c !important;
+}
+.collapsible__toggle-wrap,
+span {
+  /* display: none; */
+}
+.array-field__header,
+.array-field__header-wrap {
+  padding: 5px;
+}
+.collapsible__toggle > span {
+  display: none;
+}
+/* =========================================
+   RELATIONSHIP SINGLE VALUE TEXT DISPLAY FIX
+   ========================================= */
+
+/* 1. Ensure the value container holds items side-by-side */
+.rs__value-container,
+[class*="rs__value-container"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* 2. Target the exact classes from DevTools */
+.relationship--single-value,
+.relationship--single-value__label,
+.relationship--single-value__label-text,
+[class*="relationship--single-value"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  color: #e8d8c3 !important; /* Visible text color */
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 3. Ensure child elements don't collapse or hide */
+.relationship--single-value__label-text * {
+  color: #e8d8c3 !important;
+  display: inline !important;
+}
+/* =========================================
+   REMOVE FOCUS BORDER / CURSOR BOX IN SELECT
+   ========================================= */
+
+/* Target the hidden dummy search input inside react-select */
+.rs__input-container,
+.rs__input,
+[class*="rs__input"],
+.rs__control--is-focused,
+.rs__control--menu-is-open {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Clear focus outlines on any internal input/container within the select */
+.rs__value-container input,
+.rs__value-container input:focus,
+[class*="value-container"] input,
+[class*="value-container"] input:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  caret-color: transparent !important; /* Hides the blinking cursor block if desired */
+}
+
+/* =========================================
+   CUSTOM TOAST NOTIFICATIONS (COFFEE THEME)
+   ========================================= */
+
+/* Base Toast Container & Elements */
+.payload-toast,
+[class*="toast"] {
+  background-color: #1e1510 !important;
+
+  color: #f3ece7 !important;
+}
+
+/* Success Toast Styling */
+.payload-toast--success,
+[class*="toast--success"],
+[data-type="success"] {
+  background-color: #1e1510 !important;
+  border-left: 4px solid #48bb78 !important; /* Soft Green Accent Line */
+  color: #ffffff !important; /* Pure White Text */
+  border: none;
+}
+
+.payload-toast--success *,
+[class*="toast--success"] *,
+[data-type="success"] * {
+  color: #ffffff !important;
+}
+
+.payload-toast--error,
+[class*="toast--error"],
+[data-type="error"] {
+  background-color: #1e1510 !important;
+  border-left: 4px solid #f59e0b !important;
+  color: #fbbf24 !important;
+  border: none;
+}
+
+.payload-toast--error *,
+[class*="toast--error"] *,
+[data-type="error"] * {
+  color: #fbbf24 !important;
+}
+
+/* Close Icon Styling */
+.payload-toast button,
+[class*="toast"] button {
+  opacity: 0.7 !important;
+  transition: opacity 150ms ease !important;
+}
+
+.payload-toast button:hover,
+[class*="toast"] button:hover {
+  opacity: 1 !important;
+}

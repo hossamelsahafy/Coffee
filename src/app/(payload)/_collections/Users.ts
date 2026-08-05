@@ -8,6 +8,14 @@ export const Users: CollectionConfig = {
   slug: "users",
   admin: {
     useAsTitle: "email",
+
+    components: {
+      views: {
+        list: {
+          Component: "@/components/admin/users/UserListView",
+        },
+      },
+    },
   },
   access: {
     admin: ({ req }) => {
@@ -89,7 +97,8 @@ export const Users: CollectionConfig = {
       type: "text",
       required: true,
     },
-    { name: "phoneNumber", type: "text", required: true },
+    { name: "phoneNumber", type: "text", required: true, unique: true },
+
     {
       name: "gender",
       type: "select",
@@ -108,6 +117,7 @@ export const Users: CollectionConfig = {
     {
       name: "pendingEmail",
       type: "email",
+      unique: true,
     },
     {
       name: "pendingEmailToken",
