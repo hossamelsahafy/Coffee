@@ -8,11 +8,22 @@ import ProductModal from "@/components/shared/Model/ProductModal";
 import { useParams } from "next/navigation";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
-const DisCountSection = ({ data, onToggleFavorite, loadingProductId }) => {
+const DisCountSection = ({
+  data,
+  onToggleFavorite,
+  loadingProductId,
+  websiteName,
+  discountSection,
+  onAddToCart,
+}) => {
   const t = useTranslations("discountSection");
   const { locale } = useParams();
   const [openModel, setOpenModel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const discountTitle =
+    locale === "en"
+      ? discountSection?.discountTitle
+      : discountSection?.discountTitleAr;
 
   const defaultBreakpoints = {
     0: {
@@ -37,12 +48,10 @@ const DisCountSection = ({ data, onToggleFavorite, loadingProductId }) => {
   return (
     <>
       <div className="container-custom p-4 ">
-        <div className="flex w-full md:flex-row flex-col md:justify-between items-center">
-          <div className="flex flex-col gap-2">
-            <p className="Coffetitle">{t("coffee")}</p>
-            <p className="CoffeDiscription font-bold">
-              {t("coffeeShopBestDiscountProducts")}
-            </p>
+        <div className="flex w-full md:flex-row flex-col md:justify-between items-start">
+          <div className="flex flex-col gap-2 items-start">
+            <p className="Coffetitle">{websiteName}</p>
+            <p className="CoffeDiscription font-bold">{discountTitle}</p>
           </div>
           <Links text={t("showMoreProducts")} />
         </div>
@@ -61,6 +70,7 @@ const DisCountSection = ({ data, onToggleFavorite, loadingProductId }) => {
                   onToggleFavorite(item.id, item.isFavorite)
                 }
                 isLoading={loadingProductId === item.id}
+                onAddToCart={onAddToCart}
               />
             </div>
           )}

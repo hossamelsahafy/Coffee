@@ -28,6 +28,15 @@ export const Favorites: CollectionConfig = {
       },
     ],
   },
+  admin: {
+    components: {
+      views: {
+        list: {
+          Component: "@/components/admin/Favorites/FavoritesViewsList",
+        },
+      },
+    },
+  },
   endpoints: [
     {
       path: "/product/:productId",

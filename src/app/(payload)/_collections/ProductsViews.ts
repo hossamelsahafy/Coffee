@@ -4,7 +4,23 @@ export const ProductViews: CollectionConfig = {
   slug: "product-views",
   admin: {
     useAsTitle: "id",
-    defaultColumns: ["user", "product", "views", "lastViewed"],
+    defaultColumns: ["user", "product", "views", "updatedAt"],
+    components: {
+      views: {
+        list: {
+          Component: "@/components/admin/ProductsViews/ViewsList",
+        },
+      },
+    },
+  },
+  hooks: {
+    beforeRead: [
+      async ({ req, query }) => {
+        if (req.query) {
+          req.query.depth = "2";
+        }
+      },
+    ],
   },
 
   access: {
@@ -54,6 +70,7 @@ export const ProductViews: CollectionConfig = {
       relationTo: "users",
       required: true,
       index: true,
+      maxDepth: 3,
     },
     {
       name: "product",
@@ -61,6 +78,7 @@ export const ProductViews: CollectionConfig = {
       relationTo: "products",
       required: true,
       index: true,
+      maxDepth: 3,
     },
     {
       name: "views",
@@ -73,3 +91,5 @@ export const ProductViews: CollectionConfig = {
 
   timestamps: true,
 };
+
+export default ProductViews;

@@ -7,7 +7,7 @@
     "aboutUs": "About us",
     "contactUs": "Contact Us",
     "products": "Products",
-    "collection": "Coffee Collection",
+    "collection": "Collection",
     "item": "Items",
     "capsulatedCoffee": "Capsulated Coffee",
     "brewingTools": "Brewing Tools",
@@ -20,19 +20,34 @@
     "coffeeMarketText": "As the coffee shop market becomes more popular, the number of cafe websites is growing. The internet and social media play an important role in finding new customers.",
     "shopLinks": [
       { "id": 1, "label": "Search", "href": "/search" },
-      { "id": 2, "label": "All collections", "href": "/collections" },
-      { "id": 3, "label": "All products", "href": "/products" },
-      { "id": 4, "label": "My Cart", "href": "/cart" },
-      { "id": 5, "label": "Compare", "href": "/compare" },
-      { "id": 6, "label": "Wishlist", "href": "/wishlist" }
+      { "id": 2, "label": "All collections", "href": "/{locale}/collections" },
+      { "id": 3, "label": "All products", "href": "/{locale}/products" },
+      { "id": 4, "label": "My Cart", "href": "/{locale}/cart" },
+      {
+        "id": 6,
+        "label": "Favorites",
+        "href": "/{locale}/users/dashboard/favorites"
+      }
     ],
     "accountLinks": [
-      { "id": 1, "label": "About Us", "href": "/about-us" },
-      { "id": 2, "label": "Contact with us", "href": "/contact-us" },
-      { "id": 3, "label": "Faq's", "href": "/faq" },
-      { "id": 4, "label": "Privacy Policy", "href": "/privacy-policy" },
-      { "id": 5, "label": "Shipping & Delivery", "href": "/shipping-delivery" },
-      { "id": 6, "label": "Terms & Conditions", "href": "/terms-conditions" }
+      { "id": 1, "label": "About Us", "href": "/{locale}/about-us" },
+      { "id": 2, "label": "Contact with us", "href": "/{locale}/contact-us" },
+      { "id": 3, "label": "Faq's", "href": "/{locale}/faqs" },
+      {
+        "id": 4,
+        "label": "Privacy Policy",
+        "href": "/{locale}/privacy-policy"
+      },
+      {
+        "id": 5,
+        "label": "Shipping & Delivery",
+        "href": "/{locale}/shipping-delivery"
+      },
+      {
+        "id": 6,
+        "label": "Terms & Conditions",
+        "href": "/{locale}/terms-conditions"
+      }
     ],
     "shop": "Shop",
     "account": "Account",
@@ -52,11 +67,7 @@
     "showProducts": "Show Products"
   },
   "reviews": {
-    "coffee": "Coffee",
-    "span": "Fresh roasted coffee",
-    "fresh_roasted_coffee": "with 24h delivery blogs",
-    "denver_biscuit_cafe": "Denver Biscuit cafe knows how to entice future customers. A video takes viewers all the way from the preparation of one of their desserts to the service.",
-    "show_products": "Show Products",
+    "show_products": "Show Collections",
     "secondTitle": "Choose the origin of the coffee:"
   },
   "discountSection": {

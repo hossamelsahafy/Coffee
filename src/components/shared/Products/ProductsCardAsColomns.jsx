@@ -23,6 +23,7 @@ const ProductsCardAsColomns = ({
   selectedFilters,
   toggleFavorite,
   isLoading,
+  onAddToCart,
 }) => {
   const { user } = useUser();
   const { addToCart } = useCart();
@@ -178,10 +179,19 @@ const ProductsCardAsColomns = ({
         </div>
         <button
           disabled={isOutOfStock}
-          onClick={() => addToCart(product, safeSelectedOption)}
+          onClick={async () => {
+            if (isOutOfStock) {
+              onAddToCart?.(false);
+              return;
+            }
+
+            await addToCart(product, selectedOption);
+            onAddToCart?.(true);
+          }}
           className={`relative pb-1 whitespace-nowrap
     after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full
     after:bg-base-light after:transition-all after:duration-300
+    hover:text-base-dark duration-300 transition-all
     after:pointer-events-none
     sm:text-sm lg:text-base
     hover:after:bg-base-borderTwo uppercase flex items-center font-bold

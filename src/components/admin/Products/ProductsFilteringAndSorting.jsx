@@ -31,12 +31,15 @@ const ProductsFilteringAndSorting = ({
     const AND = [];
 
     if (search.trim()) {
+      const term = search.trim();
+
       AND.push({
         or: [
-          { title: { contains: search.trim() } },
-          { titleAr: { contains: search.trim() } },
-          { subtitle: { contains: search.trim() } },
-          { slug: { contains: search.trim() } },
+          { id: { equals: term } },
+          { title: { contains: term } },
+          { titleAr: { contains: term } },
+          { subtitle: { contains: term } },
+          { slug: { contains: term } },
         ],
       });
     }

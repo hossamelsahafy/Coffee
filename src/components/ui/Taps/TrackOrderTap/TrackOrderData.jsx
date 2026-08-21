@@ -1,10 +1,16 @@
 import React from "react";
 
-const TrackOrderData = ({ locale, order, cards }) => {
+const TrackOrderData = ({ locale, order, cards, custom }) => {
   if (!order) return null;
 
   return (
-    <div className="max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div
+      className={`${
+        custom
+          ? "w-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-5"
+          : " max-w-6xl grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5"
+      }`}
+    >
       {cards.map((card, index) => (
         <div
           key={index}
@@ -22,7 +28,7 @@ const TrackOrderData = ({ locale, order, cards }) => {
                 {card.value}
               </span>
 
-              <span className="text-xs text-[#D8A46B] font-medium">
+              <span className="text-xs text-[#D8A46B]! font-medium">
                 {card.suffix}
               </span>
             </div>

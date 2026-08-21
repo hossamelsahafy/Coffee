@@ -2,14 +2,22 @@ import Video from "@/components/shared/Video/Video";
 import Header from "@/components/ui/Header/Header";
 import GetAllData from "@/actions/GetAllData";
 import SubscripeSection from "@/components/ui/home/SubscripeSection/SubscripeSection";
-import BlogSection from "@/components/ui/home/BlogSection/BlogSection";
+import NotesSection from "@/components/ui/home/NotesSection/NotesSection";
 import GetDataServerSide from "@/actions/GetDataServerSide";
 import HomePageClient from "@/components/ui/home/HomePageClient";
+import GetFilteredData from "@/actions/GetFilteredData";
 import { getUser } from "@/actions/getUser";
+import GetReviews from "@/actions/GetReviews";
+import GetDataWithPagination from "@/actions/GetDataWithPagination";
+
 type Props = {
   params: Promise<{
     locale: string;
   }>;
+  searchParams: {
+    page?: string;
+    sort?: string;
+  };
 };
 
 interface Product {
@@ -26,22 +34,98 @@ interface Note {
   id: number;
   isImportant: boolean;
 }
-export default async function Home({ params }: Props) {
+
+interface Country {
+  id: number;
+}
+
+export default async function Home({ params, searchParams }: Props) {
   const { locale } = await params;
   const user = await getUser();
 
-  const [Categories, products, Blogs, Notes, userFavorites] = await Promise.all(
-    [
-      GetAllData("categories"),
-      GetAllData("products"),
-      GetAllData("blogs"),
-      GetAllData("Notes"),
-      user
-        ? GetDataServerSide("favorites?depth=1", "GET")
-        : Promise.resolve(null),
-    ],
+  const resolvedSearchParams = await searchParams;
+
+  const currentPage = Number(resolvedSearchParams?.page) || 1;
+  const currentSort = resolvedSearchParams?.sort || "-createdAt";
+  const Countries = await GetFilteredData({
+    collection: "countries",
+    limit: 5,
+    sort: "-reviewCount",
+  });
+
+  const [
+    Categories,
+    products,
+    importantProducts,
+    bestSellingProducts,
+    discountProducts,
+    Notes,
+    homePage,
+    userFavorites,
+  ] = await Promise.all([
+    GetFilteredData({
+      collection: "categories",
+      filterKey: "showInHomePage",
+      filterValue: true,
+      limit: 10,
+    }),
+
+    GetDataWithPagination("products", currentPage, 6, currentSort),
+    GetFilteredData({
+      collection: "products",
+      filterKey: "important",
+      filterValue: true,
+      limit: 10,
+    }),
+    GetFilteredData({
+      collection: "products",
+      filterKey: "isBestSeller",
+      filterValue: true,
+      limit: 10,
+    }),
+    GetFilteredData({
+      collection: "products",
+      filterKey: "ShowInDiscountSection",
+      filterValue: true,
+      limit: 12,
+    }),
+
+    GetFilteredData({
+      collection: "Notes",
+      filterKey: "isImportant",
+      filterValue: true,
+      limit: 10,
+    }),
+
+    GetAllData("globals/home-page", true),
+
+    user
+      ? GetDataServerSide("favorites?depth=1", "GET")
+      : Promise.resolve(null),
+  ]);
+
+  const reviewsResults = await Promise.all(
+    Countries.docs.map(async (country: Country) => {
+      const data = await GetReviews({
+        countryId: country.id,
+        page: 1,
+        limit: 2,
+      });
+      return {
+        countryId: country.id,
+        docs: data.docs || [],
+        totalPages: data.totalPages || 1,
+        hasNextPage: data.hasNextPage || false,
+        hasPrevPage: data.hasPrevPage || false,
+        totalDocs: data.totalDocs || 0,
+      };
+    }),
   );
 
+  const reviewsByCountry = reviewsResults.reduce((acc, curr) => {
+    acc[curr.countryId] = curr;
+    return acc;
+  }, {});
   const favoriteIds = new Set(
     Array.isArray(userFavorites?.docs)
       ? userFavorites.docs
@@ -50,36 +134,74 @@ export default async function Home({ params }: Props) {
       : [],
   );
 
-  const productsWithFavorites = products.map((pro: Product) => ({
+  const productsWithFavorites = products.docs.map((pro: Product) => ({
     ...pro,
     isFavorite: favoriteIds.has(pro.id),
   }));
+  const productsPaginationMeta = {
+    totalPages: products.totalPages || 1,
+    page: products.page || 1,
+    totalDocs: products.totalDocs || 0,
+    hasNextPage: products.hasNextPage || false,
+    hasPrevPage: products.hasPrevPage || false,
+  };
+  const CategoriesReversed = [...Categories.docs].reverse();
+  const importantNotes = Notes.docs;
 
-  const CategoriesReversed = [...Categories].reverse();
-  const importantNotes = Notes.filter((note: Note) => note.isImportant);
+  const videoSrc = homePage?.HeaderVideo;
+  const websiteName =
+    locale === "en" ? homePage?.websiteName : homePage?.websiteNameAr;
+  const textAnimation = homePage?.TextOverVideo;
+
+  const PartnerSection = homePage?.Partner;
+  const SecondHeaderSection = homePage?.SecondHeader;
+  const ReviewsSection = homePage?.ReviewsSection;
+  const discountSection = homePage?.discountSection;
+  const BestSellingSection = homePage?.BestSellingSection;
+  const BannerSection = homePage?.BannerSection;
+  const NoteSection = homePage?.NotesSection;
 
   return (
     <main className="h-full">
       <div className="relative w-full min-h-screen">
         <div className="absolute inset-0 w-full h-full object-cover z-0">
-          <Video
-            src="https://res.cloudinary.com/dnszjyuxi/video/upload/v1773676530/Coffe1_tlxjvt.mp4"
-            linear={true}
-            rounded=""
-          />
+          <Video src={videoSrc} linear={true} rounded="" />
         </div>
       </div>
-      <Header locale={locale} />
+      <Header
+        locale={locale}
+        websiteName={websiteName}
+        textAnimation={textAnimation}
+        PartnerSection={PartnerSection}
+      />
 
       <HomePageClient
         initialProducts={productsWithFavorites}
         categories={CategoriesReversed}
         locale={locale}
-        blogs={Blogs}
+        websiteName={websiteName}
+        SecondHeaderSection={SecondHeaderSection}
+        ReviewsSectionData={ReviewsSection}
+        discountSection={discountSection}
+        BestSellingSectionData={BestSellingSection}
+        countries={Countries}
+        initialReviewsMap={reviewsByCountry}
+        importantProducts={importantProducts.docs}
+        discountProducts={discountProducts.docs}
+        bestSellingProducts={bestSellingProducts.docs}
+        productsPagesData={productsPaginationMeta}
       />
-
-      <SubscripeSection locale={locale} />
-      <BlogSection locale={locale} data={importantNotes} />
+      <SubscripeSection
+        locale={locale}
+        websiteName={websiteName}
+        BannerSection={BannerSection}
+      />
+      <NotesSection
+        locale={locale}
+        data={importantNotes}
+        NoteSection={NoteSection}
+        websiteName={websiteName}
+      />
     </main>
   );
 }

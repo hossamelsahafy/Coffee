@@ -9,7 +9,7 @@
     "contactUs": "اتصل بنا",
     "products": "المنتجات",
     "moreOptions": "المزيد",
-    "collection": "مجموعة القهوة",
+    "collection": "المجموعات",
     "item": "عناصر",
     "capsulatedCoffee": "قهوة بالكبسولات",
     "brewingTools": "أدوات التحضير",
@@ -21,20 +21,35 @@
     "momentOfTime": "لحظة من وقتك",
     "coffeeMarketText": "مع ازدياد شعبية سوق المقاهي، يزداد عدد مواقع المقاهي على الإنترنت. تلعب وسائل التواصل الاجتماعي دوراً مهماً في جذب عملاء جدد.",
     "shopLinks": [
-      { "id": 1, "label": "بحث", "href": "/search" },
-      { "id": 2, "label": "جميع المجموعات", "href": "/collections" },
-      { "id": 3, "label": "جميع المنتجات", "href": "/products" },
-      { "id": 4, "label": "سلة التسوق", "href": "/cart" },
-      { "id": 5, "label": "قارن", "href": "/compare" },
-      { "id": 6, "label": "قائمة الرغبات", "href": "/wishlist" }
+      { "id": 1, "label": "بحث", "href": "/{locale}/search" },
+      { "id": 2, "label": "جميع المجموعات", "href": "/{locale}/collections" },
+      { "id": 3, "label": "جميع المنتجات", "href": "/{locale}/products" },
+      { "id": 4, "label": "سلة التسوق", "href": "/{locale}/cart" },
+      {
+        "id": 6,
+        "label": "قائمة المفضلات",
+        "href": "/{locale}/users/dashboard/favorites"
+      }
     ],
     "accountLinks": [
-      { "id": 1, "label": "من نحن", "href": "/about-us" },
-      { "id": 2, "label": "تواصل معنا", "href": "/contact-us" },
-      { "id": 3, "label": "الأسئلة الشائعة", "href": "/faq" },
-      { "id": 4, "label": "سياسة الخصوصية", "href": "/privacy-policy" },
-      { "id": 5, "label": "الشحن والتوصيل", "href": "/shipping-delivery" },
-      { "id": 6, "label": "الشروط والأحكام", "href": "/terms-conditions" }
+      { "id": 1, "label": "من نحن", "href": "/{locale}/about-us" },
+      { "id": 2, "label": "تواصل معنا", "href": "/{locale}/contact-us" },
+      { "id": 3, "label": "الأسئلة الشائعة", "href": "/{locale}/faqs" },
+      {
+        "id": 4,
+        "label": "سياسة الخصوصية",
+        "href": "/{locale}/privacy-policy"
+      },
+      {
+        "id": 5,
+        "label": "الشحن والتوصيل",
+        "href": "/{locale}/shipping-delivery"
+      },
+      {
+        "id": 6,
+        "label": "الشروط والأحكام",
+        "href": "/{locale}/terms-conditions"
+      }
     ],
     "shop": "المتجر",
     "account": "الجساب",
@@ -55,14 +70,7 @@
     "showProducts": "عرض المنتجات"
   },
 
-  "reviews": {
-    "coffee": "قهوة",
-    "span": "قهوة محمصة طازجة",
-    "fresh_roasted_coffee": "مع توصيل خلال 24 ساعة",
-    "denver_biscuit_cafe": "مقهى Denver Biscuit يعرف كيف يجذب العملاء المستقبليين. فيديو يأخذ المشاهدين من مرحلة تحضير أحد حلوياتهم حتى تقديمها للخدمة.",
-    "show_products": "عرض المنتجات",
-    "secondTitle": "اختر منشأ القهوة"
-  },
+  "reviews": { "show_products": "عرض المجموعات" },
   "discountSection": {
     "coffee": "القهوة",
     "coffeeShopBestDiscountProducts": "أفضل منتجات القهوة بخصومات مميزة",

@@ -19,6 +19,7 @@ const ProductCard = ({
   setOpenModel,
   toggleFavorite,
   isLoading,
+  onAddToCart,
 }) => {
   const { addToCart } = useCart();
   const options = product.choices.options;
@@ -150,12 +151,20 @@ const ProductCard = ({
             </div>
 
             <button
-              onClick={() => addToCart(product, selectedOption)}
-              disabled={!isIn}
+              onClick={async () => {
+                if (!isIn) {
+                  onAddToCart?.(false);
+                  return;
+                }
+
+                await addToCart(product, selectedOption);
+                onAddToCart?.(true);
+              }}
+              disabled={false}
               className="relative pb-1 whitespace-nowrap
             after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full 
             after:bg-base-light after:transition-all after:duration-300 sm:text-sm lg:text-base
-            hover:after:bg-base-coffe cursor-pointer uppercase flex items-center font-bold"
+            hover:after:bg-base-coffe cursor-pointer uppercase flex items-center font-bold transition-all duration-300 hover:text-base-coffe"
             >
               <FiPlus />
               {isIn ? (

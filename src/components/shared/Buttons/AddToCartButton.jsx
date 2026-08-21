@@ -13,12 +13,21 @@ const AddToCartButton = ({
   Product,
   selectedOption,
   quantity,
+  addTocart,
 }) => {
   const { addToCart } = useCart();
   const style = `px-6 py-2 hover:bg-base-lighter transition-all text-center duration-300 ${width} font-bold bg-base-coffe text-base-dark rounded-full ${disabled ? `opacity-50 cursor-not-allowed ${custBg ? custBg : ""}` : "cursor-pointer"}`;
 
   return isLink ? (
-    <Link href={linkTarget} className={style}>
+    <Link
+      onClick={() => {
+        if (!addTocart) return;
+
+        addToCart(Product, selectedOption, quantity);
+      }}
+      href={linkTarget}
+      className={style}
+    >
       {text}
     </Link>
   ) : (

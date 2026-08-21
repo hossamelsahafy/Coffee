@@ -13,10 +13,28 @@ const BestSellingSection = ({
   locale,
   onToggleFavorite,
   loadingProductId,
+  onAddToCart,
+  bestSellingSectionData,
+  websiteName,
 }) => {
   const t = useTranslations("BestSeller");
   const [openModel, setOpenModel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const BestSellingSectionTitle =
+    locale === "en"
+      ? bestSellingSectionData?.title
+      : bestSellingSectionData?.titleAr;
+
+  const BestSellingSectionDes =
+    locale === "en"
+      ? bestSellingSectionData?.des
+      : bestSellingSectionData?.desAr;
+
+  const BestSellingSectionImage =
+    bestSellingSectionData?.ImageSource === "Url"
+      ? bestSellingSectionData?.ImageUrl
+      : bestSellingSectionData?.ImageUpload?.url;
   useLockBodyScroll(openModel);
 
   return (
@@ -24,17 +42,18 @@ const BestSellingSection = ({
       <div className="container-custom p-4 ">
         <div className="flex md:flex-row gap-4 flex-col justify-between w-full items-center">
           <div className="flex flex-col justify-center gap-4 ">
-            <p className="Coffetitle">{t("title")}</p>
-            <p className="CoffeDiscription font-bold">{t("description")}</p>
+            <p className="Coffetitle">{websiteName}</p>
+            <p className="CoffeDiscription font-bold">
+              {BestSellingSectionTitle}
+            </p>
             <p className="w-full md:max-w-sm text-base">
-              {" "}
-              {t("longDescription")}
+              {BestSellingSectionDes}
             </p>
             <Links text={t("showProducts")} targetLink={"products"} />
           </div>
           <div className="lg:w-75 lg:h-75 md:h-50 md:w-50 flex justify-center">
             <Image
-              src={"/assets/Cup_of_Coffee.H03_1_x200.avif"}
+              src={BestSellingSectionImage}
               width={300}
               height={300}
               className="object-contain"
@@ -53,6 +72,7 @@ const BestSellingSection = ({
                   onToggleFavorite(product.id, product.isFavorite)
                 }
                 isLoading={loadingProductId === product.id}
+                onAddToCart={onAddToCart}
               />
             ))}
           </div>

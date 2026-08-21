@@ -11,6 +11,7 @@ export function MostViewedProducts({
   loadingProductId,
   setOpenModel,
   setSelectedProduct,
+  CardsTitle,
 }) {
   const t = useTranslations("UserDashboard");
   const locale = useLocale();
@@ -21,7 +22,7 @@ export function MostViewedProducts({
       <Card className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#1A120D]/70 text-white backdrop-blur-md shadow-2xl">
         <CardHeader className="border-b border-white/10 py-5">
           <CardTitle className="text-xl font-semibold text-white">
-            {t("MostViewedProducts")}
+            {CardsTitle ? CardsTitle : t("MostViewedProducts")}
           </CardTitle>
         </CardHeader>
 

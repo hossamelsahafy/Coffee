@@ -71,8 +71,8 @@ export interface Config {
     media: Media;
     categories: Category;
     products: Product;
-    'origins-of-coffee': OriginsOfCoffee;
-    blogs: Blog;
+    countries: Country;
+    reviews: Review;
     Subscripe: Subscripe;
     Notes: Note;
     'shipping-zones': ShippingZone;
@@ -90,8 +90,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
-    'origins-of-coffee': OriginsOfCoffeeSelect<false> | OriginsOfCoffeeSelect<true>;
-    blogs: BlogsSelect<false> | BlogsSelect<true>;
+    countries: CountriesSelect<false> | CountriesSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     Subscripe: SubscripeSelect<false> | SubscripeSelect<true>;
     Notes: NotesSelect<false> | NotesSelect<true>;
     'shipping-zones': ShippingZonesSelect<false> | ShippingZonesSelect<true>;
@@ -108,12 +108,20 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
+    'home-page': HomePage;
+    collections: Collection;
     'about-page': AboutPage;
+    faqs: Faq;
     'contact-us-page': ContactUsPage;
+    footer: Footer;
   };
   globalsSelect: {
+    'home-page': HomePageSelect<false> | HomePageSelect<true>;
+    collections: CollectionsSelect<false> | CollectionsSelect<true>;
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
+    faqs: FaqsSelect<false> | FaqsSelect<true>;
     'contact-us-page': ContactUsPageSelect<false> | ContactUsPageSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
   };
   locale: null;
   widgets: {
@@ -209,6 +217,7 @@ export interface Category {
   desAr: string;
   slug: string;
   slugAr: string;
+  showInHomePage?: boolean | null;
   ImageSource?: ('Url' | 'upload') | null;
   ImageUrl?: string | null;
   uploadImage?: (string | null) | Media;
@@ -244,11 +253,11 @@ export interface Product {
           value: string;
           valueAr: string;
           availability?: ('inStock' | 'outOfStock') | null;
+          priceAfter: number;
+          priceBefore: number;
           ImageSource?: ('Url' | 'upload') | null;
           image?: (string | null) | Media;
           imageUrl?: string | null;
-          priceAfter: number;
-          priceBefore: number;
           id?: string | null;
         }[]
       | null;
@@ -258,34 +267,39 @@ export interface Product {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "origins-of-coffee".
+ * via the `definition` "countries".
  */
-export interface OriginsOfCoffee {
+export interface Country {
   id: string;
   title: string;
   titleAr: string;
+  reviewCount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogs".
+ * via the `definition` "reviews".
  */
-export interface Blog {
+export interface Review {
   id: string;
   title: string;
-  titleAr: string;
+  titleAr?: string | null;
   subtitle: string;
-  subtitleAr: string;
+  subtitleAr?: string | null;
   des: string;
   desAr: string;
-  OriginsOfCoffee?: (string | null) | OriginsOfCoffee;
-  ImageSource: 'Url' | 'Upload';
-  image?: (string | null) | Media;
-  ImageUrl?: string | null;
+  country?: (string | null) | Country;
   rate?: number | null;
-  clientName?: string | null;
-  clientNameAr?: string | null;
+  ClientName?: (string | null) | User;
+  isApproved?: boolean | null;
+  product?: (string | null) | Product;
+  productOption?: string | null;
+  image?: {
+    ImageSource?: ('upload' | 'Url') | null;
+    image?: (string | null) | Media;
+    imageUrl?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -307,14 +321,46 @@ export interface Note {
   id: string;
   title: string;
   titleAr: string;
+  slug: string;
+  slugAr: string;
   des: string;
   desAr: string;
+  longDes: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  lonDesAr: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   brandName: string;
   brandNameAr: string;
+  isImportant?: boolean | null;
   ImageSource: 'Url' | 'upload';
   ImageUrl?: string | null;
   ImageUpload?: (string | null) | Media;
-  isImportant?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -439,12 +485,12 @@ export interface PayloadLockedDocument {
         value: string | Product;
       } | null)
     | ({
-        relationTo: 'origins-of-coffee';
-        value: string | OriginsOfCoffee;
+        relationTo: 'countries';
+        value: string | Country;
       } | null)
     | ({
-        relationTo: 'blogs';
-        value: string | Blog;
+        relationTo: 'reviews';
+        value: string | Review;
       } | null)
     | ({
         relationTo: 'Subscripe';
@@ -573,6 +619,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   desAr?: T;
   slug?: T;
   slugAr?: T;
+  showInHomePage?: T;
   ImageSource?: T;
   ImageUrl?: T;
   uploadImage?: T;
@@ -610,11 +657,11 @@ export interface ProductsSelect<T extends boolean = true> {
               value?: T;
               valueAr?: T;
               availability?: T;
+              priceAfter?: T;
+              priceBefore?: T;
               ImageSource?: T;
               image?: T;
               imageUrl?: T;
-              priceAfter?: T;
-              priceBefore?: T;
               id?: T;
             };
       };
@@ -623,32 +670,39 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "origins-of-coffee_select".
+ * via the `definition` "countries_select".
  */
-export interface OriginsOfCoffeeSelect<T extends boolean = true> {
+export interface CountriesSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  reviewCount?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogs_select".
+ * via the `definition` "reviews_select".
  */
-export interface BlogsSelect<T extends boolean = true> {
+export interface ReviewsSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
   subtitle?: T;
   subtitleAr?: T;
   des?: T;
   desAr?: T;
-  OriginsOfCoffee?: T;
-  ImageSource?: T;
-  image?: T;
-  ImageUrl?: T;
+  country?: T;
   rate?: T;
-  clientName?: T;
-  clientNameAr?: T;
+  ClientName?: T;
+  isApproved?: T;
+  product?: T;
+  productOption?: T;
+  image?:
+    | T
+    | {
+        ImageSource?: T;
+        image?: T;
+        imageUrl?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -668,14 +722,18 @@ export interface SubscripeSelect<T extends boolean = true> {
 export interface NotesSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  slug?: T;
+  slugAr?: T;
   des?: T;
   desAr?: T;
+  longDes?: T;
+  lonDesAr?: T;
   brandName?: T;
   brandNameAr?: T;
+  isImportant?: T;
   ImageSource?: T;
   ImageUrl?: T;
   ImageUpload?: T;
-  isImportant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -802,6 +860,119 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-page".
+ */
+export interface HomePage {
+  id: string;
+  websiteName: string;
+  websiteNameAr: string;
+  HeaderVideo: string;
+  TextOverVideo: {
+    title: string;
+    titleAr: string;
+    hero: string;
+    heroAr: string;
+    subTitle: string;
+    subTitleAr: string;
+    id?: string | null;
+  }[];
+  Partner: {
+    title: string;
+    titleAr: string;
+    subtitle: string;
+    subtitleAr: string;
+    Images?:
+      | {
+          ImageSource: 'Url' | 'upload';
+          ImageUrl?: string | null;
+          ImageUpload?: (string | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  SecondHeader: {
+    SecondHeaderVideo: string;
+    title: string;
+    titleAr: string;
+    subtitle: string;
+    subtitleAr: string;
+  };
+  ReviewsSection: {
+    title: string;
+    titleAr: string;
+    subtitle: string;
+    subtitleAr: string;
+    des: string;
+    desAr: string;
+    reviewTitle: string;
+    reviewTitleAr: string;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
+  discountSection: {
+    discountTitle: string;
+    discountTitleAr: string;
+  };
+  BestSellingSection: {
+    title: string;
+    titleAr: string;
+    des: string;
+    desAr: string;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
+  BannerSection: {
+    title: string;
+    titleAr: string;
+    spanTitle: string;
+    spanTitleAr: string;
+    des: string;
+    desAr: string;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
+  NotesSection: {
+    title: string;
+    titleAr: string;
+    des: string;
+    desAr: string;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections".
+ */
+export interface Collection {
+  id: string;
+  CategoriesPageData?: {
+    title?: string | null;
+    titleAr?: string | null;
+    des?: string | null;
+    desAr?: string | null;
+  };
+  allProducts: {
+    title?: string | null;
+    titleAr?: string | null;
+    slug: string;
+    slugAr: string;
+    productsCount?: string | null;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -966,6 +1137,56 @@ export interface AboutPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs".
+ */
+export interface Faq {
+  id: string;
+  titleEn: string;
+  titleAr: string;
+  descriptionEn?: string | null;
+  descriptionAr?: string | null;
+  faqItems?:
+    | {
+        questionEn: string;
+        questionAr: string;
+        answerEn: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        answerAr: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact-us-page".
  */
 export interface ContactUsPage {
@@ -984,6 +1205,168 @@ export interface ContactUsPage {
   locationIframe: string;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: string;
+  footer: {
+    websiteName: string;
+    websiteNameAr: string;
+    title: string;
+    titleAr: string;
+    span: string;
+    spanAr: string;
+    des: string;
+    desAr: string;
+    faceBookLink?: string | null;
+    instgramLink?: string | null;
+    whatsappLink?: string | null;
+    xLink?: string | null;
+    leftImageSource: 'Url' | 'upload';
+    leftImageUrl?: string | null;
+    leftImageUpload?: (string | null) | Media;
+    rightImageSource: 'Url' | 'upload';
+    rightImageUrl?: string | null;
+    rightImageUpload?: (string | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-page_select".
+ */
+export interface HomePageSelect<T extends boolean = true> {
+  websiteName?: T;
+  websiteNameAr?: T;
+  HeaderVideo?: T;
+  TextOverVideo?:
+    | T
+    | {
+        title?: T;
+        titleAr?: T;
+        hero?: T;
+        heroAr?: T;
+        subTitle?: T;
+        subTitleAr?: T;
+        id?: T;
+      };
+  Partner?:
+    | T
+    | {
+        title?: T;
+        titleAr?: T;
+        subtitle?: T;
+        subtitleAr?: T;
+        Images?:
+          | T
+          | {
+              ImageSource?: T;
+              ImageUrl?: T;
+              ImageUpload?: T;
+              id?: T;
+            };
+      };
+  SecondHeader?:
+    | T
+    | {
+        SecondHeaderVideo?: T;
+        title?: T;
+        titleAr?: T;
+        subtitle?: T;
+        subtitleAr?: T;
+      };
+  ReviewsSection?:
+    | T
+    | {
+        title?: T;
+        titleAr?: T;
+        subtitle?: T;
+        subtitleAr?: T;
+        des?: T;
+        desAr?: T;
+        reviewTitle?: T;
+        reviewTitleAr?: T;
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
+  discountSection?:
+    | T
+    | {
+        discountTitle?: T;
+        discountTitleAr?: T;
+      };
+  BestSellingSection?:
+    | T
+    | {
+        title?: T;
+        titleAr?: T;
+        des?: T;
+        desAr?: T;
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
+  BannerSection?:
+    | T
+    | {
+        title?: T;
+        titleAr?: T;
+        spanTitle?: T;
+        spanTitleAr?: T;
+        des?: T;
+        desAr?: T;
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
+  NotesSection?:
+    | T
+    | {
+        title?: T;
+        titleAr?: T;
+        des?: T;
+        desAr?: T;
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_select".
+ */
+export interface CollectionsSelect<T extends boolean = true> {
+  CategoriesPageData?:
+    | T
+    | {
+        title?: T;
+        titleAr?: T;
+        des?: T;
+        desAr?: T;
+      };
+  allProducts?:
+    | T
+    | {
+        title?: T;
+        titleAr?: T;
+        slug?: T;
+        slugAr?: T;
+        productsCount?: T;
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1036,6 +1419,28 @@ export interface AboutPageSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs_select".
+ */
+export interface FaqsSelect<T extends boolean = true> {
+  titleEn?: T;
+  titleAr?: T;
+  descriptionEn?: T;
+  descriptionAr?: T;
+  faqItems?:
+    | T
+    | {
+        questionEn?: T;
+        questionAr?: T;
+        answerEn?: T;
+        answerAr?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact-us-page_select".
  */
 export interface ContactUsPageSelect<T extends boolean = true> {
@@ -1048,6 +1453,37 @@ export interface ContactUsPageSelect<T extends boolean = true> {
   address?: T;
   addressAr?: T;
   locationIframe?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  footer?:
+    | T
+    | {
+        websiteName?: T;
+        websiteNameAr?: T;
+        title?: T;
+        titleAr?: T;
+        span?: T;
+        spanAr?: T;
+        des?: T;
+        desAr?: T;
+        faceBookLink?: T;
+        instgramLink?: T;
+        whatsappLink?: T;
+        xLink?: T;
+        leftImageSource?: T;
+        leftImageUrl?: T;
+        leftImageUpload?: T;
+        rightImageSource?: T;
+        rightImageUrl?: T;
+        rightImageUpload?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

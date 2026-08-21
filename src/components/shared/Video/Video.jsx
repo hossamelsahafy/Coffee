@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 const Video = ({ src, linear, rounded }) => {
   return (
@@ -9,7 +9,7 @@ const Video = ({ src, linear, rounded }) => {
         loop
         muted
         playsInline
-        className={`absolute inset-0 w-full h-full object-cover ${rounded ? 'rounded-lg ' : ''}`}
+        className={`absolute inset-0 w-full h-full object-cover ${rounded ? "rounded-lg " : ""}`}
       />
       <div
         className="absolute inset-0 pointer-events-none"
@@ -25,7 +25,7 @@ const Video = ({ src, linear, rounded }) => {
         }
       />
     </div>
-  )
-}
+  );
+};
 
-export default Video
+export default Video;

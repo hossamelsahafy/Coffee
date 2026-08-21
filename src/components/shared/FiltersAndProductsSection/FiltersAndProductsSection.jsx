@@ -1,12 +1,8 @@
 "use client";
-import React, { useState, useMemo, useEffect } from "react";
+
+import React, { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import {
-  getSortedData,
-  getStockCounts,
-  HigherPrice,
-  getPrice,
-} from "@/lib/sortAndFilterProducts";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import RightSideProducts from "./RightSideProducts";
 import useAttributeCounts from "@/hooks/useAttributeCounts";
 import useFilterConfig from "@/lib/FilterConfig";
@@ -18,238 +14,133 @@ import { GlassyToast } from "@/components/shared/GlassyToast/GlassyToast";
 const FiltersAndProductsSection = ({
   CurrentLocation,
   locale,
-  data = [],
+  products = [],
   userFavorites = [],
+  paginationInfo = { totalPages: 1, page: 1 },
+  currentSort = "-createdAt",
 }) => {
   const t = useTranslations("FiltersAndProductsSection");
   const { user } = useUser();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const favoriteIds = useMemo(() => {
-    const docs = Array.isArray(userFavorites?.docs)
-      ? userFavorites.docs
-      : Array.isArray(userFavorites)
-        ? userFavorites
-        : [];
+    const rawList = userFavorites?.docs || userFavorites || [];
+    const docs = Array.isArray(rawList) ? rawList : [];
 
     return new Set(
       docs
-        .map(
-          (doc) =>
-            doc?.product?.id ??
-            doc?.product?._id ??
-            doc?.product ??
-            doc?.id ??
-            doc,
-        )
+        .map((doc) => {
+          if (!doc) return null;
+          if (typeof doc.product === "object" && doc.product !== null) {
+            return doc.product.id || doc.product._id;
+          }
+          return doc.product || doc.id || doc._id || doc;
+        })
         .filter(Boolean),
     );
   }, [userFavorites]);
 
-  const [productList, setProductList] = useState(() =>
-    data.map((product) => ({
-      ...product,
-      isFavorite: favoriteIds.has(product.id || product._id),
-    })),
-  );
+  const [favoriteOverrides, setFavoriteOverrides] = useState({});
 
-  useEffect(() => {
-    setProductList(
-      data.map((product) => ({
+  const productList = useMemo(() => {
+    return products.map((product) => {
+      const id = product.id || product._id;
+      const isFav =
+        favoriteOverrides[id] !== undefined
+          ? favoriteOverrides[id]
+          : favoriteIds.has(id);
+
+      return {
         ...product,
-        isFavorite: favoriteIds.has(product.id || product._id),
-      })),
-    );
-  }, [data, favoriteIds]);
+        isFavorite: isFav,
+      };
+    });
+  }, [products, favoriteIds, favoriteOverrides]);
 
   const [loadingProductId, setLoadingProductId] = useState(null);
   const [toast, setToast] = useState({ message: null, type: "" });
 
-  const [sortType, setSortType] = useState("best_selling");
   const [openModel, setOpenModel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [collapsedFilters, setCollapsedFilters] = useState({});
   const [openFilterModal, setOpenFilterModal] = useState(false);
 
-  const sortedData = useMemo(
-    () => getSortedData(productList, sortType, locale),
-    [productList, sortType, locale],
+  const updateQueryParam = useCallback(
+    (key, value) => {
+      const params = new URLSearchParams(searchParams.toString());
+
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+
+      if (key !== "page") {
+        params.set("page", "1");
+      }
+
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [router, pathname, searchParams],
   );
 
-  const { inStock, outOfStock } = getStockCounts(sortedData);
+  const handleSortChange = useCallback(
+    (newSortValue) => {
+      updateQueryParam("sort", newSortValue);
+    },
+    [updateQueryParam],
+  );
+
+  const handlePageChange = useCallback(
+    (newPage) => {
+      updateQueryParam("page", String(newPage));
+    },
+    [updateQueryParam],
+  );
+
   const currency = locale === "en" ? "USD" : "دولار";
 
-  const toggleFavorite = async (productId, currentIsFavorite) => {
-    if (!user) {
-      setToast({
-        message:
-          locale === "ar"
-            ? "يجب تسجيل الدخول لإضافة المنتجات إلى المفضلة"
-            : "You need to login to add products to favorites",
-        type: "error",
-      });
-      return;
-    }
-
-    if (loadingProductId === productId) return;
-    const nextState = !currentIsFavorite;
-
-    setProductList((prev) =>
-      prev.map((p) =>
-        p.id === productId || p._id === productId
-          ? { ...p, isFavorite: nextState }
-          : p,
-      ),
-    );
-    setLoadingProductId(productId);
-
-    try {
-      if (nextState) {
-        await SlugMethods("favorites", "POST", { product: productId });
-        setToast({
-          message:
-            locale === "ar"
-              ? "تمت إضافة المنتج إلى المفضلة"
-              : "Product added to favorites",
-          type: "success",
-        });
-      } else {
-        await SlugMethods(
-          `favorites?where[product][equals]=${productId}`,
-          "DELETE",
-        );
-        setToast({
-          message:
-            locale === "ar"
-              ? "تمت إزالة المنتج من المفضلة"
-              : "Product removed from favorites",
-          type: "success",
-        });
-      }
-    } catch (error) {
-      console.error("Favorite toggle failed:", error);
-      setProductList((prev) =>
-        prev.map((p) =>
-          p.id === productId || p._id === productId
-            ? { ...p, isFavorite: currentIsFavorite }
-            : p,
-        ),
-      );
-      setToast({
-        message:
-          locale === "ar"
-            ? "حدث خطأ أثناء التحديث"
-            : "Failed to update favorites",
-        type: "error",
-      });
-    } finally {
-      setLoadingProductId(null);
-    }
-  };
-
-  const HigherP = HigherPrice(productList);
-  const defaultFilters = {
-    availability: [],
-    minPrice: "",
-    maxPrice: HigherP,
-    category: [],
-    type: [],
-    colors: [],
-    quantity: [],
-    sizes: [],
-  };
+  const defaultFilters = useMemo(
+    () => ({
+      availability: [],
+      minPrice: searchParams.get("minPrice") || "",
+      maxPrice: searchParams.get("maxPrice") || "",
+      category: [],
+      type: [],
+      colors: [],
+      quantity: [],
+      sizes: [],
+    }),
+    [searchParams],
+  );
 
   const [selectedFilters, setSelectedFilters] = useState(defaultFilters);
 
-  const filterData = (items, filters) => {
-    return items.filter((product) => {
-      const options = product.choices?.options || [];
-      const hasInStock = options.some((o) => o.availability === "inStock");
-      const hasOutOfStock = options.some(
-        (o) => o.availability === "outOfStock",
-      );
-
-      if (filters.availability.length > 0) {
-        const ok =
-          (filters.availability.includes("in_stock") && hasInStock) ||
-          (filters.availability.includes("out_stock") && hasOutOfStock);
-
-        if (!ok) return false;
-      }
-
-      const productPrice = getPrice(product);
-      const min = Number(filters.minPrice) || 0;
-      const max = Number(filters.maxPrice) || Infinity;
-
-      if (productPrice < min || productPrice > max) {
-        return false;
-      }
-      if (
-        filters.category.length > 0 &&
-        !filters.category.includes(product.category?.title)
-      ) {
-        return false;
-      }
-      if (filters.type.length > 0 && !filters.type.includes(product.type)) {
-        return false;
-      }
-      if (
-        filters.colors.length > 0 &&
-        !product.choices?.options?.some((option) =>
-          filters.colors.includes(option.value),
-        )
-      ) {
-        return false;
-      }
-      if (
-        filters.sizes.length > 0 &&
-        !product.choices?.options?.some((option) =>
-          filters.sizes.includes(option.value),
-        )
-      ) {
-        return false;
-      }
-      if (
-        filters.quantity.length > 0 &&
-        !product.choices?.options?.some((option) =>
-          filters.quantity.includes(option.value),
-        )
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-  };
-
-  const filteredData = useMemo(
-    () => filterData(sortedData, selectedFilters),
-    [sortedData, selectedFilters],
-  );
-
-  const toggleCollapse = (id) => {
+  const toggleCollapse = useCallback((id) => {
     setCollapsedFilters((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
-  };
+  }, []);
 
-  const resetFilter = (id) => {
-    if (id === "Price") {
+  const resetFilter = useCallback(
+    (id) => {
+      if (id === "Price") {
+        updateQueryParam("minPrice", null);
+        updateQueryParam("maxPrice", null);
+      }
+
       setSelectedFilters((prev) => ({
         ...prev,
-        minPrice: "",
-        maxPrice: HigherP,
+        [id]: defaultFilters[id],
       }));
-      return;
-    }
+    },
+    [defaultFilters, updateQueryParam],
+  );
 
-    setSelectedFilters((prev) => ({
-      ...prev,
-      [id]: defaultFilters[id],
-    }));
-  };
-
-  const toggleOption = (key, value) => {
+  const toggleOption = useCallback((key, value) => {
     setSelectedFilters((prev) => {
       const exists = prev[key].includes(value);
       return {
@@ -259,22 +150,18 @@ const FiltersAndProductsSection = ({
           : [...prev[key], value],
       };
     });
-  };
+  }, []);
 
-  const dataType = useAttributeCounts(productList, filteredData, "type", true);
-  const dataColors = useAttributeCounts(productList, filteredData, "color");
-  const dataSizes = useAttributeCounts(productList, filteredData, "size");
-  const dataQuantity = useAttributeCounts(
-    productList,
-    filteredData,
-    "quantity",
-  );
-  const categories = useAttributeCounts(productList, filteredData, "category");
+  const dataType = useAttributeCounts(productList, productList, "type", true);
+  const dataColors = useAttributeCounts(productList, productList, "color");
+  const dataSizes = useAttributeCounts(productList, productList, "size");
+  const dataQuantity = useAttributeCounts(productList, productList, "quantity");
+  const categories = useAttributeCounts(productList, productList, "category");
 
   const Filters = useFilterConfig({
-    inStock,
-    outOfStock,
-    HigherP,
+    inStock: 0,
+    outOfStock: 0,
+    HigherP: 1000,
     currency,
     categories,
     dataType,
@@ -282,6 +169,68 @@ const FiltersAndProductsSection = ({
     dataSizes,
     dataQuantity,
   });
+
+  const toggleFavorite = useCallback(
+    async (productId, currentIsFavorite) => {
+      if (!user) {
+        setToast({
+          message:
+            locale === "ar"
+              ? "يجب تسجيل الدخول لإضافة المنتجات إلى المفضلة"
+              : "You need to login to add products to favorites",
+          type: "error",
+        });
+        return;
+      }
+
+      if (loadingProductId === productId) return;
+      const nextState = !currentIsFavorite;
+
+      setFavoriteOverrides((prev) => ({ ...prev, [productId]: nextState }));
+      setLoadingProductId(productId);
+
+      try {
+        if (nextState) {
+          await SlugMethods("favorites", "POST", { product: productId });
+          setToast({
+            message:
+              locale === "ar"
+                ? "تمت إضافة المنتج إلى المفضلة"
+                : "Product added to favorites",
+            type: "success",
+          });
+        } else {
+          await SlugMethods(
+            `favorites?where[product][equals]=${productId}`,
+            "DELETE",
+          );
+          setToast({
+            message:
+              locale === "ar"
+                ? "تمت إزالة المنتج من المفضلة"
+                : "Product removed from favorites",
+            type: "success",
+          });
+        }
+      } catch (error) {
+        console.error("Favorite toggle failed:", error);
+        setFavoriteOverrides((prev) => ({
+          ...prev,
+          [productId]: currentIsFavorite,
+        }));
+        setToast({
+          message:
+            locale === "ar"
+              ? "حدث خطأ أثناء التحديث"
+              : "Failed to update favorites",
+          type: "error",
+        });
+      } finally {
+        setLoadingProductId(null);
+      }
+    },
+    [user, locale, loadingProductId],
+  );
 
   return (
     <>
@@ -307,13 +256,13 @@ const FiltersAndProductsSection = ({
 
           <RightSideProducts
             t={t}
-            sortedData={filteredData}
+            sortedData={productList}
             setOpenModel={setOpenModel}
             locale={locale}
             CurrentLocation={CurrentLocation}
             setSelectedProduct={setSelectedProduct}
-            sortType={sortType}
-            setSortType={setSortType}
+            sortType={currentSort}
+            setSortType={handleSortChange}
             openModel={openModel}
             selectedProduct={selectedProduct}
             selectedFilters={selectedFilters}
@@ -332,6 +281,9 @@ const FiltersAndProductsSection = ({
             resetFilter={resetFilter}
             toggleFavorite={toggleFavorite}
             loadingProductId={loadingProductId}
+            currentPage={paginationInfo.page || 1}
+            totalPages={paginationInfo.totalPages || 1}
+            onPageChange={handlePageChange}
           />
         </div>
       </div>

@@ -12,16 +12,20 @@ import { Users } from "@/app/(payload)/_collections/Users";
 import { Media } from "@/app/(payload)/_collections/Media";
 import { Categories } from "@/app/(payload)/_collections/Categories";
 import Products from "@/app/(payload)/_collections/Products";
-import { OriginsOfCoffee } from "@/app/(payload)/_collections/OriginsOfCoffee";
-import { Blogs } from "@/app/(payload)/_collections/Blogs";
+import { Countries } from "@/app/(payload)/_collections/Countries";
+import { Reviews } from "@/app/(payload)/_collections/Reviews";
 import { Subscripe } from "@/app/(payload)/_collections/Subscriped";
 import { Notes } from "@/app/(payload)/_collections/Notes";
 import { ShippingZones } from "@/app/(payload)/_collections/ShippingZones";
 import { Orders } from "@/app/(payload)/_collections/Order";
-import { AboutPage } from "@/app/(payload)/_collections/AboutPage";
-import { ContactUsPage } from "@/app/(payload)/_collections/ContactUsPage";
+import { AboutPage } from "@/app/(payload)/_globals/AboutPage";
+import { ContactUsPage } from "@/app/(payload)/_globals/ContactUsPage";
 import { Favorites } from "@/app/(payload)/_collections/Favorites";
 import { ProductViews } from "@/app/(payload)/_collections/ProductsViews";
+import { HomePage } from "@/app/(payload)/_globals/HomePage";
+import { Footer } from "@/app/(payload)/_globals/Footer";
+import { FAQs } from "@/app/(payload)/_globals/FAQs";
+import { Collections } from "@/app/(payload)/_globals/Collections";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
@@ -48,14 +52,19 @@ export default buildConfig({
     // importMap: {
     //   baseDir: path.resolve(dirname),
     // },
+    components: {
+      graphics: {
+        Logo: "@/components/admin/CustomLogo",
+      },
+    },
   },
   collections: [
     Users,
     Media,
     Categories,
     Products,
-    OriginsOfCoffee,
-    Blogs,
+    Countries,
+    Reviews,
     Subscripe,
     Notes,
     ShippingZones,
@@ -63,7 +72,7 @@ export default buildConfig({
     Favorites,
     ProductViews,
   ],
-  globals: [AboutPage, ContactUsPage],
+  globals: [HomePage, Collections, AboutPage, FAQs, ContactUsPage, Footer],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

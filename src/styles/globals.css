@@ -20,6 +20,43 @@ body {
   @apply max-w-7xl mx-auto p-6;
 }
 
+.custom-swiper-pagination {
+  position: relative !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-swiper-pagination .swiper-pagination-bullet.custom-page-number-bullet {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  background: #e5d5c5 !important;
+  color: #4a3525 !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 0.8 !important;
+  margin: 0 !important;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.custom-swiper-pagination
+  .swiper-pagination-bullet.custom-page-number-bullet:hover {
+  opacity: 1 !important;
+}
+
+.custom-swiper-pagination
+  .swiper-pagination-bullet.custom-page-number-bullet.swiper-pagination-bullet-active {
+  background: #6f4e37 !important; /* Rich coffee color */
+  color: #ffffff !important;
+  opacity: 1 !important;
+  transform: scale(1.08);
+}
 :root {
   --color-base-light: white;
   --color-base-dark: black;

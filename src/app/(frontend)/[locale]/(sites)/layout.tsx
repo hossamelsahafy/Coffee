@@ -3,7 +3,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Cairo } from "next/font/google";
 import NavBar from "@/components/layout/NavBar/NavBar";
-import Footer from "@/components/layout/Footer/Footer";
+import FooterData from "@/components/layout/Footer/FooterData";
 import { CartProvider } from "@/Context/CartContext";
 import { UserProvider } from "@/Context/userContext";
 import { getUser } from "@/actions/getUser";
@@ -34,7 +34,7 @@ export default async function LocaleLayout({
             <NextIntlClientProvider messages={messages} locale={locale}>
               <NavBar locale={locale} />
               <main className="flex-1">{children}</main>
-              <Footer locale={locale} />
+              <FooterData locale={locale} />
             </NextIntlClientProvider>
           </UserProvider>
         </CartProvider>

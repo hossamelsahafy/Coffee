@@ -66,7 +66,7 @@ const DescriptionSection = ({
                 width={40}
                 height={50}
                 key={i}
-                src="/assets/icons8star48.png"
+                src="/assets/icons8star49.png"
                 alt="star"
                 className="w-5 h-5"
               />
@@ -149,7 +149,7 @@ const DescriptionSection = ({
         </div>
       </div>
       {isIn ? (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 w-full">
           <AddToCartButton
             text={addtoCart}
             width={"w-1/2"}
@@ -158,19 +158,19 @@ const DescriptionSection = ({
             quantity={Quantity}
           />
           <AddToCartButton
+            addTocart={true}
             text={BuyItNow}
             isLink={true}
+            Product={data}
+            selectedOption={selectOption}
+            quantity={Quantity}
             width={"w-1/2"}
-            linkTarget={`/${locale}/checkout`}
+            linkTarget={`/${locale}/users/checkout`}
           />
         </div>
       ) : (
         <div className="flex items-center w-full">
-          <AddToCartButton
-            text={SoldOut}
-            width={"w-full"}
-            disabled={true}
-          />{" "}
+          <AddToCartButton text={SoldOut} width={"w-full"} disabled={true} />
         </div>
       )}
     </div>

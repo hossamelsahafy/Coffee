@@ -18,6 +18,8 @@ const NormalSwiper = ({
   onSwiper,
   hidden,
   rounded,
+  loop = true,
+  autoplay: enableAutoplay = true,
 }) => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
@@ -46,13 +48,17 @@ const NormalSwiper = ({
         <Swiper
           slidesPerView={slides || 4}
           spaceBetween={30}
-          loop={true}
-          autoplay={{
-            delay: 3000,
-            disableOnInteraction: false,
-          }}
+          loop={loop}
+          autoplay={
+            enableAutoplay
+              ? {
+                  delay: 3000,
+                  disableOnInteraction: false,
+                }
+              : false
+          }
           breakpoints={breakpoints}
-          modules={[Navigation, Autoplay]}
+          modules={[Navigation, ...(enableAutoplay ? [Autoplay] : [])]}
           onSwiper={(swiper) => {
             setSwiperInstance(swiper);
             onSwiper?.(swiper);

@@ -263,7 +263,7 @@ const UserForm = ({
 
   return (
     <div
-      className={`w-full max-w-xl mx-auto mt-10 ${Darker ? Darker : "bg-base-coffe/30"} p-6 rounded-lg`}
+      className={`w-full max-w-xl mx-auto  ${Darker ? Darker : "bg-base-coffe/30 mt-10"} p-6 rounded-lg`}
     >
       <h3 className="text-2xl font-bold text-center text-base-coffe mb-4">
         {header}

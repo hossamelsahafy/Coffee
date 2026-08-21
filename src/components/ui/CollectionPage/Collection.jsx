@@ -1,73 +1,85 @@
-import React from "react";
+"use client";
+
+import React, { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
-import ItemsButton from "@/components/shared/Buttons/AddToCartButton";
-import Link from "next/link";
-const Collection = ({ data, locale }) => {
+import CollectionCard from "./CollectionCard";
+import CollectionSkelaton from "./CollectionSkelaton";
+import GridSwiper from "@/components/shared/Swiper/GridSwiper";
+import GetDataWithPagination from "@/actions/GetDataWithPagination";
+
+const Collection = ({ data, pagination, locale, allProducts }) => {
   const t = useTranslations("Collection");
-  const totalProductsCount = data.reduce((sum, cat) => {
-    return sum + cat.productsCount;
-  }, 0);
+
+  const [isPending, startTransition] = useTransition();
+  const [isLoadingPage, setIsLoadingPage] = useState(false);
+
+  const [collections, setCollections] = useState(data);
+  const [currentPage, setCurrentPage] = useState(pagination?.page || 1);
+  const [totalPages, setTotalPages] = useState(pagination?.totalPages || 1);
+
+  const totalProductsCount = allProducts?.productsCount || 0;
+
+  const image =
+    allProducts?.ImageSource === "Url"
+      ? allProducts?.ImageUrl
+      : allProducts?.ImageUpload?.url;
 
   const ProductsData = {
     id: "All_products",
-    imageUrl:
-      "https://res.cloudinary.com/dnszjyuxi/image/upload/v1778169687/1_cfpjul.png",
-    title: "All Products",
-    titleAr: "جميع المنتجات",
-    slug: "products",
-    slugAr: "products",
+    imageUrl: image,
+    title: allProducts?.title,
+    titleAr: allProducts?.titleAr,
+    slug: allProducts?.slug,
+    slugAr: allProducts?.slugAr,
     productsCount: totalProductsCount,
   };
 
-  const dataWithAllProducts = [ProductsData, ...data];
-  const getImageSrc = (item) => {
-    if (item.slug === "products") return item.imageUrl;
+  const dataWithAllProducts = [ProductsData, ...collections];
 
-    if (item.ImageSource === "Url") return item.ImageUrl;
+  const handlePageChange = (newPage) => {
+    if (newPage === currentPage || isPending) return;
 
-    return item?.image?.url;
+    setIsLoadingPage(true); // Turn on loading state immediately
+
+    startTransition(async () => {
+      try {
+        const result = await GetDataWithPagination("categories", newPage, 5);
+        setCollections(result.docs);
+        setCurrentPage(result.page);
+        setTotalPages(result.totalPages);
+      } finally {
+        setIsLoadingPage(false); // Turn off loading state once data arrives
+      }
+    });
   };
 
   return (
-    <div className="mt-20 container-custom p-4">
-      <div className="flex flex-col justify-center items-center mt-10">
-        <h2 className="text-4xl font-bold text-base-coffe">
+    <div id="products-section" className="container-custom p-4">
+      <div className="flex flex-col justify-center items-center mt-10 w-full">
+        <h2 className="text-4xl font-bold text-base-coffe mb-8">
           {t("Collections")}
         </h2>
-        <div className="grid mt-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center gap-10 w-full">
-          {dataWithAllProducts.map((data) => {
-            const href =
-              data.slug === "products"
-                ? `/${locale}/products`
-                : locale === "en"
-                  ? `/${locale}/collections/${data.slug}`
-                  : `/${locale}/collections/${data.slugAr}`;
 
-            return (
-              <Link key={data.id} href={href} className="block group">
-                <div className="flex flex-col justify-center items-center gap-4 text-base-light cursor-pointer">
-                  <Image
-                    src={getImageSrc(data)}
-                    alt={data.title}
-                    width={400}
-                    height={400}
-                    className="object-contain rounded-lg"
-                  />
-
-                  <p className="font-bold text-lg text-base-light  group-hover:text-base-coffe transition-colors duration-300">
-                    {locale === "en" ? data.title : data.titleAr}
-                  </p>
-
-                  <ItemsButton
-                    text={`${data.productsCount} - ${
-                      locale === "en" ? "Items" : "عناصر"
-                    }`}
-                  />
-                </div>
-              </Link>
-            );
-          })}
+        <div className="w-full relative min-h-[300px]">
+          {isLoadingPage ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <CollectionSkelaton key={index} />
+              ))}
+            </div>
+          ) : (
+            <GridSwiper
+              filteredProducts={dataWithAllProducts}
+              enablePagePagination={true}
+              makeBulletsWhilePagePagination={true}
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              renderItem={(item) => (
+                <CollectionCard item={item} locale={locale} />
+              )}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -6,33 +6,92 @@ import ProductCard from "./ProductsCard";
 import GridSwiper from "@/components/shared/Swiper/GridSwiper";
 import ProductModal from "@/components/shared/Model/ProductModal";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
+import GetDataWithPagination from "@/actions/GetDataWithPagination";
 
 const HightLightedProducts = ({
-  categories,
-  products,
+  categories = [],
+  products = [],
   onToggleFavorite,
   loadingProductId,
+  productsPagesData,
+  onAddToCart,
 }) => {
+  console.log(productsPagesData);
+
   const [openModel, setOpenModel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   let { locale } = useParams();
+
+  const [currentPage, setCurrentPage] = useState(productsPagesData?.page || 1);
+  const [totalPages, setTotalPages] = useState(
+    productsPagesData?.totalPages || 1,
+  );
+  const [currentProducts, setCurrentProducts] = useState(products);
+  const [isLoading, setIsLoading] = useState(false);
+  const [active, setActive] = useState("all");
+
+  const fetchProducts = async (pageToFetch, categoryId) => {
+    setIsLoading(true);
+
+    try {
+      const queryParams =
+        categoryId === "all"
+          ? {}
+          : {
+              category: {
+                equals: categoryId,
+              },
+            };
+
+      const data = await GetDataWithPagination(
+        "products",
+        pageToFetch,
+        6,
+        "",
+        queryParams,
+      );
+
+      setCurrentProducts(data.docs || []);
+      if (data.totalPages !== undefined) {
+        setTotalPages(data.totalPages);
+      }
+    } catch (error) {
+      console.error("Failed to fetch filtered page data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleCategoryChange = (catId) => {
+    if (catId === active) return;
+
+    setActive(catId);
+    setCurrentPage(1);
+
+    fetchProducts(1, catId);
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage === currentPage || isLoading) return;
+
+    setCurrentPage(newPage);
+    fetchProducts(newPage, active);
+  };
 
   const allCategories = [
     { id: "all", title: "All Products", titleAr: "كل المنتجات" },
     ...categories,
   ];
-  const [active, setActive] = useState("all");
-  const filteredProducts = products.filter((product) => {
-    if (active === "all") return true;
-    const categoryName = categories.find((c) => c.id === active)?.title;
-    return product.category.title === categoryName;
-  });
+
   useLockBodyScroll(openModel);
+  console.log(totalPages);
 
   return (
     <>
-      <div className="w-full md:max-w-7xl md:mx-auto flex flex-col text-base-light relative p-4 justify-center items-center">
-        <div className="flex md:flex-row  justify-start flex-col md:justify-between w-full gap-4 items-center">
+      <div
+        id="products-section"
+        className="w-full md:max-w-7xl md:mx-auto flex flex-col text-base-light relative p-4 justify-center items-center"
+      >
+        <div className="flex md:flex-row justify-start flex-col md:justify-between w-full gap-4 items-center">
           <div className="flex justify-start md:justify-center items-center flex-wrap font-semibold gap-4">
             {allCategories.map((cat) => {
               const isActive = active === cat.id;
@@ -40,13 +99,15 @@ const HightLightedProducts = ({
               return (
                 <div
                   key={cat.id}
-                  onClick={() => setActive(cat.id)}
+                  onClick={() => handleCategoryChange(cat.id)}
                   className="relative cursor-pointer group"
                 >
                   <span
                     className={`
                     relative pb-1
-                    ${isActive ? "after:w-full" : "after:w-0"} after:content-[''] after:absolute after:left-0 after:bottom-0  after:h-px  after:bg-base-light after:transition-all after:duration-300 group-hover:after:w-full text-lg
+                    ${
+                      isActive ? "after:w-full" : "after:w-0"
+                    } after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:bg-base-light after:transition-all after:duration-300 group-hover:after:w-full text-lg
                   `}
                   >
                     {locale === "en" ? cat.title : cat.titleAr}
@@ -59,22 +120,29 @@ const HightLightedProducts = ({
           <div className="group inline-block">
             <Link
               href={`/${locale}/products`}
-              className="
-            font-semibold relative pb-1 text-lg after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full after:bg-base-light after:transition-all after:duration-300 hover:after:bg-base-coffe"
+              className="font-semibold relative hover:text-base-coffe duration-300 transition-all pb-1 text-lg after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full after:bg-base-light after:transition-all after:duration-300 hover:after:bg-base-coffe"
             >
               {locale === "en" ? "Show Products" : "عرض المنتجات"}
             </Link>
           </div>
         </div>
+
         <div className="w-full">
           <GridSwiper
-            filteredProducts={filteredProducts}
-            loop={true}
+            filteredProducts={currentProducts}
+            enablePagePagination={true}
+            makeBulletsWhilePagePagination={true}
+            ChunkSize={6}
+            loop={false}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            isLoading={isLoading}
             breakpoints={{
-              0: { slidesPerView: 1, grid: { rows: 1 } },
-              640: { slidesPerView: 2, grid: { rows: 2 } },
-              768: { slidesPerView: 2, grid: { rows: 2 } },
-              1024: { slidesPerView: 3, grid: { rows: 2 } },
+              0: { slidesPerView: 1 },
+              640: { slidesPerView: 2 },
+              768: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
             }}
             renderItem={(product) => (
               <ProductCard
@@ -86,6 +154,7 @@ const HightLightedProducts = ({
                   onToggleFavorite(product.id, product.isFavorite)
                 }
                 isLoading={loadingProductId === product.id}
+                onAddToCart={onAddToCart}
               />
             )}
           />

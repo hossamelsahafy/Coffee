@@ -33,13 +33,6 @@ export type ChartPoint = {
   orders: number;
 };
 
-interface ChartAreaInteractiveProps {
-  chartData: ChartPoint[];
-  lines: ChartLine[];
-  title?: string;
-  description?: string;
-  NotFound?: String;
-}
 export type ChartLine = {
   dataKey: string;
   label: string;
@@ -48,6 +41,15 @@ export type ChartLine = {
   stroke: string;
   strokeWidth?: number;
 };
+
+interface ChartAreaInteractiveProps {
+  chartData: ChartPoint[];
+  lines: ChartLine[];
+  title?: string;
+  description?: string;
+  NotFound?: string;
+}
+
 export function ChartAreaInteractive({
   chartData,
   lines,
@@ -57,6 +59,7 @@ export function ChartAreaInteractive({
 }: ChartAreaInteractiveProps) {
   const t = useTranslations("UserDashboard");
   const [timeRange, setTimeRange] = React.useState("all");
+
   const chartConfig = {
     spent: {
       label: t("spent"),
@@ -74,19 +77,30 @@ export function ChartAreaInteractive({
       label: "Products",
       color: "#D8A46B",
     },
+    Revenue: {
+      label: "Revenue",
+      color: "#D8A46B",
+    },
+    views: {
+      label: "views",
+      color: "#D8A46B",
+    },
+    favorites: {
+      label: "favorites",
+      color: "#D8A46B",
+    },
   } satisfies ChartConfig;
 
   const filteredData = React.useMemo(() => {
     if (!Array.isArray(chartData) || chartData.length === 0) return [];
 
-    if (timeRange === "all") {
-      return [...chartData].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-      );
-    }
+    const sorted = [...chartData].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
+
+    if (timeRange === "all") return sorted;
 
     let daysToSubtract = 90;
-
     if (timeRange === "30d") daysToSubtract = 30;
     if (timeRange === "7d") daysToSubtract = 7;
 
@@ -94,12 +108,11 @@ export function ChartAreaInteractive({
     startDate.setDate(startDate.getDate() - daysToSubtract);
     startDate.setHours(0, 0, 0, 0);
 
-    return [...chartData]
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .filter((item) => new Date(item.date) >= startDate);
+    return sorted.filter((item) => new Date(item.date) >= startDate);
   }, [chartData, timeRange]);
+
   return (
-    <Card className="relative transition-all ease-in-out duration-300 overflow-hidden pt-0 w-full rounded-3xl border  border-white/10 bg-[#1A120D]/70 backdrop-blur-md shadow-2xl text-white">
+    <Card className="relative transition-all ease-in-out duration-300 overflow-hidden pt-0 w-full rounded-3xl border border-white/10 bg-[#1A120D]/70 backdrop-blur-md shadow-2xl text-white">
       <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#C07A3B]/10 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-10 left-10 h-32 w-32 rounded-full bg-[#965015]/10 blur-3xl pointer-events-none" />
 
@@ -130,19 +143,19 @@ export function ChartAreaInteractive({
             </SelectItem>
             <SelectItem
               value="90d"
-              className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B] data-[highlighted]:bg-[#382418] data-[highlighted]:!text-[#D8A46B]"
+              className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B]"
             >
               {t("last3Months")}
             </SelectItem>
             <SelectItem
               value="30d"
-              className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B] data-[highlighted]:bg-[#382418] data-[highlighted]:!text-[#D8A46B]"
+              className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B]"
             >
               {t("last30Days")}
             </SelectItem>
             <SelectItem
               value="7d"
-              className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B] data-[highlighted]:bg-[#382418] data-[highlighted]:!text-[#D8A46B]"
+              className="rounded-lg cursor-pointer focus:bg-[#382418] focus:!text-[#D8A46B]"
             >
               {t("last7Days")}
             </SelectItem>
@@ -162,7 +175,10 @@ export function ChartAreaInteractive({
             config={chartConfig}
             className="aspect-auto h-[280px] w-full"
           >
-            <AreaChart data={filteredData}>
+            <AreaChart
+              data={filteredData}
+              margin={{ top: 10, bottom: 0, left: 0, right: 0 }}
+            >
               <defs>
                 <linearGradient id="fillSpent" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#D8A46B" stopOpacity={0.8} />
@@ -193,8 +209,14 @@ export function ChartAreaInteractive({
                 }}
               />
 
+              {/* FIX: Force explicit zero domain boundary to avoid area overlapping below X-axis */}
               {lines.map((line) => (
-                <YAxis key={line.dataKey} yAxisId={line.dataKey} hide />
+                <YAxis
+                  key={line.dataKey}
+                  yAxisId={line.dataKey}
+                  domain={[0, "auto"]}
+                  hide
+                />
               ))}
 
               <ChartTooltip
@@ -218,7 +240,7 @@ export function ChartAreaInteractive({
                   key={line.dataKey}
                   yAxisId={line.dataKey}
                   dataKey={line.dataKey}
-                  type="natural"
+                  type="monotone"
                   fill={line.fill}
                   stroke={line.stroke}
                   strokeWidth={line.strokeWidth ?? 2}

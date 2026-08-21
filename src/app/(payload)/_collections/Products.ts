@@ -14,6 +14,10 @@ export const Products: CollectionConfig = {
         },
       },
     },
+    pagination: {
+      defaultLimit: 12,
+      limits: [8, 12, 24, 50],
+    },
   },
 
   access: { read: () => true },
@@ -30,6 +34,7 @@ export const Products: CollectionConfig = {
       name: "slug",
       type: "text",
       required: true,
+      unique: true,
       validate: (value) => {
         if (!value) return "Slug is required";
 
@@ -46,6 +51,7 @@ export const Products: CollectionConfig = {
       name: "slugAr",
       type: "text",
       required: true,
+      unique: true,
       validate: (value) => {
         if (!value) return "Slug is required";
 
@@ -73,6 +79,27 @@ export const Products: CollectionConfig = {
       type: "checkbox",
       defaultValue: false,
       required: true,
+      validate: async (value, { req, operation, siblingData }) => {
+        if (!value) return true;
+
+        const count = await req.payload.find({
+          collection: "products",
+          where: { ShowInDiscountSection: { equals: true } },
+          limit: 0,
+        });
+
+        const currentId = siblingData?.id;
+        const total =
+          currentId && operation === "update"
+            ? count.totalDocs - 1
+            : count.totalDocs;
+
+        if (total >= 12) {
+          return "Cannot have more than 12 discount products";
+        }
+
+        return true;
+      },
     },
     {
       name: "important",
@@ -177,22 +204,30 @@ export const Products: CollectionConfig = {
                 { value: "outOfStock", label: "Out of Stock" },
               ],
             },
+            { name: "priceAfter", type: "number", required: true },
+            { name: "priceBefore", type: "number", required: true },
             {
               name: "ImageSource",
               type: "radio",
+              defaultValue: "upload",
+
               options: [
                 { value: "Url", label: "Paste Image Url" },
-                { value: "upload", label: "upload Image" },
+                { value: "upload", label: "Select Image" },
               ],
             },
             {
               name: "image",
               type: "upload",
               relationTo: "media",
+              label: "Select Image",
               required: true,
               admin: {
                 condition: (_, siblingData) =>
                   siblingData?.ImageSource === "upload",
+                components: {
+                  Field: "@/components/admin/CustomMediaSelection",
+                },
               },
             },
             {
@@ -205,8 +240,6 @@ export const Products: CollectionConfig = {
                   siblingData?.ImageSource === "Url",
               },
             },
-            { name: "priceAfter", type: "number", required: true },
-            { name: "priceBefore", type: "number", required: true },
           ],
         },
       ],

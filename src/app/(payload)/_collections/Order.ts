@@ -28,6 +28,17 @@ export const Orders: CollectionConfig = {
 
   admin: {
     useAsTitle: "orderNumber",
+    components: {
+      views: {
+        list: {
+          Component: "@/components/admin/Orders/OrdersViewList",
+        },
+      },
+    },
+    pagination: {
+      defaultLimit: 12,
+      limits: [8, 12, 24, 50],
+    },
   },
 
   fields: [

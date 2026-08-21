@@ -84,6 +84,9 @@ const ProductModal = ({ selectedProduct, locale, setOpenModel, openModel }) => {
                 slides={1}
                 px={"px-0"}
                 onSwiper={setSwiper}
+                loop={false}
+                autoplay={false}
+                hidden={imagesData.length <= 1}
               />
             </div>
             <div className="flex  w-full md:max-w-1/2 flex-col items-center md:items-start justify-center gap-4">

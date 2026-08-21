@@ -1,5 +1,4 @@
 import type { CollectionConfig } from "payload";
-import { ValidationError } from "payload";
 
 export const Notes: CollectionConfig = {
   slug: "Notes",
@@ -19,17 +18,60 @@ export const Notes: CollectionConfig = {
   fields: [
     { name: "title", type: "text", required: true },
     { name: "titleAr", type: "text", required: true },
+    {
+      name: "slug",
+      type: "text",
+      required: true,
+      validate: (value) => {
+        if (!value) return "Slug is required";
+
+        const isValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
+
+        if (!isValid) {
+          return "Slug must be lowercase, no spaces, use hyphens (-), No Special Characters";
+        }
+
+        return true;
+      },
+    },
+    {
+      name: "slugAr",
+      type: "text",
+      required: true,
+      validate: (value) => {
+        if (!value) return "Slug is required";
+
+        const isValid = /^[\u0600-\u06FF0-9]+(?:-[\u0600-\u06FF0-9]+)*$/.test(
+          value,
+        );
+
+        if (!isValid) {
+          return "Slug must be Arabic letters/numbers separated by hyphens";
+        }
+
+        return true;
+      },
+    },
     { name: "des", type: "text", required: true },
     { name: "desAr", type: "text", required: true },
+    { name: "longDes", type: "richText", required: true },
+    { name: "lonDesAr", type: "richText", required: true },
     { name: "brandName", type: "text", required: true },
     { name: "brandNameAr", type: "text", required: true },
+    {
+      name: "isImportant",
+      label: "Choose If U Need The Element To Appear In Home Page",
+      type: "checkbox",
+      defaultValue: false,
+    },
     {
       name: "ImageSource",
       type: "radio",
       required: true,
+      defaultValue: "upload",
       options: [
         { value: "Url", label: "Paste Image Url" },
-        { value: "upload", label: "UploadImage" },
+        { value: "upload", label: "Select Image" },
       ],
     },
     {
@@ -42,18 +84,15 @@ export const Notes: CollectionConfig = {
     },
     {
       name: "ImageUpload",
-      label: "Upload Image",
+      label: "Select Image",
       type: "relationship",
       relationTo: "media",
       admin: {
         condition: (_, siblingData) => siblingData?.ImageSource === "upload",
+        components: {
+          Field: "@/components/admin/CustomMediaSelection",
+        },
       },
-    },
-    {
-      name: "isImportant",
-      label: "Choose If U Need The Element To Appear In Home Page",
-      type: "checkbox",
-      defaultValue: false,
     },
   ],
   hooks: {

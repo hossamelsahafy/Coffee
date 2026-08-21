@@ -1,15 +1,10 @@
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);
 
-/* Scope utilities */
 .custom-admin-ui {
   @layer utilities {
   }
 }
-
-/* =========================================
-   GPU-ACCELERATED NAVIGATION & LAYOUT
-   ========================================= */
 
 aside,
 header,
@@ -29,9 +24,6 @@ body {
   background-color: #18100d !important;
 }
 
-/* =========================================
-   BUTTON & ACTION STYLES
-   ========================================= */
 #action-save,
 .form-submit .btn {
   background-color: #8c6a51 !important;
@@ -554,4 +546,9 @@ span {
 .payload-toast button:hover,
 [class*="toast"] button:hover {
   opacity: 1 !important;
+}
+
+.array-field__header,
+.field-label {
+  background-color: transparent !important;
 }

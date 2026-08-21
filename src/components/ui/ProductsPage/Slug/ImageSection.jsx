@@ -1,34 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import NormalSwiper from "@/components/shared/Swiper/NormalSwiper";
 import ImageSlide from "@/components/shared/Model/ImageSlide";
+
 const ImageSection = ({ activeOption, setSelectedOption, options, locale }) => {
   const [swiper, setSwiper] = useState(null);
 
   const defaultBreakpoints = {
-    0: {
-      slidesPerView: 1,
-      spaceBetween: 20,
-    },
-    640: {
-      slidesPerView: 1,
-      spaceBetween: 20,
-    },
-    768: {
-      slidesPerView: 1,
-      spaceBetween: 20,
-    },
-    1024: {
-      slidesPerView: 1,
-      spaceBetween: 20,
-    },
+    0: { slidesPerView: 1, spaceBetween: 20 },
+    640: { slidesPerView: 1, spaceBetween: 20 },
+    768: { slidesPerView: 1, spaceBetween: 20 },
+    1024: { slidesPerView: 1, spaceBetween: 20 },
   };
+
   const imagesData =
     options?.map((opt) => ({
       id: opt.imageUrl || opt.image.url,
       image: opt.ImageSource === "Url" ? opt.imageUrl : opt.image?.url,
       option: opt,
     })) || [];
+
+  useEffect(() => {
+    if (swiper && activeOption) {
+      const index = imagesData.findIndex(
+        (img) => img.option?.id === activeOption?.id,
+      );
+      if (index !== -1) {
+        swiper.slideTo(index);
+      }
+    }
+  }, [activeOption, swiper]);
+
   return (
     <div className="flex gap-1 items-center w-full mx-auto">
       <div className="flex flex-col gap-3">
@@ -44,7 +46,11 @@ const ImageSection = ({ activeOption, setSelectedOption, options, locale }) => {
 
               swiper?.slideTo(index);
             }}
-            className={`p-1 border ${activeOption.id === item.option.id ? "border-base-light" : "border-base-border"} rounded-lg cursor-pointer`}
+            className={`p-1 border ${
+              activeOption?.id === item.option?.id
+                ? "border-base-light"
+                : "border-base-border"
+            } rounded-lg cursor-pointer`}
           >
             <Image
               src={item.image}
@@ -57,7 +63,6 @@ const ImageSection = ({ activeOption, setSelectedOption, options, locale }) => {
         ))}
       </div>
 
-      {/* swiper */}
       <div className="flex-1 w-full overflow-hidden">
         <NormalSwiper
           changebg={true}
@@ -70,6 +75,8 @@ const ImageSection = ({ activeOption, setSelectedOption, options, locale }) => {
           onSwiper={setSwiper}
           hidden={true}
           rounded={true}
+          loop={false}
+          autoplay={false}
         />
       </div>
     </div>

@@ -6,6 +6,7 @@ import ContentLayout from "@/components/shared/Dashboard/ContentLayout";
 import ProductsGrid from "./ProductsGrid";
 import TrackOrderData from "@/components/ui/Taps/TrackOrderTap/TrackOrderData";
 import { ChartAreaInteractive } from "@/components/ui/Taps/DashboardTap/ChartAreaInteractive";
+import MostOrderedProducts from "./MostOrderedProducts";
 
 export default function ProductsListView() {
   const { isLoading } = useListQuery();
@@ -23,6 +24,7 @@ export default function ProductsListView() {
   });
 
   const [productActivity, setProductActivity] = useState([]);
+  const [mostOrdered, setMostOrdered] = useState([]);
 
   useEffect(() => {
     async function fetchGlobalStats() {
@@ -44,6 +46,7 @@ export default function ProductsListView() {
         });
 
         setProductActivity(data.activity || []);
+        setMostOrdered(data.mostOrderedProducts || []);
       } catch (error) {
         console.error("Product stats error:", error);
         setGlobalStats((prev) => ({ ...prev, loading: false }));
@@ -118,6 +121,7 @@ export default function ProductsListView() {
       >
         <div className="flex flex-col gap-4 max-w-full">
           <TrackOrderData locale="en" cards={productStatsCards} order={true} />
+
           <div className="mt-4">
             <ChartAreaInteractive
               lines={[
@@ -136,6 +140,8 @@ export default function ProductsListView() {
               NotFound="No product activity found yet."
             />
           </div>
+
+          <MostOrderedProducts data={mostOrdered} />
 
           <ProductsGrid />
         </div>

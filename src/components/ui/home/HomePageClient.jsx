@@ -4,7 +4,7 @@ import HighLightedProducts from "@/components/ui/home/Products/HightLightedProdu
 import HeaderTwo from "@/components/ui/Header/HeaderTwo";
 import DiscountSection from "@/components/ui/home/DiscountProducts/DisCountSection";
 import BestSellingSection from "@/components/ui/home/BestSells/BestSellingSection";
-import BlogsSection from "@/components/ui/home/Reviews/BlogsSection";
+import ReviewsSection from "@/components/ui/home/Reviews/ReviewsSection";
 import SlugMethods from "@/actions/SlugMethods";
 import { useUser } from "@/Context/userContext";
 import { GlassyToast } from "@/components/shared/GlassyToast/GlassyToast";
@@ -13,7 +13,17 @@ export default function HomePageClient({
   initialProducts,
   categories,
   locale,
-  blogs,
+  initialReviewsMap,
+  SecondHeaderSection,
+  ReviewsSectionData,
+  discountSection,
+  BestSellingSectionData,
+  websiteName,
+  countries,
+  importantProducts,
+  discountProducts,
+  bestSellingProducts,
+  productsPagesData,
 }) {
   const { user } = useUser();
   const [productList, setProductList] = useState(initialProducts || []);
@@ -87,9 +97,18 @@ export default function HomePageClient({
     }
   };
 
-  const importantProducts = productList.filter((p) => p.important);
-  const discountProducts = productList.filter((p) => p.ShowInDiscountSection);
-  const bestSellingProducts = productList.filter((p) => p.isBestSeller);
+  const handleAddToCart = (isIn) => {
+    setToast({
+      message: isIn
+        ? locale === "ar"
+          ? "تمت إضافة المنتج إلى السلة"
+          : "Product added to cart"
+        : locale === "ar"
+          ? "المنتج غير متوفر"
+          : "Product is sold out",
+      type: isIn ? "success" : "error",
+    });
+  };
 
   return (
     <>
@@ -98,25 +117,41 @@ export default function HomePageClient({
         products={productList}
         onToggleFavorite={toggleFavorite}
         loadingProductId={loadingProductId}
+        productsPagesData={productsPagesData}
+        onAddToCart={handleAddToCart}
       />
       <HeaderTwo
         importantProducts={importantProducts}
-        src="https://res.cloudinary.com/dnszjyuxi/video/upload/v1773676563/Coffe2_igrxsq.mp4"
+        secondHeader={SecondHeaderSection}
+        locale={locale}
         onToggleFavorite={toggleFavorite}
         loadingProductId={loadingProductId}
+        onAddToCart={handleAddToCart}
       />
-      <BlogsSection Blogs={blogs} />
-
+      <ReviewsSection
+        initialReviewsMap={initialReviewsMap}
+        websiteName={websiteName}
+        ReviewsSectionData={ReviewsSectionData}
+        locale={locale}
+        countries={countries.docs}
+      />
       <DiscountSection
         data={discountProducts}
         onToggleFavorite={toggleFavorite}
         loadingProductId={loadingProductId}
+        websiteName={websiteName}
+        discountSection={discountSection}
+        locale={locale}
+        onAddToCart={handleAddToCart}
       />
       <BestSellingSection
         data={bestSellingProducts}
         locale={locale}
         onToggleFavorite={toggleFavorite}
         loadingProductId={loadingProductId}
+        onAddToCart={handleAddToCart}
+        bestSellingSectionData={BestSellingSectionData}
+        websiteName={websiteName}
       />
 
       <GlassyToast

@@ -37,10 +37,10 @@ const page = async ({ params }: Props) => {
   return (
     <>
       <ProductSlugClient
-        importantProducts={importantProducts}
+        importantProducts={importantProducts.docs}
         locale={locale}
         dataBySlug={dataBySlug}
-        products={products}
+        products={products.docs}
         userFavorites={favorites}
       />
     </>

@@ -36,36 +36,24 @@ const RightSideProducts = ({
   resetFilter,
   toggleFavorite,
   loadingProductId,
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange,
+  isFetching = false,
 }) => {
+  // Sort options matching Payload CMS API fields
   const sortOptions = [
-    { value: "best_selling", en: "Best Selling", ar: "الأكثر مبيعًا" },
-    {
-      value: "price_low_high",
-      en: "Price: Low to High",
-      ar: "السعر: من الأقل للأعلى",
-    },
-    {
-      value: "price_high_low",
-      en: "Price: High to Low",
-      ar: "السعر: من الأعلى للأقل",
-    },
-    { value: "a_z", en: "A → Z", ar: "من الألف إلى الياء" },
-    { value: "z_a", en: "Z → A", ar: "من الياء إلى الألف" },
+    { value: "-createdAt", en: "Latest", ar: "الأحدث" },
+    { value: "price", en: "Price: Low to High", ar: "السعر: من الأقل للأعلى" },
+    { value: "-price", en: "Price: High to Low", ar: "السعر: من الأعلى للأقل" },
+    { value: "title", en: "A → Z", ar: "من الألف إلى الياء" },
+    { value: "-title", en: "Z → A", ar: "من الياء إلى الألف" },
   ];
+
   const handleSortChange = (e) => {
     setSortType(e.target.value);
   };
-  const breakpoints = {
-    0: {
-      slidesPerView: 1,
-    },
-    768: {
-      slidesPerView: 2,
-    },
-    1024: {
-      slidesPerView: 3,
-    },
-  };
+
   useLockBodyScroll(openModel);
 
   return (
@@ -81,12 +69,8 @@ const RightSideProducts = ({
             </button>
           </div>
           <div className="flex items-start p-4 gap-4 font-bold text-lg">
-            <Link className="" href={`/${locale}`}>
-              {t("home")}/{" "}
-            </Link>
-            <Link className="" href={"#productPage"}>
-              {CurrentLocation}
-            </Link>
+            <Link href={`/${locale}`}>{t("home")}/ </Link>
+            <Link href={"#productPage"}>{CurrentLocation}</Link>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-lg font-bold">{t("SortBy")}:</span>
@@ -94,7 +78,7 @@ const RightSideProducts = ({
               <select
                 value={sortType}
                 onChange={handleSortChange}
-                className=" text-base-dark border font-semibold border-base-borderTwo px-3 py-2 pr-8 rounded-full cursor-pointer appearance-none ring-0 focus:ring-0"
+                className="text-base-dark border font-semibold border-base-borderTwo px-3 py-2 pr-8 rounded-full cursor-pointer appearance-none ring-0 focus:ring-0"
               >
                 {sortOptions.map((opt, idx) => (
                   <option
@@ -111,13 +95,17 @@ const RightSideProducts = ({
           </div>
         </div>
         <div className="w-full border-b border-base-borderTwo md:-ms-4"></div>
+
         <div className="flex-1 min-w-0">
           <GridSwiper
             filteredProducts={sortedData}
-            loop={false}
             enablePagePagination={true}
-            breakpoints={breakpoints}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            isLoading={isFetching}
             PaddingBottom="15px"
+            makeBulletsWhilePagePagination={false}
             renderItem={(product) => (
               <ProductsCardAsColomns
                 product={product}
@@ -137,12 +125,15 @@ const RightSideProducts = ({
           />
         </div>
       </div>
+
       <ProductModal
         selectedProduct={selectedProduct}
         locale={locale}
         setOpenModel={setOpenModel}
         openModel={openModel}
       />
+
+      {/* Filter Modal Panel */}
       <div
         className={`fixed inset-0 z-50 flex transition-opacity duration-300 ${
           openFilterModal
@@ -150,7 +141,6 @@ const RightSideProducts = ({
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Left Sliding Panel */}
         <div
           className={`w-1/2 h-screen bg-base-light shadow-2xl flex flex-col transform transition-transform duration-300 ease-out ${
             openFilterModal ? "translate-x-0" : "-translate-x-full"
@@ -173,8 +163,6 @@ const RightSideProducts = ({
             setOpenFilterModal={setOpenFilterModal}
           />
         </div>
-
-        {/* Dark Backdrop */}
         <div
           className={`w-1/2 h-screen bg-black/50 transition-opacity duration-300 ease-out cursor-pointer ${
             openFilterModal ? "opacity-100" : "opacity-0"

@@ -92,7 +92,6 @@ const ProductSlugClient = ({
     const nextState = !currentIsFavorite;
 
     const updateLocalState = (isFav) => {
-      // Main product update
       setCurrentProduct((prev) => {
         const curId = prev?.id || prev?._id;
         if (curId === productId) {
@@ -101,7 +100,6 @@ const ProductSlugClient = ({
         return prev;
       });
 
-      // Important products list update
       setImportantList((prev) =>
         prev.map((p) =>
           p?.id === productId || p?._id === productId

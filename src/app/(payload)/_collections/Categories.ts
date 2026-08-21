@@ -40,6 +40,7 @@ export const Categories: CollectionConfig = {
       name: "slug",
       type: "text",
       required: true,
+      unique: true,
       validate: (value) => {
         if (!value) return "Slug is required";
 
@@ -56,6 +57,7 @@ export const Categories: CollectionConfig = {
       name: "slugAr",
       type: "text",
       required: true,
+      unique: true,
       validate: (value) => {
         if (!value) return "Slug is required";
 
@@ -70,16 +72,49 @@ export const Categories: CollectionConfig = {
         return true;
       },
     },
+    {
+      name: "showInHomePage",
+      type: "checkbox",
+      defaultValue: false,
+      validate: async (value, { req, operation, data }) => {
+        if (!value) return true;
+
+        const existing = await req.payload.find({
+          collection: "categories",
+          where: {
+            showInHomePage: {
+              equals: true,
+            },
+          },
+          limit: 5,
+        });
+
+        if (operation === "update") {
+          const isSameDoc = existing.docs.some(
+            (doc) => String(doc.id) === String(data?.id),
+          );
+
+          if (isSameDoc) return true;
+        }
+
+        if (existing.totalDocs >= 4) {
+          return "Cannot have more than 4 best seller products";
+        }
+
+        return true;
+      },
+    },
 
     {
       name: "ImageSource",
       type: "radio",
+      defaultValue: "upload",
+
       label: "Choose Image Source",
       options: [
         { value: "Url", label: "Paste Image Url" },
-        { value: "upload", label: "Upload Image" },
+        { value: "upload", label: "Select Image" },
       ],
-      defaultValue: "Url",
     },
     {
       name: "ImageUrl",
@@ -93,9 +128,13 @@ export const Categories: CollectionConfig = {
       name: "uploadImage",
       type: "relationship",
       relationTo: "media",
-      label: "Upload Image",
+      label: "Select Image",
+
       admin: {
         condition: (_, siblingData) => siblingData?.ImageSource === "upload",
+        components: {
+          Field: "@/components/admin/CustomMediaSelection",
+        },
       },
     },
   ],
@@ -123,7 +162,6 @@ export const Categories: CollectionConfig = {
             `Error fetching product count for category ${doc.id}:`,
             error,
           );
-          // Return the doc without productsCount to avoid breaking the request
           return {
             ...doc,
             productsCount: 0,
