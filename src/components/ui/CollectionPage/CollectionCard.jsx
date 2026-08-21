@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import ItemsButton from "@/components/shared/Buttons/AddToCartButton";
 import Link from "next/link";
 import CollectionSkelaton from "./CollectionSkelaton";
 
@@ -16,7 +15,7 @@ const CollectionCard = ({ item, locale, isLoading }) => {
   };
 
   const href =
-    item.slug === "products"
+    item.id === "All_products"
       ? `/${locale}/products`
       : locale === "en"
         ? `/${locale}/collections/${item.slug}`
@@ -39,12 +38,9 @@ const CollectionCard = ({ item, locale, isLoading }) => {
           {locale === "en" ? item.title : item.titleAr}
         </p>
 
-        <ItemsButton
-          isLink={false}
-          text={`${item.productsCount} - ${
-            locale === "en" ? "Items" : "عناصر"
-          }`}
-        />
+        <button className="px-6 py-2 cursor-pointer hover:bg-base-lighter transition-all text-center duration-300 font-bold bg-base-coffe text-base-dark rounded-full">
+          {`${item.productsCount} - ${locale === "en" ? "Items" : "عناصر"}`}
+        </button>
       </div>
     </Link>
   );
