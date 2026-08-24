@@ -14,8 +14,8 @@ const page = async ({ params }) => {
     locale === "en" ? "Back TO Home" : "الرجوع للصفحة الرئيسية";
 
   return (
-    <div className="border-t mt-24 border-base-border w-full">
-      <div className="container-custom p-4 mt-10">
+    <div className="border-t mt-28 border-base-border w-full">
+      <div className="container-custom p-4">
         <Header
           title={locale === "en" ? title : titleAr}
           des={locale === "en" ? des : desAr}

@@ -29,12 +29,13 @@ const GridSwiper = ({
   isLoading = false,
   rows = 2,
   skeletonCount = 6,
+  errorMessage,
 }) => {
   const { locale } = useParams();
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const swiperRef = useRef(null);
-  const containerRef = useRef(null); // Ref to scroll back up to the parent container
+  const containerRef = useRef(null);
   const isExternalChangeRef = useRef(false);
 
   const [mounted, setMounted] = useState(false);
@@ -75,7 +76,6 @@ const GridSwiper = ({
     ? totalPages > 1
     : totalSlides > maxSlidesPerView;
 
-  // Determine if we should show the block overlay loader (CoffeeLoader)
   const showBlockLoader =
     isLoading && (!enablePagePagination || makeBulletsWhilePagePagination);
 
@@ -93,9 +93,11 @@ const GridSwiper = ({
       <div className="relative w-full">
         {filteredProducts.length === 0 && !isLoading ? (
           <div className="w-full text-center py-16 text-amber-950/70 font-medium">
-            {locale === "en"
-              ? "No products found in this category."
-              : "لم يتم العثور على منتجات في هذه المجموعة"}
+            {errorMessage
+              ? errorMessage
+              : locale === "en"
+                ? "No products found in this category."
+                : "لم يتم العثور على منتجات في هذه المجموعة"}
           </div>
         ) : (
           <motion.div

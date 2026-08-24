@@ -1,13 +1,18 @@
 "use server";
+
+import { cookies } from "next/headers";
+
 export default async function GetDataWithPagination(
   collection: string,
   page: number = 1,
   limit: number = 9,
   sort: string = "",
   where: Record<string, any> = {},
+  useCookies: boolean = false,
 ) {
   try {
     const url = process.env.NEXT_PUBLIC_URL;
+
     const query = new URLSearchParams({
       page: String(page),
       limit: String(limit),
@@ -17,7 +22,7 @@ export default async function GetDataWithPagination(
       query.append("sort", sort);
     }
 
-    const appendWhereParams = (obj, prefix = "where") => {
+    const appendWhereParams = (obj: any, prefix = "where") => {
       for (const key in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const value = obj[key];
@@ -40,9 +45,26 @@ export default async function GetDataWithPagination(
       appendWhereParams(where);
     }
 
-    const res = await fetch(`${url}/api/${collection}?${query.toString()}`, {
-      next: { revalidate: 60 },
-    });
+    const fetchOptions: RequestInit = {};
+
+    if (useCookies) {
+      const cookieStore = await cookies();
+
+      fetchOptions.headers = {
+        Cookie: cookieStore.toString(),
+      };
+
+      fetchOptions.cache = "no-store";
+    } else {
+      fetchOptions.next = {
+        revalidate: 60,
+      };
+    }
+
+    const res = await fetch(
+      `${url}/api/${collection}?${query.toString()}`,
+      fetchOptions,
+    );
 
     if (!res.ok) {
       throw new Error(`Fetch failed: ${res.status}`);
@@ -60,6 +82,7 @@ export default async function GetDataWithPagination(
     };
   } catch (error) {
     console.error("GetDataWithPagination error:", error);
+
     return {
       docs: [],
       totalPages: 1,

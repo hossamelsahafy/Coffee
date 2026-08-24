@@ -24,7 +24,7 @@ const CheckoutClient = ({
   const hasPendingOrders = pendingOrders?.docs?.length > 0;
   if (hasPendingOrders && checkoutMode === null) {
     return (
-      <div className="mt-24 w-full border-t border-base-border">
+      <div className="mt-28 w-full border-t border-base-border">
         <PendingChoice
           locale={locale}
           pendingCount={pendingOrders?.docs?.length || 0}
@@ -36,7 +36,7 @@ const CheckoutClient = ({
   }
 
   return (
-    <div className="mt-24 w-full border-t border-base-border">
+    <div className="mt-28 w-full border-t border-base-border">
       {checkoutMode === "pending" && hasPendingOrders && (
         <CheckoutPendingOrders
           total={total}

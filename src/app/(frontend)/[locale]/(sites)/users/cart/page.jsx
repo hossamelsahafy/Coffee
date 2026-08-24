@@ -12,7 +12,7 @@ const page = async ({ params }) => {
     redirect(`/${locale}/users/login`);
   }
   return (
-    <div className="mt-24 w-full border-t border-base-border">
+    <div className="mt-28 w-full border-t border-base-border">
       <CartPageHeader />
       <CartData locale={locale} />
     </div>

@@ -39,7 +39,7 @@ const Collection = ({ data, pagination, locale, allProducts }) => {
   const handlePageChange = (newPage) => {
     if (newPage === currentPage || isPending) return;
 
-    setIsLoadingPage(true); // Turn on loading state immediately
+    setIsLoadingPage(true);
 
     startTransition(async () => {
       try {
@@ -48,7 +48,7 @@ const Collection = ({ data, pagination, locale, allProducts }) => {
         setCurrentPage(result.page);
         setTotalPages(result.totalPages);
       } finally {
-        setIsLoadingPage(false); // Turn off loading state once data arrives
+        setIsLoadingPage(false);
       }
     });
   };
@@ -73,6 +73,11 @@ const Collection = ({ data, pagination, locale, allProducts }) => {
               enablePagePagination={true}
               makeBulletsWhilePagePagination={true}
               totalPages={totalPages}
+              errorMessage={
+                locale === "en"
+                  ? "No collections Was Found"
+                  : "لم يتم العثور على مجموعات"
+              }
               currentPage={currentPage}
               onPageChange={handlePageChange}
               renderItem={(item) => (

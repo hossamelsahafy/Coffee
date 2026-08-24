@@ -38,7 +38,7 @@ const NotesSection = ({ locale, data, NoteSection, websiteName }) => {
           <p className="Coffetitle">{websiteName}</p>
           <p className="CoffeDiscription">{title}</p>
           <p className="w-full md:max-w-md text-base">{des}</p>
-          <Links text={t("cta")} targetLink={"blogs"} />
+          <Links text={t("cta")} targetLink={"notes"} />
           <div className="hidden md:flex justify-end items-end">
             <Image
               src={src}

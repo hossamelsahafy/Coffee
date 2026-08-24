@@ -7,7 +7,6 @@ import { fileURLToPath } from "url";
 import sharp from "sharp";
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import nodemailer from "nodemailer";
-import { stripeCreatePayment } from "@/app/(payload)/endpoints/payments/stripe";
 import { Users } from "@/app/(payload)/_collections/Users";
 import { Media } from "@/app/(payload)/_collections/Media";
 import { Categories } from "@/app/(payload)/_collections/Categories";
@@ -25,7 +24,12 @@ import { ProductViews } from "@/app/(payload)/_collections/ProductsViews";
 import { HomePage } from "@/app/(payload)/_globals/HomePage";
 import { Footer } from "@/app/(payload)/_globals/Footer";
 import { FAQs } from "@/app/(payload)/_globals/FAQs";
+import { NotesPage } from "@/app/(payload)/_globals/NotesPage";
 import { Collections } from "@/app/(payload)/_globals/Collections";
+import { Policy } from "@/app/(payload)/_globals/Policy";
+import { shippingDelivery } from "@/app/(payload)/_globals/ShippingDelivery";
+import { TermsAndConditions } from "@/app/(payload)/_globals/TermsAndConditions";
+
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
@@ -45,13 +49,8 @@ export default buildConfig({
       },
     }),
   }),
-  endpoints: [stripeCreatePayment],
 
   admin: {
-    // user: Users.slug,
-    // importMap: {
-    //   baseDir: path.resolve(dirname),
-    // },
     components: {
       graphics: {
         Logo: "@/components/admin/CustomLogo",
@@ -72,7 +71,18 @@ export default buildConfig({
     Favorites,
     ProductViews,
   ],
-  globals: [HomePage, Collections, AboutPage, FAQs, ContactUsPage, Footer],
+  globals: [
+    HomePage,
+    Collections,
+    AboutPage,
+    FAQs,
+    ContactUsPage,
+    Footer,
+    NotesPage,
+    Policy,
+    shippingDelivery,
+    TermsAndConditions,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

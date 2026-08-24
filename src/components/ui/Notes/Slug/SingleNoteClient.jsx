@@ -46,7 +46,7 @@ export default function SingleNoteClient({ note, locale }) {
 
   return (
     <article
-      className="min-h-screen mt-20 border-t border-base-nav p-4 bg-black text-white py-12 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen mt-24 border-t border-base-nav p-4 bg-black text-white py-12 px-4 sm:px-6 lg:px-8"
       dir={isAr ? "rtl" : "ltr"}
     >
       <div className="max-w-4xl mx-auto space-y-10">

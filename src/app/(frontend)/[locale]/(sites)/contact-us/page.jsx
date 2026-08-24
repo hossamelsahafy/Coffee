@@ -23,7 +23,7 @@ const page = async ({ params }) => {
           locale={locale}
         />
       </div>
-      <div className="w-full h-auto bg-base-lighter">
+      <div className="w-full h-full bg-base-lighter">
         <ContactUs data={ContactUsData} locale={locale} />
       </div>
     </div>

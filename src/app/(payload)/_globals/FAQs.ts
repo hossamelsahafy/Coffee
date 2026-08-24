@@ -39,6 +39,7 @@ export const FAQs: GlobalConfig = {
       name: "faqItems",
       type: "array",
       label: "FAQ Questions & Answers",
+      maxRows: 10,
       fields: [
         {
           type: "row",

@@ -9,19 +9,22 @@ import {
 } from "@/lib/Emails/OrderConfirmation";
 export const Orders: CollectionConfig = {
   slug: "orders",
-
   access: {
     read: ({ req }) => {
-      if (req.user?.role === "admin") return true;
+      if (!req.user) return false;
+
+      if (req.user.role === "admin") return true;
 
       return {
         user: {
-          equals: req.user?.id,
+          equals: req.user.id,
         },
       };
     },
 
-    create: ({ req }) => !!req.user,
+    create: ({ req }) => {
+      return !!req.user;
+    },
     update: ({ req }) => req.user?.role === "admin",
     delete: ({ req }) => req.user?.role === "admin",
   },
@@ -177,17 +180,14 @@ export const Orders: CollectionConfig = {
       async ({ req, data, operation, originalDoc }) => {
         if (!req.user) return data;
 
-        if (req.user.role !== "admin") {
-          data.user = req.user.id;
+        data.user = req.user.id;
 
-          data.customer = {
-            firstName: req.user.firstName,
-            lastName: req.user.lastName,
-            phone: req.user.phoneNumber,
-            email: req.user.email,
-          };
-        }
-
+        data.customer = {
+          firstName: req.user.firstName,
+          lastName: req.user.lastName,
+          phone: req.user.phoneNumber,
+          email: req.user.email,
+        };
         if (operation === "create") {
           if (!data.orderNumber) {
             data.orderNumber = `ORD-${Date.now()}`;
@@ -195,9 +195,10 @@ export const Orders: CollectionConfig = {
 
           if (data.payment?.method === "cash") {
             data.payment.status = "cash_on_delivery";
-          }
-
-          if (data.payment?.method === "stripe") {
+          } else if (
+            data.payment?.method === "stripe" &&
+            !data.payment.status
+          ) {
             data.payment.status = "pending";
           }
         }

@@ -23,7 +23,7 @@ const Page = async ({ params, searchParams }) => {
   const allproducts = categoriesData.allProducts;
 
   return (
-    <div className="border-t mt-24 border-base-border w-full">
+    <div className="border-t mt-28 border-base-border w-full">
       <div className="container-custom p-4 mt-10">
         <Header
           title={locale === "en" ? title : titleAr}
@@ -31,6 +31,9 @@ const Page = async ({ params, searchParams }) => {
           backToHome={backToHome}
           locale={locale}
         />
+      </div>
+      <div className="border-t  border-base-border w-full" />
+      <div className="container-custom p-4">
         <Collection
           data={categories.docs}
           locale={locale}

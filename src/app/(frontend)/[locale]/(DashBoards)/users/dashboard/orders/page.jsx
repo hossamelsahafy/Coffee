@@ -1,11 +1,11 @@
 import React from "react";
 import Orders from "@/components/ui/OrderPage/Orders";
-import GetDataServerSide from "@/actions/GetDataServerSide";
+import GetDataWithPagination from "@/actions/GetDataWithPagination";
 import ContentLayout from "@/components/shared/Dashboard/ContentLayout";
 import { getTranslations } from "next-intl/server";
 export default async function Page({ params }) {
   const { locale } = await params;
-  const data = await GetDataServerSide("orders?limit=100", "GET");
+  const data = await GetDataWithPagination("orders", 1, 9, "", {}, true);
   const t = await getTranslations("Orders");
   const title = t("title");
   const subtitle = t("subtitle");
@@ -36,6 +36,13 @@ export default async function Page({ params }) {
           PayNow={PayNow}
           Paid={Paid}
           cash={cash}
+          pagination={{
+            page: data.page,
+            totalPages: data.totalPages,
+            hasNextPage: data.hasNextPage,
+            hasPrevPage: data.hasPrevPage,
+            totalDocs: data.totalDocs,
+          }}
         />
       </ContentLayout>
     </div>

@@ -114,6 +114,10 @@ export interface Config {
     faqs: Faq;
     'contact-us-page': ContactUsPage;
     footer: Footer;
+    'notes-page': NotesPage;
+    policy: Policy;
+    'shipping-delivery': ShippingDelivery;
+    'terms-and-conditions': TermsAndCondition;
   };
   globalsSelect: {
     'home-page': HomePageSelect<false> | HomePageSelect<true>;
@@ -122,6 +126,10 @@ export interface Config {
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     'contact-us-page': ContactUsPageSelect<false> | ContactUsPageSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'notes-page': NotesPageSelect<false> | NotesPageSelect<true>;
+    policy: PolicySelect<false> | PolicySelect<true>;
+    'shipping-delivery': ShippingDeliverySelect<false> | ShippingDeliverySelect<true>;
+    'terms-and-conditions': TermsAndConditionsSelect<false> | TermsAndConditionsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1237,6 +1245,148 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notes-page".
+ */
+export interface NotesPage {
+  id: string;
+  titleEn: string;
+  titleAr: string;
+  descriptionEn?: string | null;
+  descriptionAr?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "policy".
+ */
+export interface Policy {
+  id: string;
+  title: string;
+  titleAr: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  contentAr: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shipping-delivery".
+ */
+export interface ShippingDelivery {
+  id: string;
+  title: string;
+  titleAr: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  contentAr: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "terms-and-conditions".
+ */
+export interface TermsAndCondition {
+  id: string;
+  title: string;
+  titleAr: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  contentAr: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home-page_select".
  */
 export interface HomePageSelect<T extends boolean = true> {
@@ -1484,6 +1634,64 @@ export interface FooterSelect<T extends boolean = true> {
         rightImageUrl?: T;
         rightImageUpload?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notes-page_select".
+ */
+export interface NotesPageSelect<T extends boolean = true> {
+  titleEn?: T;
+  titleAr?: T;
+  descriptionEn?: T;
+  descriptionAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "policy_select".
+ */
+export interface PolicySelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  content?: T;
+  contentAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shipping-delivery_select".
+ */
+export interface ShippingDeliverySelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  content?: T;
+  contentAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "terms-and-conditions_select".
+ */
+export interface TermsAndConditionsSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  content?: T;
+  contentAr?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

@@ -4,6 +4,7 @@ export const ShippingZones: CollectionConfig = {
   slug: "shipping-zones",
   access: { read: () => true },
   admin: {
+    useAsTitle: "cityName",
     components: {
       views: {
         list: {

@@ -7,6 +7,10 @@ export const Notes: CollectionConfig = {
   },
   admin: {
     useAsTitle: "title",
+    pagination: {
+      defaultLimit: 6,
+      limits: [8, 12, 24, 50],
+    },
     components: {
       views: {
         list: {
@@ -22,6 +26,7 @@ export const Notes: CollectionConfig = {
       name: "slug",
       type: "text",
       required: true,
+      unique: true,
       validate: (value) => {
         if (!value) return "Slug is required";
 
@@ -37,6 +42,7 @@ export const Notes: CollectionConfig = {
     {
       name: "slugAr",
       type: "text",
+      unique: true,
       required: true,
       validate: (value) => {
         if (!value) return "Slug is required";

@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import StripeElements from "@/lib/StripeElements";
 import CheckoutForm from "./CheckoutForm";
 import LoadingSpiner from "@/components/shared/Spiner/LoadingSpiner";
+import SlugMethods from "@/actions/SlugMethods";
 
 export default function StripeModule({
   orderId,
@@ -13,38 +14,38 @@ export default function StripeModule({
   setToast,
 }) {
   const [clientSecret, setClientSecret] = useState("");
-
   const calledRef = useRef(false);
 
   useEffect(() => {
     if (!orderId || calledRef.current) return;
-
     calledRef.current = true;
 
     const createPaymentIntent = async () => {
-      const res = await fetch("/api/payments/stripe", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ orderId }),
-      });
+      try {
+        const data = await SlugMethods("payments/stripe", "POST", { orderId });
 
-      const data = await res.json();
-      setClientSecret(data.clientSecret);
-      if (data.clientSecret) {
-        sessionStorage.setItem("active_checkout_order_id", orderId);
-        sessionStorage.setItem("is_checkout_active", "true");
+        if (data?.clientSecret) {
+          setClientSecret(data.clientSecret);
+          sessionStorage.setItem("active_checkout_order_id", orderId);
+          sessionStorage.setItem("is_checkout_active", "true");
+        }
+      } catch (err) {
+        setToast({
+          message:
+            locale === "en"
+              ? "Failed to initialize payment."
+              : "فشل تهيئة الدفع.",
+          type: "error",
+        });
       }
     };
 
     createPaymentIntent();
-  }, [orderId]);
+  }, [orderId, locale, setToast]);
 
   if (!clientSecret) {
     return (
-      <div className="flex text-center items-center ">
+      <div className="flex text-center items-center">
         <p>
           {locale === "en"
             ? "Loading Payment Form..."

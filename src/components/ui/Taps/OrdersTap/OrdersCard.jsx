@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { ORDER_STATUS, PAYMENT_STATUS } from "@/lib/OrderStatus";
 import Image from "next/image";
-
+import LoadingSpiner from "@/components/shared/Spiner/LoadingSpiner";
 const OrderCard = ({
   d,
   locale,
@@ -21,6 +21,7 @@ const OrderCard = ({
   setSelectedData,
   setToast,
   cash,
+  isUpdating,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,24 +57,36 @@ const OrderCard = ({
           >
             # {d.orderNumber}
           </p>
-          <p
-            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${status.bg} ${status.color}`}
-          >
-            <Icon className="h-4 w-4" />
-            {t(d.status)}
-          </p>
+          {isUpdating ? (
+            <div className="flex items-center gap-2 px-3 py-1">
+              <LoadingSpiner customBorder="w-4 h-4 border-2" />
+            </div>
+          ) : (
+            <p
+              className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${status.bg} ${status.color}`}
+            >
+              <Icon className="h-4 w-4" />
+              {t(d.status)}
+            </p>
+          )}
         </div>
 
         <div className="flex w-full justify-between items-center">
           <p>
             {subtotal}: {d.subtotal}
           </p>
-          <p
-            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${payment.bg} ${payment.color}`}
-          >
-            <PaymentIcon className="h-4 w-4" />
-            {paymentT(d.payment.status)}
-          </p>
+          {isUpdating ? (
+            <div className="flex items-center gap-2 px-3 py-1">
+              <LoadingSpiner customBorder="w-4 h-4 border-2" />
+            </div>
+          ) : (
+            <p
+              className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${payment.bg} ${payment.color}`}
+            >
+              <PaymentIcon className="h-4 w-4" />
+              {paymentT(d.payment.status)}
+            </p>
+          )}
         </div>
 
         <div className="w-full flex justify-between items-center">
@@ -172,23 +185,31 @@ const OrderCard = ({
         <button
           onClick={handlePayment}
           disabled={
+            isUpdating ||
             d.payment.status === "paid" ||
             d.payment.status === "cash_on_delivery"
           }
-          className={`rounded-lg w-full ${
+          className={`rounded-lg w-full px-5 py-2 text-sm font-medium text-white active:scale-[0.98] flex items-center justify-center gap-2 ${
+            isUpdating ||
             d.payment.status === "paid" ||
             d.payment.status === "cash_on_delivery"
               ? "bg-gray-500 cursor-not-allowed opacity-60"
               : "bg-primary hover:opacity-90 cursor-pointer"
-          } px-5 py-2 text-sm font-medium text-white active:scale-[0.98]`}
+          }`}
         >
-          {d.payment.status === "paid"
-            ? Paid
-            : d.payment.method === "cash"
-              ? cash
-              : PayNow}
+          {isUpdating ? (
+            <>
+              <LoadingSpiner customBorder="w-4 h-4 border-2" />
+              <span>{PayNow}</span>
+            </>
+          ) : d.payment.status === "paid" ? (
+            Paid
+          ) : d.payment.method === "cash" ? (
+            cash
+          ) : (
+            PayNow
+          )}
         </button>
-
         <button
           onClick={() => {
             setSelectedData(d);

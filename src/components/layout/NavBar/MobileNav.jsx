@@ -5,6 +5,7 @@ import Link from "next/link";
 import LocaleSwitcher from "@/components/shared/Buttons/LocaleSwitcher";
 import DropDown from "@/components/shared/dropMenue/DropMenu";
 import CartButton from "@/components/ui/CartButton/CartButton";
+import Image from "next/image";
 const MobileNav = ({
   locale,
   navLinks,
@@ -47,10 +48,12 @@ const MobileNav = ({
   return (
     <div className="w-full flex items-center justify-between gap-5 p-4 bg-base-dark text-base-light overflow-hidden">
       <div className="flex">
-        <img
-          src="/assets/logo.webp"
-          className="w-24 object-contain"
-          alt="Logo"
+        <Image
+          alt="Coffe And Tea"
+          src="/assets/Logo.png"
+          className="max-w-16 object-contain"
+          width={200}
+          height={200}
         />
       </div>
       <div className="flex justify-center items-center gap-4">
@@ -90,10 +93,12 @@ const MobileNav = ({
     }
   `}
       >
-        <img
-          src="/assets/logo.webp"
-          className="w-28 object-contain mt-8 mb-6"
-          alt="Logo"
+        <Image
+          alt="Coffe And Tea"
+          src="/assets/Logo.png"
+          className="w-24 object-contain mt-4"
+          width={400}
+          height={400}
         />
 
         <div className="flex flex-col justify-start gap-4 p-4 ">

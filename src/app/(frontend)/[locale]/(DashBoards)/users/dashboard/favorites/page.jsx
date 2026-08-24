@@ -4,6 +4,7 @@ import ContentLayout from "@/components/shared/Dashboard/ContentLayout";
 import { getTranslations } from "next-intl/server";
 import getDataServerSide from "@/actions/GetDataServerSide";
 import FavoritesData from "@/components/ui/Taps/FavoritesTap/FavoritesData";
+import GetDataWithPagination from "@/actions/GetDataWithPagination";
 export default async function ({ params }) {
   const { locale } = await params;
   const user = await getUser();
@@ -12,7 +13,9 @@ export default async function ({ params }) {
   const subtitle = t("subtitle");
   const MyAccount = t("MyAccount");
   const NotYet = t("NoData");
-  const data = await getDataServerSide("favorites");
+  const data = await GetDataWithPagination("/favorites", 1, 9, "", {}, true);
+  console.log(data);
+
   return (
     <div className="">
       <ContentLayout
@@ -23,7 +26,18 @@ export default async function ({ params }) {
         MyThing={MyAccount}
         isdiff={true}
       >
-        <FavoritesData locale={locale} data={data.docs} NotYet={NotYet} />
+        <FavoritesData
+          locale={locale}
+          data={data.docs}
+          NotYet={NotYet}
+          pagination={{
+            page: data.page,
+            totalPages: data.totalPages,
+            hasNextPage: data.hasNextPage,
+            hasPrevPage: data.hasPrevPage,
+            totalDocs: data.totalDocs,
+          }}
+        />
       </ContentLayout>
     </div>
   );
