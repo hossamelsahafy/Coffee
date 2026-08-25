@@ -48,3 +48,17 @@ export default async function Page({ params }) {
     </div>
   );
 }
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+
+  const isArabic = locale === "ar";
+
+  return {
+    title: isArabic ? "طلباتي" : "My Orders",
+
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}

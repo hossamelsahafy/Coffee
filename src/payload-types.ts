@@ -109,6 +109,7 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'home-page': HomePage;
+    'products-page': ProductsPage;
     collections: Collection;
     'about-page': AboutPage;
     faqs: Faq;
@@ -118,9 +119,11 @@ export interface Config {
     policy: Policy;
     'shipping-delivery': ShippingDelivery;
     'terms-and-conditions': TermsAndCondition;
+    'site-settings': SiteSetting;
   };
   globalsSelect: {
     'home-page': HomePageSelect<false> | HomePageSelect<true>;
+    'products-page': ProductsPageSelect<false> | ProductsPageSelect<true>;
     collections: CollectionsSelect<false> | CollectionsSelect<true>;
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
@@ -130,6 +133,7 @@ export interface Config {
     policy: PolicySelect<false> | PolicySelect<true>;
     'shipping-delivery': ShippingDeliverySelect<false> | ShippingDeliverySelect<true>;
     'terms-and-conditions': TermsAndConditionsSelect<false> | TermsAndConditionsSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -229,6 +233,39 @@ export interface Category {
   ImageSource?: ('Url' | 'upload') | null;
   ImageUrl?: string | null;
   uploadImage?: (string | null) | Media;
+  SEO?: {
+    /**
+     * SEO title for search engines. Recommended: 50–60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * Arabic SEO title. Recommended: 50–60 characters.
+     */
+    metaTitleAr?: string | null;
+    /**
+     * SEO description for search engines. Recommended: 150–160 characters.
+     */
+    metaDescription?: string | null;
+    /**
+     * Arabic SEO description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr?: string | null;
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource?: ('Url' | 'upload') | null;
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -269,6 +306,39 @@ export interface Product {
           id?: string | null;
         }[]
       | null;
+  };
+  SEO?: {
+    /**
+     * SEO title for search engines. Recommended: 50–60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * Arabic SEO title. Recommended: 50–60 characters.
+     */
+    metaTitleAr?: string | null;
+    /**
+     * SEO description for search engines. Recommended: 150–160 characters.
+     */
+    metaDescription?: string | null;
+    /**
+     * Arabic SEO description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr?: string | null;
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource?: ('Url' | 'upload') | null;
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
   };
   updatedAt: string;
   createdAt: string;
@@ -369,6 +439,39 @@ export interface Note {
   ImageSource: 'Url' | 'upload';
   ImageUrl?: string | null;
   ImageUpload?: (string | null) | Media;
+  SEO?: {
+    /**
+     * SEO title for search engines. Recommended: 50–60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * Arabic SEO title. Recommended: 50–60 characters.
+     */
+    metaTitleAr?: string | null;
+    /**
+     * SEO description for search engines. Recommended: 150–160 characters.
+     */
+    metaDescription?: string | null;
+    /**
+     * Arabic SEO description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr?: string | null;
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource?: ('Url' | 'upload') | null;
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -631,6 +734,29 @@ export interface CategoriesSelect<T extends boolean = true> {
   ImageSource?: T;
   ImageUrl?: T;
   uploadImage?: T;
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -672,6 +798,29 @@ export interface ProductsSelect<T extends boolean = true> {
               imageUrl?: T;
               id?: T;
             };
+      };
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -742,6 +891,29 @@ export interface NotesSelect<T extends boolean = true> {
   ImageSource?: T;
   ImageUrl?: T;
   ImageUpload?: T;
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -954,6 +1126,79 @@ export interface HomePage {
     ImageUrl?: string | null;
     ImageUpload?: (string | null) | Media;
   };
+  SEO: {
+    metaTitle?: string | null;
+    metaTitleAr?: string | null;
+    metaDescription?: string | null;
+    metaDescriptionAr?: string | null;
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products-page".
+ */
+export interface ProductsPage {
+  id: string;
+  title: string;
+  titleAr: string;
+  description: string;
+  descriptionAr: string;
+  SEO?: {
+    /**
+     * SEO title for search engines. Recommended: 50–60 characters.
+     */
+    metaTitle?: string | null;
+    /**
+     * Arabic SEO title. Recommended: 50–60 characters.
+     */
+    metaTitleAr?: string | null;
+    /**
+     * SEO description for search engines. Recommended: 150–160 characters.
+     */
+    metaDescription?: string | null;
+    /**
+     * Arabic SEO description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr?: string | null;
+    /**
+     * Add relevant English SEO keywords.
+     */
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Add relevant Arabic SEO keywords.
+     */
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource?: ('Url' | 'upload') | null;
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -975,6 +1220,45 @@ export interface Collection {
     slug: string;
     slugAr: string;
     productsCount?: string | null;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
+  SEO: {
+    /**
+     * Recommended: 50–60 characters. Used as the page title in search engines.
+     */
+    metaTitle: string;
+    /**
+     * Arabic meta title. Recommended: 50–60 characters.
+     */
+    metaTitleAr: string;
+    /**
+     * Recommended: 150–160 characters. Used as the search engine description.
+     */
+    metaDescription: string;
+    /**
+     * Arabic meta description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr: string;
+    /**
+     * Add relevant English SEO keywords.
+     */
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Add relevant Arabic SEO keywords.
+     */
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
     ImageSource: 'Url' | 'upload';
     ImageUrl?: string | null;
     ImageUpload?: (string | null) | Media;
@@ -1140,6 +1424,27 @@ export interface AboutPage {
         id?: string | null;
       }[]
     | null;
+  SEO: {
+    metaTitle: string;
+    metaTitleAr: string;
+    metaDescription: string;
+    metaDescriptionAr: string;
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1190,6 +1495,45 @@ export interface Faq {
         id?: string | null;
       }[]
     | null;
+  SEO: {
+    /**
+     * Recommended: 50–60 characters. Used as the page title in search engines.
+     */
+    metaTitle: string;
+    /**
+     * Arabic meta title. Recommended: 50–60 characters.
+     */
+    metaTitleAr: string;
+    /**
+     * Recommended: 150–160 characters. Used as the search engine description.
+     */
+    metaDescription: string;
+    /**
+     * Arabic meta description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr: string;
+    /**
+     * Add relevant English SEO keywords.
+     */
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Add relevant Arabic SEO keywords.
+     */
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1208,9 +1552,48 @@ export interface ContactUsPage {
   address: string;
   addressAr: string;
   /**
-   * Paste full Google Maps iframe code (we will extract src automatically)
+   * Paste full Google Maps iframe code. It will be converted to the clean Google Maps URL automatically.
    */
   locationIframe: string;
+  SEO: {
+    /**
+     * Recommended: 50–60 characters. Used as the page title in search engines.
+     */
+    metaTitle: string;
+    /**
+     * Arabic meta title. Recommended: 50–60 characters.
+     */
+    metaTitleAr: string;
+    /**
+     * Recommended: 150–160 characters. Used as the search engine description.
+     */
+    metaDescription: string;
+    /**
+     * Arabic meta description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr: string;
+    /**
+     * Add relevant English SEO keywords.
+     */
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Add relevant Arabic SEO keywords.
+     */
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1253,6 +1636,45 @@ export interface NotesPage {
   titleAr: string;
   descriptionEn?: string | null;
   descriptionAr?: string | null;
+  SEO: {
+    /**
+     * Recommended: 50–60 characters. Used as the page title in search engines.
+     */
+    metaTitle: string;
+    /**
+     * Arabic meta title. Recommended: 50–60 characters.
+     */
+    metaTitleAr: string;
+    /**
+     * Recommended: 150–160 characters. Used as the search engine description.
+     */
+    metaDescription: string;
+    /**
+     * Arabic meta description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr: string;
+    /**
+     * Add relevant English SEO keywords.
+     */
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Add relevant Arabic SEO keywords.
+     */
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1295,6 +1717,45 @@ export interface Policy {
       version: number;
     };
     [k: string]: unknown;
+  };
+  SEO: {
+    /**
+     * Recommended: 50–60 characters. Used as the page title in search engines.
+     */
+    metaTitle: string;
+    /**
+     * Arabic meta title. Recommended: 50–60 characters.
+     */
+    metaTitleAr: string;
+    /**
+     * Recommended: 150–160 characters. Used as the search engine description.
+     */
+    metaDescription: string;
+    /**
+     * Arabic meta description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr: string;
+    /**
+     * Add relevant English SEO keywords.
+     */
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Add relevant Arabic SEO keywords.
+     */
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1339,6 +1800,45 @@ export interface ShippingDelivery {
     };
     [k: string]: unknown;
   };
+  SEO: {
+    /**
+     * Recommended: 50–60 characters. Used as the page title in search engines.
+     */
+    metaTitle: string;
+    /**
+     * Arabic meta title. Recommended: 50–60 characters.
+     */
+    metaTitleAr: string;
+    /**
+     * Recommended: 150–160 characters. Used as the search engine description.
+     */
+    metaDescription: string;
+    /**
+     * Arabic meta description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr: string;
+    /**
+     * Add relevant English SEO keywords.
+     */
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Add relevant Arabic SEO keywords.
+     */
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1382,6 +1882,65 @@ export interface TermsAndCondition {
     };
     [k: string]: unknown;
   };
+  SEO: {
+    /**
+     * Recommended: 50–60 characters. Used as the page title in search engines.
+     */
+    metaTitle: string;
+    /**
+     * Arabic meta title. Recommended: 50–60 characters.
+     */
+    metaTitleAr: string;
+    /**
+     * Recommended: 150–160 characters. Used as the search engine description.
+     */
+    metaDescription: string;
+    /**
+     * Arabic meta description. Recommended: 150–160 characters.
+     */
+    metaDescriptionAr: string;
+    /**
+     * Add relevant English SEO keywords.
+     */
+    keywords?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Add relevant Arabic SEO keywords.
+     */
+    keywordsAr?:
+      | {
+          keyword: string;
+          id?: string | null;
+        }[]
+      | null;
+    ImageSource: 'Url' | 'upload';
+    ImageUrl?: string | null;
+    ImageUpload?: (string | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: string;
+  /**
+   * Enter the full website URL, for example https://example.com
+   */
+  websiteUrl: string;
+  siteName: string;
+  siteNameAr: string;
+  description?: string | null;
+  descriptionAr?: string | null;
+  ImageSource: 'Url' | 'upload';
+  ImageUrl?: string | null;
+  ImageUpload?: (string | null) | Media;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1485,6 +2044,65 @@ export interface HomePageSelect<T extends boolean = true> {
         ImageUrl?: T;
         ImageUpload?: T;
       };
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products-page_select".
+ */
+export interface ProductsPageSelect<T extends boolean = true> {
+  title?: T;
+  titleAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1510,6 +2128,29 @@ export interface CollectionsSelect<T extends boolean = true> {
         slug?: T;
         slugAr?: T;
         productsCount?: T;
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
         ImageSource?: T;
         ImageUrl?: T;
         ImageUpload?: T;
@@ -1563,6 +2204,29 @@ export interface AboutPageSelect<T extends boolean = true> {
         imageUrl?: T;
         id?: T;
       };
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1585,6 +2249,29 @@ export interface FaqsSelect<T extends boolean = true> {
         answerAr?: T;
         id?: T;
       };
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1603,6 +2290,29 @@ export interface ContactUsPageSelect<T extends boolean = true> {
   address?: T;
   addressAr?: T;
   locationIframe?: T;
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1647,6 +2357,29 @@ export interface NotesPageSelect<T extends boolean = true> {
   titleAr?: T;
   descriptionEn?: T;
   descriptionAr?: T;
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1662,6 +2395,29 @@ export interface PolicySelect<T extends boolean = true> {
   descriptionAr?: T;
   content?: T;
   contentAr?: T;
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1677,6 +2433,29 @@ export interface ShippingDeliverySelect<T extends boolean = true> {
   descriptionAr?: T;
   content?: T;
   contentAr?: T;
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1692,6 +2471,46 @@ export interface TermsAndConditionsSelect<T extends boolean = true> {
   descriptionAr?: T;
   content?: T;
   contentAr?: T;
+  SEO?:
+    | T
+    | {
+        metaTitle?: T;
+        metaTitleAr?: T;
+        metaDescription?: T;
+        metaDescriptionAr?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        keywordsAr?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        ImageSource?: T;
+        ImageUrl?: T;
+        ImageUpload?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  websiteUrl?: T;
+  siteName?: T;
+  siteNameAr?: T;
+  description?: T;
+  descriptionAr?: T;
+  ImageSource?: T;
+  ImageUrl?: T;
+  ImageUpload?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

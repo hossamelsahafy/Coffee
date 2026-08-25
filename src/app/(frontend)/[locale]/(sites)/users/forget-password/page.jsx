@@ -29,3 +29,18 @@ const page = async ({ params }) => {
 };
 
 export default page;
+
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+
+  const isArabic = locale === "ar";
+
+  return {
+    title: isArabic ? "نسيت كلمة المرور؟" : "Forgot Password?",
+
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}

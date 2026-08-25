@@ -29,6 +29,8 @@ import { Collections } from "@/app/(payload)/_globals/Collections";
 import { Policy } from "@/app/(payload)/_globals/Policy";
 import { shippingDelivery } from "@/app/(payload)/_globals/ShippingDelivery";
 import { TermsAndConditions } from "@/app/(payload)/_globals/TermsAndConditions";
+import { SiteSettings } from "@/app/(payload)/_globals/SiteSettings";
+import { ProductsPage } from "@/app/(payload)/_globals/ProductsPage";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -73,6 +75,7 @@ export default buildConfig({
   ],
   globals: [
     HomePage,
+    ProductsPage,
     Collections,
     AboutPage,
     FAQs,
@@ -82,6 +85,7 @@ export default buildConfig({
     Policy,
     shippingDelivery,
     TermsAndConditions,
+    SiteSettings,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

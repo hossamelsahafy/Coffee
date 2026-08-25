@@ -2,8 +2,6 @@ import React from "react";
 import Image from "next/image";
 
 const ReviewCard = ({ review, locale }) => {
-  console.log(review);
-
   return (
     <div className="flex lg:flex-row flex-col w-full gap-4 items-center">
       <div className="">

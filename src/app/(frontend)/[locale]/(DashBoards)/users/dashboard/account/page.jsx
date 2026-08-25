@@ -24,3 +24,18 @@ export default async function ({ params }) {
     </div>
   );
 }
+
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+
+  const isArabic = locale === "ar";
+
+  return {
+    title: isArabic ? "حسابي" : "My Account",
+
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}

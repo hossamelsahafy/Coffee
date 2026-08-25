@@ -1,6 +1,5 @@
 import Video from "@/components/shared/Video/Video";
 import Header from "@/components/ui/Header/Header";
-import GetAllData from "@/actions/GetAllData";
 import SubscripeSection from "@/components/ui/home/SubscripeSection/SubscripeSection";
 import NotesSection from "@/components/ui/home/NotesSection/NotesSection";
 import GetDataServerSide from "@/actions/GetDataServerSide";
@@ -9,6 +8,8 @@ import GetFilteredData from "@/actions/GetFilteredData";
 import { getUser } from "@/actions/getUser";
 import GetReviews from "@/actions/GetReviews";
 import GetDataWithPagination from "@/actions/GetDataWithPagination";
+import { getDataCache } from "@/lib/GetDataCache";
+import type { Metadata } from "next";
 
 type Props = {
   params: Promise<{
@@ -97,8 +98,7 @@ export default async function Home({ params, searchParams }: Props) {
       limit: 10,
     }),
 
-    GetAllData("globals/home-page", true),
-
+    getDataCache("globals/home-page"),
     user
       ? GetDataServerSide("favorites?depth=1", "GET")
       : Promise.resolve(null),
@@ -204,4 +204,48 @@ export default async function Home({ params, searchParams }: Props) {
       />
     </main>
   );
+}
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+
+  const homePage = await getDataCache("globals/home-page");
+
+  const isArabic = locale === "ar";
+
+  const title = isArabic
+    ? homePage?.SEO?.metaTitleAr
+    : homePage?.SEO?.metaTitle;
+
+  const description = isArabic
+    ? homePage?.SEO?.metaDescriptionAr
+    : homePage?.SEO?.metaDescription;
+
+  const keywords = (
+    isArabic ? homePage?.SEO?.keywordsAr : homePage?.SEO?.keywords
+  )?.map((item: { keyword: string }) => item.keyword);
+
+  const image =
+    homePage?.SEO?.ImageSource === "Url"
+      ? homePage?.SEO?.ImageUrl
+      : homePage?.SEO?.ImageUpload?.url;
+
+  return {
+    title,
+    description,
+    keywords,
+
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      ...(image ? { images: [image] } : {}),
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
+  };
 }

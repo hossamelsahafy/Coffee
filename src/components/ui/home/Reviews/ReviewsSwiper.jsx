@@ -79,7 +79,11 @@ const ReviewsSectionClient = ({
   }, []);
 
   if (!reviews.length)
-    return <p className="text-sm text-gray-400">No reviews available.</p>;
+    return (
+      <p className="text-sm text-gray-400">
+        {locale === "en" ? "No reviews available." : "لا يوجد تقييمات متاحة"}
+      </p>
+    );
 
   return (
     <div className="relative w-full pb-10">
@@ -103,7 +107,7 @@ const ReviewsSectionClient = ({
       >
         {grouped.map((pair, index) => (
           <SwiperSlide key={index}>
-            <div className="flex flex-col gap-4 min-h-[220px] justify-between">
+            <div className="flex flex-col gap-4 min-h-[220px] items-start justify-between">
               {pair.map((review) => (
                 <ReviewCard key={review.id} review={review} locale={locale} />
               ))}

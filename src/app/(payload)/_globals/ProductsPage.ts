@@ -1,41 +1,45 @@
 import type { GlobalConfig } from "payload";
 
-export const Policy: GlobalConfig = {
-  slug: "policy",
+export const ProductsPage: GlobalConfig = {
+  slug: "products-page",
+  label: "Products Page",
+
   access: {
     read: () => true,
   },
+
   fields: [
     {
       name: "title",
       type: "text",
+      label: "Title",
       required: true,
     },
+
     {
       name: "titleAr",
       type: "text",
+      label: "Title (Arabic)",
       required: true,
     },
+
     {
       name: "description",
       type: "textarea",
+      label: "Description",
+      required: true,
     },
+
     {
       name: "descriptionAr",
       type: "textarea",
-    },
-    {
-      name: "content",
-      type: "richText",
+      label: "Description (Arabic)",
       required: true,
-      localized: true,
     },
-    {
-      name: "contentAr",
-      type: "richText",
-      required: true,
-      localized: true,
-    },
+
+    // =========================
+    // SEO
+    // =========================
     {
       name: "SEO",
       type: "group",
@@ -46,10 +50,9 @@ export const Policy: GlobalConfig = {
           name: "metaTitle",
           type: "text",
           label: "Meta Title",
-          required: true,
           admin: {
             description:
-              "Recommended: 50–60 characters. Used as the page title in search engines.",
+              "SEO title for search engines. Recommended: 50–60 characters.",
           },
         },
 
@@ -57,9 +60,8 @@ export const Policy: GlobalConfig = {
           name: "metaTitleAr",
           type: "text",
           label: "Meta Title (Arabic)",
-          required: true,
           admin: {
-            description: "Arabic meta title. Recommended: 50–60 characters.",
+            description: "Arabic SEO title. Recommended: 50–60 characters.",
           },
         },
 
@@ -67,10 +69,9 @@ export const Policy: GlobalConfig = {
           name: "metaDescription",
           type: "textarea",
           label: "Meta Description",
-          required: true,
           admin: {
             description:
-              "Recommended: 150–160 characters. Used as the search engine description.",
+              "SEO description for search engines. Recommended: 150–160 characters.",
           },
         },
 
@@ -78,10 +79,9 @@ export const Policy: GlobalConfig = {
           name: "metaDescriptionAr",
           type: "textarea",
           label: "Meta Description (Arabic)",
-          required: true,
           admin: {
             description:
-              "Arabic meta description. Recommended: 150–160 characters.",
+              "Arabic SEO description. Recommended: 150–160 characters.",
           },
         },
 
@@ -119,35 +119,42 @@ export const Policy: GlobalConfig = {
 
         {
           name: "ImageSource",
-          type: "radio",
-          required: true,
+          type: "select",
+          label: "SEO Image Source",
+          defaultValue: "upload",
+
           options: [
             {
+              label: "URL",
               value: "Url",
-              label: "Paste Image URL",
             },
             {
+              label: "Upload",
               value: "upload",
-              label: "Select Image",
             },
           ],
         },
+
         {
           name: "ImageUrl",
-          label: "Paste Image URL",
           type: "text",
+          label: "SEO Image URL",
+
           admin: {
             condition: (_, siblingData) => siblingData?.ImageSource === "Url",
           },
         },
+
         {
           name: "ImageUpload",
-          label: "Select Image",
           type: "relationship",
+          label: "SEO Image Upload",
           relationTo: "media",
+
           admin: {
             condition: (_, siblingData) =>
               siblingData?.ImageSource === "upload",
+
             components: {
               Field: "@/components/admin/CustomMediaSelection",
             },

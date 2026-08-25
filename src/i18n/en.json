@@ -22,7 +22,12 @@
       { "id": 1, "label": "Search", "href": "/search" },
       { "id": 2, "label": "All collections", "href": "/{locale}/collections" },
       { "id": 3, "label": "All products", "href": "/{locale}/products" },
-      { "id": 4, "label": "My Cart", "href": "/{locale}/cart" },
+      {
+        "id": 4,
+        "label": "Blogs",
+        "href": "/{locale}/notes"
+      },
+      { "id": 5, "label": "My Cart", "href": "/{locale}/cart" },
       {
         "id": 6,
         "label": "Favorites",
@@ -136,8 +141,6 @@
     "backToHome": "Back To Home Page"
   },
   "ProductsMainPage": {
-    "title": "All Products",
-    "des": "Coffee is a drink prepared from roasted coffee beans. Darkly colored, bitter, and slightly acidic, coffee has a stimulating effect on humans, primarily due to its caffeine content. It is the most popular hot drink in the world.",
     "backToHome": "Back To Home"
   },
   "FiltersAndProductsSection": {

@@ -75,3 +75,17 @@ export default async function TrackOrderPage({ params, searchParams }) {
     </div>
   );
 }
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+
+  const isArabic = locale === "ar";
+
+  return {
+    title: isArabic ? "متابعة الطلب" : "Track Orders",
+
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}

@@ -1,10 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Links from "@/components/shared/Links/Links";
 import { useParams } from "next/navigation";
 import ReviewsSwiper from "./ReviewsSwiper";
+
 const ReviewsSection = ({
   websiteName,
   countries,
@@ -42,24 +43,33 @@ const ReviewsSection = ({
     locale === "en"
       ? ReviewsSectionData?.reviewTitle
       : ReviewsSectionData?.reviewTitleAr;
+
   return (
-    <div className="max-w-7xl -mt-10 text-base-light mx-auto p-4 flex md:flex-row flex-col justify-between items-stretch">
+    // Switched to grid-cols-1 md:grid-cols-3 with uniform border styling between columns
+    <div className="max-w-7xl -mt-10 text-base-light mx-auto p-4 grid grid-cols-1 md:grid-cols-3 items-stretch">
+      {/* Column 1 */}
       <div
-        className={`flex flex-col min-w-1/3 justify-start gap-4 ${locale === "en" ? "md:border-r" : "md:border-l"} border-base-borderTwo pt-10`}
+        className={`flex flex-col text-start justify-start gap-4 ${
+          locale === "en" ? "md:border-r" : "md:border-l"
+        } border-base-borderTwo pt-4 ${locale === "en" ? "md:pr-6" : "md:pl-6"}`}
       >
         <p className="font-bold text-lg">{websiteName}</p>
         <p className="font-bold text-3xl text-base-coffe">{title}</p>
         <p className="font-semibold text-3xl text-base-coffe">{subtitle}</p>
-        <p className="w-full md:max-w-sm text-base">{describe}</p>
+        <p className="w-full text-base">{describe}</p>
         <Links text={t("show_products")} targetLink={"collection"} />
       </div>
+
+      {/* Column 2 */}
       <div
-        className={`relative min-w-1/3 flex flex-col justify-start gap-4 ${locale === "en" ? "md:border-r" : "md:border-l"} flex-1 md:p-4 border-base-borderTwo pt-10`}
+        className={`relative flex flex-col justify-start gap-4 ${
+          locale === "en" ? "md:border-r md:px-6" : "md:border-l md:px-6"
+        } border-base-borderTwo pt-4`}
       >
-        <p className="font-semibold">{reviewTitle}</p>
+        <p className="font-semibold h-7 flex items-center">{reviewTitle}</p>
 
         <div className="flex flex-col gap-6">
-          <div className="flex relative  md:flex-row flex-col justify-center md:justify-between w-full">
+          <div className="flex relative md:flex-row flex-col justify-center md:justify-between w-full">
             <div className="flex flex-col gap-6 z-30">
               {countries.map((blog) => (
                 <p
@@ -76,20 +86,28 @@ const ReviewsSection = ({
               ))}
             </div>
             <div
-              className={`hidden lg:flex absolute bottom-0 ${locale === "en" ? "right-0" : "left-0"} z-10`}
+              className={`hidden lg:flex absolute bottom-0 ${
+                locale === "en" ? "right-0" : "left-0"
+              } z-10`}
             >
               <Image
                 src={image}
-                width={100}
-                height={100}
+                width={200}
+                height={200}
                 alt="Image"
-                className=""
+                className="max-w-52"
               />
             </div>
           </div>
         </div>
       </div>
-      <div className="flex flex-col w-full md:max-w-1/3 justify-start gap-4 md:p-4 flex-1 pt-10">
+
+      {/* Column 3 */}
+      <div
+        className={`flex flex-col w-full justify-start gap-4 pt-4 ${locale === "en" ? "md:pl-6" : "md:pr-6"}`}
+      >
+        <div className="h-7 hidden md:block" aria-hidden="true" />
+
         <ReviewsSwiper
           filteredReviews={currentCountryData.docs}
           initialTotalPages={currentCountryData.totalPages}

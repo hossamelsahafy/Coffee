@@ -179,5 +179,89 @@ export const AboutPage: GlobalConfig = {
         },
       ],
     },
+    {
+      name: "SEO",
+      type: "group",
+      fields: [
+        {
+          name: "metaTitle",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "metaTitleAr",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "metaDescription",
+          type: "textarea",
+          required: true,
+        },
+        {
+          name: "metaDescriptionAr",
+          type: "textarea",
+          required: true,
+        },
+        {
+          name: "keywords",
+          type: "array",
+          fields: [
+            {
+              name: "keyword",
+              type: "text",
+              required: true,
+            },
+          ],
+        },
+        {
+          name: "keywordsAr",
+          type: "array",
+          fields: [
+            {
+              name: "keyword",
+              type: "text",
+              required: true,
+            },
+          ],
+        },
+        {
+          name: "ImageSource",
+          type: "radio",
+          required: true,
+          options: [
+            {
+              value: "Url",
+              label: "Paste Image URL",
+            },
+            {
+              value: "upload",
+              label: "Select Image",
+            },
+          ],
+        },
+        {
+          name: "ImageUrl",
+          label: "Paste Image URL",
+          type: "text",
+          admin: {
+            condition: (_, siblingData) => siblingData?.ImageSource === "Url",
+          },
+        },
+        {
+          name: "ImageUpload",
+          label: "Select Image",
+          type: "relationship",
+          relationTo: "media",
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.ImageSource === "upload",
+            components: {
+              Field: "@/components/admin/CustomMediaSelection",
+            },
+          },
+        },
+      ],
+    },
   ],
 };

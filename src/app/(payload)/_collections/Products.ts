@@ -244,6 +244,117 @@ export const Products: CollectionConfig = {
         },
       ],
     },
+    {
+      name: "SEO",
+      type: "group",
+      label: "SEO",
+      fields: [
+        {
+          name: "metaTitle",
+          type: "text",
+          label: "Meta Title",
+          admin: {
+            description:
+              "SEO title for search engines. Recommended: 50–60 characters.",
+          },
+        },
+
+        {
+          name: "metaTitleAr",
+          type: "text",
+          label: "Meta Title (Arabic)",
+          admin: {
+            description: "Arabic SEO title. Recommended: 50–60 characters.",
+          },
+        },
+
+        {
+          name: "metaDescription",
+          type: "textarea",
+          label: "Meta Description",
+          admin: {
+            description:
+              "SEO description for search engines. Recommended: 150–160 characters.",
+          },
+        },
+
+        {
+          name: "metaDescriptionAr",
+          type: "textarea",
+          label: "Meta Description (Arabic)",
+          admin: {
+            description:
+              "Arabic SEO description. Recommended: 150–160 characters.",
+          },
+        },
+
+        {
+          name: "keywords",
+          type: "array",
+          label: "Keywords",
+          fields: [
+            {
+              name: "keyword",
+              type: "text",
+              required: true,
+            },
+          ],
+        },
+
+        {
+          name: "keywordsAr",
+          type: "array",
+          label: "Keywords (Arabic)",
+          fields: [
+            {
+              name: "keyword",
+              type: "text",
+              required: true,
+            },
+          ],
+        },
+
+        {
+          name: "ImageSource",
+          type: "radio",
+          label: "SEO Image Source",
+          defaultValue: "upload",
+          options: [
+            {
+              label: "URL",
+              value: "Url",
+            },
+            {
+              label: "Select",
+              value: "upload",
+            },
+          ],
+        },
+
+        {
+          name: "ImageUrl",
+          type: "text",
+          label: "SEO Image URL",
+          admin: {
+            condition: (_, siblingData) => siblingData?.ImageSource === "Url",
+          },
+        },
+
+        {
+          name: "ImageUpload",
+          type: "relationship",
+          label: "SEO Select Image",
+          relationTo: "media",
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.ImageSource === "upload",
+            components: {
+              Field: "@/components/admin/CustomMediaSelection",
+            },
+          },
+        },
+      ],
+    },
   ],
 };
 

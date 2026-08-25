@@ -1,10 +1,9 @@
 import React from "react";
 import Header from "@/components/shared/Headers/Header";
 import { useTranslations } from "next-intl";
-const MainPage = ({ dataLength, locale }) => {
+const MainPage = ({ dataLength, locale, title, des }) => {
   const t = useTranslations("ProductsMainPage");
-  const title = t("title");
-  const des = t("des");
+
   const backToHome = t("backToHome");
   return (
     <div className="container-custom p-4 mt-10">

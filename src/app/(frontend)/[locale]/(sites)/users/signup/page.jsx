@@ -103,3 +103,18 @@ const page = async ({ params }) => {
 };
 
 export default page;
+
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+
+  const isArabic = locale === "ar";
+
+  return {
+    title: isArabic ? "انشاء حساب جديد" : "Signup",
+
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}

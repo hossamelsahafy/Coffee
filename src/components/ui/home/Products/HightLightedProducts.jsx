@@ -16,8 +16,6 @@ const HightLightedProducts = ({
   productsPagesData,
   onAddToCart,
 }) => {
-  console.log(productsPagesData);
-
   const [openModel, setOpenModel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   let { locale } = useParams();
@@ -83,7 +81,6 @@ const HightLightedProducts = ({
   ];
 
   useLockBodyScroll(openModel);
-  console.log(totalPages);
 
   return (
     <>
