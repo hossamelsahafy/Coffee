@@ -71,24 +71,30 @@ export default async function Home({ params, searchParams }: Props) {
       limit: 10,
     }),
 
-    GetDataWithPagination("products", currentPage, 6, currentSort),
+    GetDataWithPagination("products", currentPage, 6, currentSort, {}, true, 2),
     GetFilteredData({
       collection: "products",
       filterKey: "important",
       filterValue: true,
       limit: 10,
+      depth: 3,
+      useCookies: true,
     }),
     GetFilteredData({
       collection: "products",
       filterKey: "isBestSeller",
       filterValue: true,
       limit: 10,
+      depth: 3,
+      useCookies: true,
     }),
     GetFilteredData({
       collection: "products",
       filterKey: "ShowInDiscountSection",
       filterValue: true,
       limit: 12,
+      depth: 3,
+      useCookies: true,
     }),
 
     GetFilteredData({
@@ -129,15 +135,26 @@ export default async function Home({ params, searchParams }: Props) {
   const favoriteIds = new Set(
     Array.isArray(userFavorites?.docs)
       ? userFavorites.docs
-          .map((doc: any) => doc?.product?.id ?? doc?.product)
+          .map((doc: any) => String(doc?.product?.id ?? doc?.product))
           .filter(Boolean)
       : [],
   );
 
-  const productsWithFavorites = products.docs.map((pro: Product) => ({
-    ...pro,
-    isFavorite: favoriteIds.has(pro.id),
-  }));
+  const addFavoriteState = (product: Product) => ({
+    ...product,
+    isFavorite: favoriteIds.has(String(product.id)),
+  });
+
+  const productsWithFavorites = products.docs.map(addFavoriteState);
+
+  const importantProductsWithFavorites =
+    importantProducts.docs.map(addFavoriteState);
+
+  const discountProductsWithFavorites =
+    discountProducts.docs.map(addFavoriteState);
+
+  const bestSellingProductsWithFavorites =
+    bestSellingProducts.docs.map(addFavoriteState);
   const productsPaginationMeta = {
     totalPages: products.totalPages || 1,
     page: products.page || 1,
@@ -186,9 +203,9 @@ export default async function Home({ params, searchParams }: Props) {
         BestSellingSectionData={BestSellingSection}
         countries={Countries}
         initialReviewsMap={reviewsByCountry}
-        importantProducts={importantProducts.docs}
-        discountProducts={discountProducts.docs}
-        bestSellingProducts={bestSellingProducts.docs}
+        importantProducts={importantProductsWithFavorites}
+        discountProducts={discountProductsWithFavorites}
+        bestSellingProducts={bestSellingProductsWithFavorites}
         productsPagesData={productsPaginationMeta}
       />
       <SubscripeSection

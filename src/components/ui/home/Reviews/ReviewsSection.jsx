@@ -45,9 +45,7 @@ const ReviewsSection = ({
       : ReviewsSectionData?.reviewTitleAr;
 
   return (
-    // Switched to grid-cols-1 md:grid-cols-3 with uniform border styling between columns
     <div className="max-w-7xl -mt-10 text-base-light mx-auto p-4 grid grid-cols-1 md:grid-cols-3 items-stretch">
-      {/* Column 1 */}
       <div
         className={`flex flex-col text-start justify-start gap-4 ${
           locale === "en" ? "md:border-r" : "md:border-l"
@@ -60,7 +58,6 @@ const ReviewsSection = ({
         <Links text={t("show_products")} targetLink={"collection"} />
       </div>
 
-      {/* Column 2 */}
       <div
         className={`relative flex flex-col justify-start gap-4 ${
           locale === "en" ? "md:border-r md:px-6" : "md:border-l md:px-6"
@@ -102,7 +99,6 @@ const ReviewsSection = ({
         </div>
       </div>
 
-      {/* Column 3 */}
       <div
         className={`flex flex-col w-full justify-start gap-4 pt-4 ${locale === "en" ? "md:pl-6" : "md:pr-6"}`}
       >

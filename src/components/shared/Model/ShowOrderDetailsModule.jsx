@@ -4,7 +4,12 @@ import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-export default function ShowOrderDetailsModule({ open, onClose, order }) {
+export default function ShowOrderDetailsModule({
+  locale,
+  open,
+  onClose,
+  order,
+}) {
   const t = useTranslations("Orders");
 
   if (!open || !order) return null;
@@ -57,7 +62,10 @@ export default function ShowOrderDetailsModule({ open, onClose, order }) {
 
                   {item.optionType && (
                     <p className="text-sm text-white/70">
-                      {item.optionType}: {item.optionValue}
+                      {locale === "en" ? item.optionType : item.optionTypeAr}:{" "}
+                      {locale === "en"
+                        ? item.optionValue.name
+                        : item.optionValue.nameAr}
                     </p>
                   )}
 

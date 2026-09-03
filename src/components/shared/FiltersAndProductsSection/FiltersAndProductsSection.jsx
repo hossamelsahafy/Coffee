@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useTransition,
+} from "react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import RightSideProducts from "./RightSideProducts";
@@ -10,6 +16,7 @@ import { useUser } from "@/Context/userContext";
 import Aside from "./Aside";
 import SlugMethods from "@/actions/SlugMethods";
 import { GlassyToast } from "@/components/shared/GlassyToast/GlassyToast";
+import GetDataWithPagination from "@/actions/GetDataWithPagination";
 
 const FiltersAndProductsSection = ({
   CurrentLocation,
@@ -25,6 +32,22 @@ const FiltersAndProductsSection = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const [isPending, startTransition] = useTransition();
+  const [isLoadingPage, setIsLoadingPage] = useState(false);
+  const [productList, setProductList] = useState(products);
+  const [currentPage, setCurrentPage] = useState(paginationInfo?.page || 1);
+  const [totalPages, setTotalPages] = useState(paginationInfo?.totalPages || 1);
+
+  const [selectedFilters, setSelectedFilters] = useState({
+    availability: [],
+    minPrice: "",
+    maxPrice: "",
+    category: [],
+    type: [],
+    colors: [],
+    quantity: [],
+    sizes: [],
+  });
   const favoriteIds = useMemo(() => {
     const rawList = userFavorites?.docs || userFavorites || [];
     const docs = Array.isArray(rawList) ? rawList : [];
@@ -44,8 +67,8 @@ const FiltersAndProductsSection = ({
 
   const [favoriteOverrides, setFavoriteOverrides] = useState({});
 
-  const productList = useMemo(() => {
-    return products.map((product) => {
+  const formattedProductList = useMemo(() => {
+    return productList.map((product) => {
       const id = product.id || product._id;
       const isFav =
         favoriteOverrides[id] !== undefined
@@ -67,56 +90,110 @@ const FiltersAndProductsSection = ({
   const [collapsedFilters, setCollapsedFilters] = useState({});
   const [openFilterModal, setOpenFilterModal] = useState(false);
 
-  const updateQueryParam = useCallback(
-    (key, value) => {
-      const params = new URLSearchParams(searchParams.toString());
+  const fetchFilteredProducts = useCallback(
+    (pageToFetch = 1, filters = selectedFilters, sort = currentSort) => {
+      setIsLoadingPage(true);
 
-      if (value) {
-        params.set(key, value);
-      } else {
-        params.delete(key);
-      }
+      startTransition(async () => {
+        try {
+          const where = {};
 
-      if (key !== "page") {
-        params.set("page", "1");
-      }
+          if (filters.availability?.length > 0) {
+            where["choices.options.availability"] = {
+              ...(filters.availability.includes("in_stock") &&
+              !filters.availability.includes("out_stock")
+                ? { equals: "inStock" }
+                : {}),
+              ...(filters.availability.includes("out_stock") &&
+              !filters.availability.includes("in_stock")
+                ? { equals: "outOfStock" }
+                : {}),
+            };
+          }
 
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+          if (filters.minPrice) {
+            where.price = {
+              ...(where.price || {}),
+              greater_than_equal: Number(filters.minPrice),
+            };
+          }
+          if (filters.maxPrice) {
+            where.price = {
+              ...(where.price || {}),
+              less_than_equal: Number(filters.maxPrice),
+            };
+          }
+
+          if (filters.category?.length > 0) {
+            where.category = { in: filters.category };
+          }
+
+          if (filters.type?.length > 0) {
+            where.type = { in: filters.type };
+          }
+
+          if (filters.colors?.length > 0) {
+            where["choices.options.value"] = { in: filters.colors };
+          }
+          if (filters.sizes?.length > 0) {
+            where["choices.options.value"] = { in: filters.sizes };
+          }
+
+          const result = await GetDataWithPagination(
+            "products",
+            pageToFetch,
+            9,
+            sort,
+            where,
+            true,
+          );
+
+          if (result?.docs) {
+            setProductList(result.docs);
+            setCurrentPage(result.page);
+            setTotalPages(result.totalPages);
+          }
+        } catch (error) {
+          console.error("Failed to fetch filtered products:", error);
+          setToast({
+            message:
+              locale === "ar" ? "فشل تحميل البيانات" : "Failed to load data",
+            type: "error",
+          });
+        } finally {
+          setIsLoadingPage(false);
+        }
+      });
     },
-    [router, pathname, searchParams],
+    [selectedFilters, currentSort, locale],
   );
+
+  useEffect(() => {
+    fetchFilteredProducts(1, selectedFilters, currentSort);
+  }, [selectedFilters, currentSort, fetchFilteredProducts]);
 
   const handleSortChange = useCallback(
     (newSortValue) => {
-      updateQueryParam("sort", newSortValue);
+      fetchFilteredProducts(1, selectedFilters, newSortValue);
     },
-    [updateQueryParam],
+    [selectedFilters, fetchFilteredProducts],
   );
 
   const handlePageChange = useCallback(
     (newPage) => {
-      updateQueryParam("page", String(newPage));
+      if (newPage === currentPage || isPending) return;
+      fetchFilteredProducts(newPage, selectedFilters, currentSort);
     },
-    [updateQueryParam],
+    [
+      currentPage,
+      isPending,
+      selectedFilters,
+      currentSort,
+      fetchFilteredProducts,
+    ],
   );
 
   const currency = locale === "en" ? "USD" : "دولار";
-
-  const defaultFilters = useMemo(
-    () => ({
-      availability: [],
-      minPrice: searchParams.get("minPrice") || "",
-      maxPrice: searchParams.get("maxPrice") || "",
-      category: [],
-      type: [],
-      colors: [],
-      quantity: [],
-      sizes: [],
-    }),
-    [searchParams],
-  );
-
-  const [selectedFilters, setSelectedFilters] = useState(defaultFilters);
 
   const toggleCollapse = useCallback((id) => {
     setCollapsedFilters((prev) => ({
@@ -125,29 +202,23 @@ const FiltersAndProductsSection = ({
     }));
   }, []);
 
-  const resetFilter = useCallback(
-    (id) => {
-      if (id === "Price") {
-        updateQueryParam("minPrice", null);
-        updateQueryParam("maxPrice", null);
-      }
-
-      setSelectedFilters((prev) => ({
-        ...prev,
-        [id]: defaultFilters[id],
-      }));
-    },
-    [defaultFilters, updateQueryParam],
-  );
+  const resetFilter = useCallback((id) => {
+    setSelectedFilters((prev) => ({
+      ...prev,
+      [id]: id === "Price" ? "" : [],
+      ...(id === "Price" ? { minPrice: "", maxPrice: "" } : {}),
+    }));
+  }, []);
 
   const toggleOption = useCallback((key, value) => {
     setSelectedFilters((prev) => {
-      const exists = prev[key].includes(value);
+      const currentValues = prev[key] || [];
+      const exists = currentValues.includes(value);
       return {
         ...prev,
         [key]: exists
-          ? prev[key].filter((v) => v !== value)
-          : [...prev[key], value],
+          ? currentValues.filter((v) => v !== value)
+          : [...currentValues, value],
       };
     });
   }, []);
@@ -232,6 +303,8 @@ const FiltersAndProductsSection = ({
     [user, locale, loadingProductId],
   );
 
+  const showSkeleton = isLoadingPage || isPending;
+
   return (
     <>
       <div className="container-custom p-4 md:min-h-screen h-auto flex flex-col">
@@ -256,7 +329,7 @@ const FiltersAndProductsSection = ({
 
           <RightSideProducts
             t={t}
-            sortedData={productList}
+            sortedData={formattedProductList}
             setOpenModel={setOpenModel}
             locale={locale}
             CurrentLocation={CurrentLocation}
@@ -281,9 +354,10 @@ const FiltersAndProductsSection = ({
             resetFilter={resetFilter}
             toggleFavorite={toggleFavorite}
             loadingProductId={loadingProductId}
-            currentPage={paginationInfo.page || 1}
-            totalPages={paginationInfo.totalPages || 1}
+            currentPage={currentPage}
+            totalPages={totalPages}
             onPageChange={handlePageChange}
+            isLoading={showSkeleton}
           />
         </div>
       </div>

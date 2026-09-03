@@ -31,9 +31,8 @@ const CheckoutDetails = ({ locale, shippingData }) => {
     items: cart.map((item) => ({
       product: item.productId,
       title: item.title,
-      price: item.price,
       quantity: item.quantity,
-      selectedOptions: item.optionId,
+      optionValue: item.optionId,
     })),
     shipping: {
       zone: selectedCity.id,

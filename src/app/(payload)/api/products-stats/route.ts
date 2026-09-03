@@ -63,23 +63,15 @@ export async function GET(req: Request) {
           $group: {
             _id: {
               productId: "$items.product",
-              optionValue: {
-                $ifNull: [
-                  "$items.selectedOption.value",
-                  {
-                    $ifNull: [
-                      "$items.choice.value",
-                      { $ifNull: ["$items.optionValue", "$items.variant"] },
-                    ],
-                  },
-                ],
-              },
+              optionValue: "$items.optionValue",
             },
+
             totalQuantitySold: {
               $sum: {
                 $cond: [{ $gt: ["$items.quantity", 0] }, "$items.quantity", 1],
               },
             },
+
             totalRevenue: {
               $sum: {
                 $multiply: [
@@ -94,15 +86,9 @@ export async function GET(req: Request) {
                 ],
               },
             },
-            directItemImageUrl: {
-              $first: {
-                $ifNull: ["$items.selectedOption.imageUrl", "$items.imageUrl"],
-              },
-            },
-            directItemMediaId: {
-              $first: {
-                $ifNull: ["$items.selectedOption.image", "$items.image"],
-              },
+
+            variantImage: {
+              $first: "$items.image",
             },
           },
         },
@@ -119,67 +105,65 @@ export async function GET(req: Request) {
             as: "productDoc",
           },
         },
+
         { $unwind: "$productDoc" },
 
         {
           $lookup: {
-            from: "media",
-            localField: "directItemMediaId",
+            from: "product-options",
+            localField: "_id.optionValue",
             foreignField: "_id",
-            as: "mediaDoc",
+            as: "optionDoc",
+          },
+        },
+
+        {
+          $unwind: {
+            path: "$optionDoc",
+            preserveNullAndEmptyArrays: true,
           },
         },
 
         {
           $project: {
             _id: "$productDoc._id",
+
             title: "$productDoc.title",
             titleAr: "$productDoc.titleAr",
+
             choiceType: "$productDoc.choices.choiceType",
             choiceTypeAr: "$productDoc.choices.choiceTypeAr",
-            selectedVariant: "$_id.optionValue",
+
+            selectedVariant: "$optionDoc.name",
+            selectedVariantAr: "$optionDoc.nameAr",
+
             totalQuantitySold: 1,
             totalRevenue: 1,
-            variantImage: {
-              $ifNull: [
-                { $arrayElemAt: ["$mediaDoc.url", 0] },
-                "$directItemImageUrl",
-              ],
-            },
-            fallbackOptions: "$productDoc.choices.options",
+
+            variantImage: 1,
           },
         },
       ]),
     ]);
 
     const mostOrderedProducts = mostOrderedAggregate.map((item: any) => {
-      let finalImage = item.variantImage;
-
-      if (!finalImage && Array.isArray(item.fallbackOptions)) {
-        const matchedOption = item.fallbackOptions.find(
-          (opt: any) =>
-            opt.value === item.selectedVariant ||
-            opt.valueAr === item.selectedVariant,
-        );
-
-        if (matchedOption) {
-          finalImage =
-            matchedOption.ImageSource === "Url"
-              ? matchedOption.imageUrl
-              : matchedOption.image?.url || null;
-        }
-      }
-
       return {
         id: item._id,
+
         title: item.title,
         titleAr: item.titleAr || item.title,
+
         choiceType: item.choiceType || "Option",
         choiceTypeAr: item.choiceTypeAr || "النوع",
+
         selectedVariant: item.selectedVariant || "Default",
+        selectedVariantAr:
+          item.selectedVariantAr || item.selectedVariant || "افتراضي",
+
         totalQuantitySold: item.totalQuantitySold,
         totalRevenue: item.totalRevenue,
-        image: finalImage || null,
+
+        image: item.variantImage || null,
       };
     });
 

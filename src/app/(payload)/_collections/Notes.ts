@@ -62,8 +62,12 @@ export const Notes: CollectionConfig = {
     { name: "desAr", type: "text", required: true },
     { name: "longDes", type: "richText", required: true },
     { name: "lonDesAr", type: "richText", required: true },
-    { name: "brandName", type: "text", required: true },
-    { name: "brandNameAr", type: "text", required: true },
+    {
+      name: "BrandName",
+      type: "relationship",
+      relationTo: "brands",
+      required: true,
+    },
     {
       name: "isImportant",
       label: "Choose If U Need The Element To Appear In Home Page",

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FiChevronsDown } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa6";
@@ -11,6 +11,7 @@ import { useCart } from "@/Context/CartContext";
 import { useUser } from "@/Context/userContext";
 import { CgSpinner } from "react-icons/cg";
 import SlugMethods from "@/actions/SlugMethods";
+
 const ProductCard = ({
   product,
   locale,
@@ -20,15 +21,38 @@ const ProductCard = ({
   toggleFavorite,
   isLoading,
   onAddToCart,
+  isFavorite,
 }) => {
   const { addToCart } = useCart();
-  const options = product.choices.options;
+  const options = product?.choices?.options || [];
   const { user } = useUser();
+
   const getInitialOption = () => {
     return options.find((o) => o.availability === "inStock") || options[0];
   };
+
   const [selectedOption, setSelectedOption] = useState(getInitialOption);
+  const [isFading, setIsFading] = useState(false);
   const isIn = selectedOption?.availability === "inStock";
+
+  const getOptionKey = (opt) => {
+    if (!opt) return "";
+    const val = opt.value;
+    if (typeof val === "object" && val !== null) {
+      return val.id || val.name;
+    }
+    return val || opt.en || "";
+  };
+
+  const handleOptionChange = (newOption) => {
+    if (!newOption || newOption === selectedOption) return;
+
+    setIsFading(true);
+    setTimeout(() => {
+      setSelectedOption(newOption);
+      setIsFading(false);
+    }, 150);
+  };
 
   const handleViewed = async () => {
     if (user) {
@@ -48,38 +72,48 @@ const ProductCard = ({
         className={`${bg ? "backdrop-blur-sm bg-forTra" : "bg-highlightedProductsbg"} flex md:flex-row flex-col justify-center w-full gap-4 p-4 rounded-lg h-full min-h-25 min-w-0`}
       >
         <div className="flex justify-center w-full relative gap-4 ">
-          <div className="flex justify-between items-center">
-            <Image
-              src={
-                selectedOption.ImageSource === "Url"
-                  ? selectedOption.imageUrl
-                  : selectedOption.image.url
-              }
-              alt={locale === "en" ? product.title : product.titleAr}
-              width={200}
-              height={200}
-              className="object-contain md:object-cover rounded-lg"
-            />
+          <div className="flex justify-between items-center overflow-hidden">
+            {selectedOption && (
+              <Image
+                src={
+                  selectedOption.ImageSource === "Url"
+                    ? selectedOption.imageUrl
+                    : selectedOption.image?.url
+                }
+                alt={locale === "en" ? product.title : product.titleAr}
+                width={200}
+                height={200}
+                className={`object-contain md:object-cover rounded-lg transition-opacity duration-300 ${
+                  isFading ? "opacity-0 scale-95" : "opacity-100 scale-100"
+                }`}
+              />
+            )}
           </div>
           <div>
             <div
-              className={`absolute top-0 ${locale === "ar" ? "left-0 " : "right-0"} text-2xl md:text-lg font-semibold gap-2`}
+              className={`absolute top-0 ${locale === "ar" ? "left-0 " : "right-0"} text-2xl md:text-lg font-semibold gap-2 z-10`}
             >
               <button
-                onClick={toggleFavorite}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleFavorite();
+                }}
                 disabled={isLoading}
-                className="cursor-pointer block my-2 disabled:cursor-wait"
+                aria-label="Toggle Favorite"
+                className="cursor-pointer block my-2 disabled:cursor-wait items-center"
               >
                 {isLoading ? (
                   <CgSpinner className="text-sm animate-spin text-base-lighter" />
-                ) : product.isFavorite ? (
+                ) : isFavorite ? (
                   <FaHeart className="text-sm text-base-lighter" />
                 ) : (
                   <FaRegHeart className="text-sm text-base-light" />
                 )}
               </button>
               <button
-                className="cursor-pointer"
+                className="cursor-pointer items-center"
+                aria-label="View Product"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -88,7 +122,7 @@ const ProductCard = ({
                   setOpenModel?.(true);
                 }}
               >
-                <IoEyeOutline />
+                <IoEyeOutline className="text-base text-base-light" />
               </button>
             </div>
           </div>
@@ -96,41 +130,50 @@ const ProductCard = ({
         <div className="flex flex-col gap-2 min-w-0 w-full">
           <Link
             onClick={() => handleViewed()}
-            href={`${locale}/products/${locale === "en" ? product.slug : product.slugAr}`}
+            href={`/${locale}/products/${locale === "en" ? product.slug : product.slugAr}`}
           >
-            <p className="font-semiboldtext-lg overflow-hidden">
-              {locale === "en" ? product.subtitle : product.subtitleAr}
-            </p>
-            <p className="text-coffeText font-bold line-clamp-1 whitespace-nowrap overflow-hidden">
+            <p className="text-coffeText font-bold line-clamp-1 mwhitespace-nowrap overflow-hidden">
               {locale === "en" ? product.title : product.titleAr}
             </p>
+            <p className="font-semibold text-lg overflow-hidden line-clamp-1">
+              {locale === "en" ? product.subtitle : product.subtitleAr}
+            </p>
             <p className="whitespace-nowrap overflow-hidden">
-              {locale === "en" ? product.type : product.typeAr}
+              {locale === "en"
+                ? product.BrandName?.name
+                : product.BrandName?.nameAr}
             </p>
           </Link>
           <div className="relative w-full">
             <select
-              value={selectedOption.value || selectedOption.en}
-              onChange={(e) =>
-                setSelectedOption(
-                  options.find(
-                    (opt) => (opt.value || opt.en) === e.target.value,
-                  ),
-                )
-              }
+              value={getOptionKey(selectedOption)}
+              onChange={(e) => {
+                const foundOpt = options.find(
+                  (opt) => getOptionKey(opt) === e.target.value,
+                );
+                handleOptionChange(foundOpt);
+              }}
               className="w-full flex justify-between items-center bg-inherit text-base-light border px-3 py-2 rounded-lg cursor-pointer appearance-none"
             >
-              {options.map((opt, idx) => (
-                <option
-                  className="text-base-dark"
-                  key={idx}
-                  value={opt.value || opt.en}
-                >
-                  {locale === "en"
-                    ? opt.value || opt.en
-                    : opt.ar || opt.valueAr}
-                </option>
-              ))}
+              {options.map((opt, idx) => {
+                const optKey = getOptionKey(opt);
+                const valObj = opt.value;
+                const displayText =
+                  locale === "en"
+                    ? (typeof valObj === "object" ? valObj?.name : valObj) ||
+                      opt.en
+                    : (typeof valObj === "object"
+                        ? valObj?.nameAr || valObj?.name
+                        : valObj) ||
+                      opt.ar ||
+                      opt.valueAr;
+
+                return (
+                  <option className="text-base-dark" key={idx} value={optKey}>
+                    {displayText}
+                  </option>
+                );
+              })}
             </select>
             <FiChevronsDown
               className={`absolute ${locale === "en" ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 pointer-events-none text-base-light scale-x-150`}
@@ -139,19 +182,21 @@ const ProductCard = ({
 
           <div className="flex gap-8 justify-between items-center w-full">
             <div className="flex font-bold flex-col items-center min-w-0">
-              <p className="whitespace-nowrap  sm:text-sm lg:text-base">
-                {selectedOption.priceAfter} USD
+              <p className="whitespace-nowrap text-sm">
+                {selectedOption?.priceAfter} USD
               </p>
               <p
-                className="relative text-gray-400 whitespace-nowrap  sm:text-sm lg:text-base
+                className="relative text-gray-400 whitespace-nowrap text-sm
               before:absolute before:left-0 before:right-0 before:top-1/2 before:border-t-2 before:border-gray-400"
               >
-                {selectedOption.priceBefore} USD
+                {selectedOption?.priceBefore} USD
               </p>
             </div>
 
             <button
-              onClick={async () => {
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 if (!isIn) {
                   onAddToCart?.(false);
                   return;
@@ -163,7 +208,7 @@ const ProductCard = ({
               disabled={false}
               className="relative pb-1 whitespace-nowrap
             after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full 
-            after:bg-base-light after:transition-all after:duration-300 sm:text-sm lg:text-base
+            after:bg-base-light after:transition-all after:duration-300 text-sm
             hover:after:bg-base-coffe cursor-pointer uppercase flex items-center font-bold transition-all duration-300 hover:text-base-coffe"
             >
               <FiPlus />
@@ -179,4 +224,5 @@ const ProductCard = ({
     </>
   );
 };
+
 export default ProductCard;

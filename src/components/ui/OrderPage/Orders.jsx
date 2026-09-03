@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useTransition } from "react";
+import React, { useEffect, useState, useTransition, useRef } from "react";
 import { useCart } from "@/Context/CartContext";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -12,8 +12,6 @@ import ShowOrderDetailsModule from "@/components/shared/Model/ShowOrderDetailsMo
 import { useDashboard } from "@/Context/DashboardContext";
 import GetDataWithPagination from "@/actions/GetDataWithPagination";
 import OrdersFilterBar from "./OrderFilterData";
-import SlugMethods from "@/actions/SlugMethods";
-import Pusher from "pusher-js";
 
 const Orders = ({
   data,
@@ -44,6 +42,7 @@ const Orders = ({
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
+  const [sseOrderId, setSseOrderId] = useState("");
 
   useEffect(() => {
     const fromPayment = searchParams.get("payment");
@@ -139,76 +138,130 @@ const Orders = ({
   const showSkeleton = isLoadingPage || isPending;
 
   useEffect(() => {
-    if (!stripeOrderId) return;
+    if (!sseOrderId) return;
 
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
-      channelAuthorization: {
-        endpoint: "/api/auth/pusher",
-        transport: "ajax",
+    console.log("🔌 Opening SSE connection:", sseOrderId);
+
+    const eventSource = new EventSource(
+      `/api/auth/orders/${sseOrderId}/events`,
+    );
+
+    // SSE lifetime
+    const sseTimeout = setTimeout(
+      () => {
+        console.log("⏱️ SSE timeout - closing connection:", sseOrderId);
+
+        eventSource.close();
+
+        setSseOrderId("");
       },
-    });
+      5 * 60 * 1000,
+    );
 
-    const channelName = `private-order-${stripeOrderId}`;
-    const channel = pusher.subscribe(channelName);
+    const handleStatusUpdate = (event) => {
+      try {
+        const updatedOrder = JSON.parse(event.data);
 
-    const handleStatusUpdate = (updatedOrder) => {
-      console.log("📥 Pusher event received:", updatedOrder);
-
-      setOrders((prevOrders) =>
-        prevOrders.map((item) => {
-          const itemId = item.id || item._id;
-
-          if (String(itemId) !== String(updatedOrder.id)) {
-            return item;
-          }
-
-          return {
-            ...item,
-            ...updatedOrder,
-            payment: {
-              ...(item.payment || {}),
-              ...(updatedOrder.payment || {}),
-            },
-          };
-        }),
-      );
-
-      if (updatedOrder.payment?.status === "paid") {
-        setUpdatingOrderId(null);
-        setStripeOpen(false);
-
-        setToast({
-          type: "success",
-          message:
-            locale === "en"
-              ? "Payment completed successfully."
-              : "تم إتمام عملية الدفع بنجاح.",
+        console.log("📥 SSE ORDER EVENT RECEIVED:", {
+          id: updatedOrder.id,
+          paymentStatus: updatedOrder.payment?.status,
+          orderStatus: updatedOrder.status,
         });
-      }
 
-      if (updatedOrder.payment?.status === "failed") {
-        setUpdatingOrderId(null);
-        setStripeOpen(false);
+        setOrders((prevOrders) =>
+          prevOrders.map((item) => {
+            const itemId = item.id || item._id;
 
-        setToast({
-          type: "error",
-          message:
-            locale === "en"
-              ? "Payment failed or was declined."
-              : "فشلت عملية الدفع أو تم رفضها.",
-        });
+            if (String(itemId) !== String(updatedOrder.id)) {
+              return item;
+            }
+
+            return updatedOrder;
+          }),
+        );
+
+        const paymentStatus = updatedOrder.payment?.status;
+
+        console.log("💳 CURRENT PAYMENT STATUS FROM SSE:", paymentStatus);
+
+        if (paymentStatus === "failed") {
+          setUpdatingOrderId(null);
+
+          setToast({
+            type: "error",
+            message:
+              locale === "en"
+                ? "Payment failed or was declined. Please try another card."
+                : "فشلت عملية الدفع أو تم رفضها. يرجى تجربة بطاقة أخرى.",
+          });
+
+          return;
+        }
+        if (paymentStatus === "paid") {
+          setUpdatingOrderId(null);
+
+          setToast({
+            type: "success",
+            message:
+              locale === "en"
+                ? "Payment completed successfully."
+                : "تم إتمام عملية الدفع بنجاح.",
+          });
+
+          clearTimeout(sseTimeout);
+
+          eventSource.close();
+
+          setSseOrderId("");
+          setStripeOpen(false);
+          setStripeOrderId("");
+
+          return;
+        }
+
+        if (updatedOrder.status === "cancelled") {
+          setUpdatingOrderId(null);
+
+          setToast({
+            type: "error",
+            message:
+              locale === "en"
+                ? "Your order has been cancelled because payment was not completed within 24 hours."
+                : "تم إلغاء طلبك لأن عملية الدفع لم تكتمل خلال 24 ساعة.",
+          });
+
+          clearTimeout(sseTimeout);
+
+          eventSource.close();
+
+          setSseOrderId("");
+          setStripeOpen(false);
+          setStripeOrderId("");
+
+          return;
+        }
+      } catch (error) {
+        console.error("❌ Failed to parse SSE order event:", error);
       }
     };
 
-    channel.bind("status-update", handleStatusUpdate);
+    eventSource.addEventListener("order.updated", handleStatusUpdate);
+
+    eventSource.onerror = (error) => {};
 
     return () => {
-      channel.unbind("status-update", handleStatusUpdate);
-      pusher.unsubscribe(channelName);
-      pusher.disconnect();
+      clearTimeout(sseTimeout);
+
+      eventSource.removeEventListener("order.updated", handleStatusUpdate);
+
+      eventSource.close();
     };
-  }, [stripeOrderId, locale]);
+  }, [sseOrderId, locale]);
+  const handleStripeClose = (reason = "cancel") => {
+    setStripeOpen(false);
+    setStripeOrderId("");
+    return;
+  };
 
   return (
     <>
@@ -265,6 +318,7 @@ const Orders = ({
                   paymentM={paymentM}
                   setStripeOrderId={(id) => {
                     setStripeOrderId(id);
+                    setSseOrderId(id);
                     setUpdatingOrderId(id);
                   }}
                   setStripeOpen={setStripeOpen}
@@ -289,7 +343,7 @@ const Orders = ({
             <StripeModule
               orderId={stripeOrderId}
               locale={locale}
-              setStripeOpen={setStripeOpen}
+              setStripeOpen={handleStripeClose}
               isEndPoint={isendPoint}
               setToast={setToast}
             />
@@ -304,6 +358,7 @@ const Orders = ({
         onClose={() => setToast((prev) => ({ ...prev, message: null }))}
       />
       <ShowOrderDetailsModule
+        locale={locale}
         open={openModule}
         onClose={() => setOpenModule(false)}
         order={selectedData}

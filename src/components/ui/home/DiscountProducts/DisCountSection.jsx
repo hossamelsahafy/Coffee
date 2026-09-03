@@ -15,6 +15,7 @@ const DisCountSection = ({
   websiteName,
   discountSection,
   onAddToCart,
+  favoriteState,
 }) => {
   const t = useTranslations("discountSection");
   const { locale } = useParams();
@@ -66,8 +67,12 @@ const DisCountSection = ({
                 locale={locale}
                 setOpenModel={setOpenModel}
                 setSelectedProduct={setSelectedProduct}
+                isFavorite={favoriteState[item.id] ?? item.isFavorite ?? false}
                 toggleFavorite={() =>
-                  onToggleFavorite(item.id, item.isFavorite)
+                  onToggleFavorite(
+                    item.id,
+                    favoriteState[item.id] ?? item.isFavorite ?? false,
+                  )
                 }
                 isLoading={loadingProductId === item.id}
                 onAddToCart={onAddToCart}

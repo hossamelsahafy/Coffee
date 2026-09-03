@@ -10,6 +10,7 @@ export default function MostOrderedProducts({
   locale = "en",
 }) {
   const isArabic = locale === "ar";
+  console.log(data);
 
   return (
     <Card className="relative transition-all ease-in-out duration-300 overflow-hidden pt-0 w-full rounded-3xl border border-white/10 bg-[#1A120D]/70 backdrop-blur-md shadow-2xl text-white">

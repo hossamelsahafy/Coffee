@@ -79,7 +79,10 @@ export interface Config {
     orders: Order;
     favorites: Favorite;
     'product-views': ProductView;
+    'product-options': ProductOption;
+    brands: Brand;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -98,7 +101,10 @@ export interface Config {
     orders: OrdersSelect<false> | OrdersSelect<true>;
     favorites: FavoritesSelect<false> | FavoritesSelect<true>;
     'product-views': ProductViewsSelect<false> | ProductViewsSelect<true>;
+    'product-options': ProductOptionsSelect<false> | ProductOptionsSelect<true>;
+    brands: BrandsSelect<false> | BrandsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -141,7 +147,13 @@ export interface Config {
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      cancelUnpaidOrder: TaskCancelUnpaidOrder;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -279,8 +291,36 @@ export interface Product {
   titleAr?: string | null;
   subtitle?: string | null;
   subtitleAr?: string | null;
-  longDes?: string | null;
-  longDesAr?: string | null;
+  longDes?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  longDesAr?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   slug: string;
   slugAr: string;
   isNewest: boolean;
@@ -288,15 +328,13 @@ export interface Product {
   important?: boolean | null;
   isBestSeller?: boolean | null;
   category: string | Category;
-  type?: string | null;
-  typeAr?: string | null;
+  BrandName: string | Brand;
   choices: {
     choiceType: 'color' | 'quantity' | 'types' | 'size';
     choiceTypeAr: 'لون' | 'كمية' | 'نوع' | 'حجم';
     options?:
       | {
-          value: string;
-          valueAr: string;
+          value: string | ProductOption;
           availability?: ('inStock' | 'outOfStock') | null;
           priceAfter: number;
           priceBefore: number;
@@ -306,6 +344,18 @@ export interface Product {
           id?: string | null;
         }[]
       | null;
+  };
+  headerTwo?: {
+    websiteName?: string | null;
+    websiteNameAr?: string | null;
+    title?: string | null;
+    titleAr?: string | null;
+    subtitle?: string | null;
+    subtitleAr?: string | null;
+    HeaderTwoVideo?: string | null;
+    ImageSource?: ('Url' | 'upload') | null;
+    rightSideImage?: (string | null) | Media;
+    rightSideImageUrl?: string | null;
   };
   SEO?: {
     /**
@@ -340,6 +390,29 @@ export interface Product {
     ImageUrl?: string | null;
     ImageUpload?: (string | null) | Media;
   };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brands".
+ */
+export interface Brand {
+  id: string;
+  name: string;
+  nameAr: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-options".
+ */
+export interface ProductOption {
+  id: string;
+  name: string;
+  nameAr: string;
+  type: 'color' | 'quantity' | 'types' | 'size';
   updatedAt: string;
   createdAt: string;
 }
@@ -433,8 +506,7 @@ export interface Note {
     };
     [k: string]: unknown;
   };
-  brandName: string;
-  brandNameAr: string;
+  BrandName: string | Brand;
   isImportant?: boolean | null;
   ImageSource: 'Url' | 'upload';
   ImageUrl?: string | null;
@@ -502,9 +574,8 @@ export interface Order {
     quantity: number;
     price?: number | null;
     total?: number | null;
-    selectedOptions?: string | null;
+    optionValue: string | ProductOption;
     optionType?: string | null;
-    optionValue?: string | null;
     id?: string | null;
   }[];
   subtotal?: number | null;
@@ -574,6 +645,98 @@ export interface PayloadKv {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: string;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'cancelUnpaidOrder';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'cancelUnpaidOrder') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -626,6 +789,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'product-views';
         value: string | ProductView;
+      } | null)
+    | ({
+        relationTo: 'product-options';
+        value: string | ProductOption;
+      } | null)
+    | ({
+        relationTo: 'brands';
+        value: string | Brand;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -778,8 +949,7 @@ export interface ProductsSelect<T extends boolean = true> {
   important?: T;
   isBestSeller?: T;
   category?: T;
-  type?: T;
-  typeAr?: T;
+  BrandName?: T;
   choices?:
     | T
     | {
@@ -789,7 +959,6 @@ export interface ProductsSelect<T extends boolean = true> {
           | T
           | {
               value?: T;
-              valueAr?: T;
               availability?: T;
               priceAfter?: T;
               priceBefore?: T;
@@ -798,6 +967,20 @@ export interface ProductsSelect<T extends boolean = true> {
               imageUrl?: T;
               id?: T;
             };
+      };
+  headerTwo?:
+    | T
+    | {
+        websiteName?: T;
+        websiteNameAr?: T;
+        title?: T;
+        titleAr?: T;
+        subtitle?: T;
+        subtitleAr?: T;
+        HeaderTwoVideo?: T;
+        ImageSource?: T;
+        rightSideImage?: T;
+        rightSideImageUrl?: T;
       };
   SEO?:
     | T
@@ -885,8 +1068,7 @@ export interface NotesSelect<T extends boolean = true> {
   desAr?: T;
   longDes?: T;
   lonDesAr?: T;
-  brandName?: T;
-  brandNameAr?: T;
+  BrandName?: T;
   isImportant?: T;
   ImageSource?: T;
   ImageUrl?: T;
@@ -944,9 +1126,8 @@ export interface OrdersSelect<T extends boolean = true> {
         quantity?: T;
         price?: T;
         total?: T;
-        selectedOptions?: T;
-        optionType?: T;
         optionValue?: T;
+        optionType?: T;
         id?: T;
       };
   subtotal?: T;
@@ -1003,11 +1184,63 @@ export interface ProductViewsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-options_select".
+ */
+export interface ProductOptionsSelect<T extends boolean = true> {
+  name?: T;
+  nameAr?: T;
+  type?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brands_select".
+ */
+export interface BrandsSelect<T extends boolean = true> {
+  name?: T;
+  nameAr?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2524,6 +2757,16 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCancelUnpaidOrder".
+ */
+export interface TaskCancelUnpaidOrder {
+  input: {
+    orderId: string;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

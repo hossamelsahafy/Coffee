@@ -16,10 +16,13 @@ const ProductSlug = ({
   products,
   onToggleFavorite,
   loadingProductId,
+  rightSideImage,
+  pageData,
 }) => {
   const t = useTranslations("productSlug");
   const options = data?.choices?.options || [];
-
+  const websiteName =
+    locale === "en" ? pageData.websiteName : pageData.webSiteNameAr;
   const [selectOption, setSelectedOption] = useState(options[0]);
   const activeOption = selectOption || options[0];
   const addtoCart = t("AddToCart");
@@ -74,6 +77,8 @@ const ProductSlug = ({
         data={data}
         locale={locale}
         selectedOption={selectOption}
+        rightSideImage={rightSideImage}
+        webSiteName={websiteName}
       />
       <RecentlyProducts
         products={products}

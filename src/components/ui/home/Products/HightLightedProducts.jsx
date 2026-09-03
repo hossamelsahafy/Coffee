@@ -15,6 +15,7 @@ const HightLightedProducts = ({
   loadingProductId,
   productsPagesData,
   onAddToCart,
+  favoriteState = {},
 }) => {
   const [openModel, setOpenModel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -147,8 +148,14 @@ const HightLightedProducts = ({
                 locale={locale}
                 setOpenModel={setOpenModel}
                 setSelectedProduct={setSelectedProduct}
+                isFavorite={
+                  favoriteState[product.id] ?? product.isFavorite ?? false
+                }
                 toggleFavorite={() =>
-                  onToggleFavorite(product.id, product.isFavorite)
+                  onToggleFavorite(
+                    product.id,
+                    favoriteState[product.id] ?? product.isFavorite ?? false,
+                  )
                 }
                 isLoading={loadingProductId === product.id}
                 onAddToCart={onAddToCart}

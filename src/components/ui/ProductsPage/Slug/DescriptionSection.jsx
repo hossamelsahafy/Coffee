@@ -81,32 +81,41 @@ const DescriptionSection = ({
       <h2 className="text-3xl font-bold text-base-coffe">
         {locale === "en" ? data?.title : data?.titleAr}
       </h2>
+      <h2 className="text-lg font-bold text-base-light">
+        {locale === "en" ? data?.subtitle : data?.subtitleAr}
+      </h2>
       <p className="text-bold capitalize font-bold">
         {locale === "en"
           ? data?.choices?.choiceType
           : data?.choices?.choiceTypeAr}
         :
         <span className="font-semibold capitalize inline mx-2">
-          {activeOption?.value}
+          {locale === "en"
+            ? activeOption?.value.name
+            : activeOption?.value.nameAr}
         </span>
       </p>
-      <div className="relative w-fit">
+      <div className="relative w-1/2">
         <select
-          value={selectOption?.value || selectOption?.en}
+          value={selectOption?.value.name || selectOption?.en}
           onChange={(e) =>
             setSelectedOption(
-              options.find((opt) => (opt.value || opt.en) === e.target.value),
+              options.find(
+                (opt) => (opt.value.name || opt.en) === e.target.value,
+              ),
             )
           }
-          className="bg-inherit text-base-light border px-3 py-2 pr-8 rounded-lg cursor-pointer appearance-none"
+          className="bg-inherit text-base-light w-full border px-3 py-2 pr-8 rounded-lg cursor-pointer appearance-none"
         >
           {options.map((opt, idx) => (
             <option
               className="text-base-dark"
               key={idx}
-              value={opt.value || opt.en}
+              value={opt.value.name || opt.en}
             >
-              {locale === "en" ? opt.value || opt.en : opt.ar || opt.valueAr}
+              {locale === "en"
+                ? opt.value.name || opt.en
+                : opt.ar || opt.value.nameAr}
             </option>
           ))}
         </select>
@@ -115,7 +124,7 @@ const DescriptionSection = ({
       </div>
 
       <p className="text-base font-semibold">
-        {locale === "en" ? data?.longDes : data?.longDesAr}
+        {locale === "en" ? data?.des : data?.desAr}
       </p>
       <div className="flex items-center gap-2 w-full">
         <p className="font-bold">{Quan}:</p>

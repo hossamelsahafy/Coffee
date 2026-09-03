@@ -10,7 +10,7 @@ const CustomLogo = () => {
       }}
     >
       <img
-        src="/assets/logo.webp"
+        src="/assets/Logo.png"
         alt="Custom Logo"
         style={{ width: "150px", height: "auto" }}
       />

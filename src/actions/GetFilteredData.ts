@@ -1,3 +1,7 @@
+"use server";
+
+import { cookies } from "next/headers";
+
 interface FilterItem {
   key: string;
   value: any;
@@ -15,6 +19,7 @@ interface GetFilteredDataParams {
   limit?: number;
   sort?: string;
   depth?: number;
+  useCookies?: boolean;
 }
 
 export default async function GetFilteredData({
@@ -28,6 +33,7 @@ export default async function GetFilteredData({
   limit = 9,
   sort = "-createdAt",
   depth = 1,
+  useCookies = false,
 }: GetFilteredDataParams) {
   try {
     const url = process.env.NEXT_PUBLIC_URL;
@@ -46,10 +52,14 @@ export default async function GetFilteredData({
       query.append(`where[${filterKey}][${operator}]`, String(filterValue));
     }
 
-    if (filters && Array.isArray(filters) && filters.length > 0) {
-      filters.forEach((f, index) => {
-        const op = f.operator || "equals";
-        query.append(`where[and][${index}][${f.key}][${op}]`, String(f.value));
+    if (filters.length > 0) {
+      filters.forEach((filter, index) => {
+        const op = filter.operator || "equals";
+
+        query.append(
+          `where[and][${index}][${filter.key}][${op}]`,
+          String(filter.value),
+        );
       });
     }
 
@@ -61,11 +71,30 @@ export default async function GetFilteredData({
       query.append("where[slug][not_equals]", slugName);
     }
 
-    const res = await fetch(`${url}/api/${collection}?${query.toString()}`, {
-      next: { revalidate: 60 },
-    });
+    const fetchOptions: RequestInit = {};
 
-    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+    if (useCookies) {
+      const cookieStore = await cookies();
+
+      fetchOptions.headers = {
+        Cookie: cookieStore.toString(),
+      };
+
+      fetchOptions.cache = "no-store";
+    } else {
+      fetchOptions.next = {
+        revalidate: 60,
+      };
+    }
+
+    const requestUrl = `${url}/api/${collection}?${query.toString()}`;
+
+    const res = await fetch(requestUrl, fetchOptions);
+
+    if (!res.ok) {
+      throw new Error(`Fetch failed: ${res.status}`);
+    }
+
     const data = await res.json();
 
     return {
@@ -78,6 +107,7 @@ export default async function GetFilteredData({
     };
   } catch (error) {
     console.error("GetFilteredData error:", error);
+
     return {
       docs: [],
       totalPages: 1,

@@ -11,7 +11,7 @@ import LoadingSpiner from "@/components/shared/Spiner/LoadingSpiner";
 
 type CheckoutFormProps = {
   locale?: "en" | "ar";
-  setStripeOpen: (value: boolean) => void;
+  setStripeOpen: (reason: "success" | "cancel") => void;
   isEndPoint: boolean;
   orderID: string;
   clientSecret: string;
@@ -32,8 +32,6 @@ export default function CheckoutForm({
   setToast,
   orderID,
   clientSecret,
-
-  clearCart,
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
@@ -52,8 +50,9 @@ export default function CheckoutForm({
           ? "Payment completed successfully."
           : "تم إتمام عملية الدفع بنجاح.",
     });
-
-    setStripeOpen(false);
+    if (isEndPoint) {
+      setStripeOpen("success");
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -143,9 +142,12 @@ export default function CheckoutForm({
       );
 
       setTimeout(() => {
-        setStripeOpen(false);
+        if (isEndPoint) {
+          setStripeOpen("cancel");
+        }
+
         router.push("/users/dashboard/orders?payment=pending");
-      }, 2000);
+      }, 5000);
 
       return;
     }
@@ -157,8 +159,10 @@ export default function CheckoutForm({
           ? "Payment was cancelled. You can complete it later."
           : "تم إلغاء عملية الدفع. يمكنك إكمالها لاحقًا.",
     });
+    if (isEndPoint) {
+      setStripeOpen("cancel");
+    }
 
-    setStripeOpen(false);
     setCancelLoading(false);
   };
 

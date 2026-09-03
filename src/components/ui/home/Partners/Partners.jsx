@@ -25,8 +25,8 @@ const Partners = ({ locale, title, fresh, freshSpan, partners, data }) => {
   };
   const slides = data;
   return (
-    <section className="w-full md:mt-22 flex flex-col text-base-light relative p-4 justify-center items-center">
-      <div className="flex flex-col md:flex-row w-full md:justify-center items-start md:items-center gap-10">
+    <section className="max-w-7xl mx-auto flex flex-col text-base-light relative p-4 justify-center items-center">
+      <div className="flex flex-col md:flex-row w-full md:justify-between justify-center items-start  md:items-center gap-4">
         <div className="flex flex-col justify-center ">
           <p
             className={`text-lg ${locale === "en" ? "text-left" : "text-right"} lg:text-xl font-bold tracking-tighter`}

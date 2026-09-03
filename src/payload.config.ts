@@ -31,6 +31,9 @@ import { shippingDelivery } from "@/app/(payload)/_globals/ShippingDelivery";
 import { TermsAndConditions } from "@/app/(payload)/_globals/TermsAndConditions";
 import { SiteSettings } from "@/app/(payload)/_globals/SiteSettings";
 import { ProductsPage } from "@/app/(payload)/_globals/ProductsPage";
+import { ProductOptions } from "@/app/(payload)/_collections/ProductsOptions";
+import { Brands } from "@/app/(payload)/_collections/Brands";
+import { CancelUnpaidOrder } from "@/app/(payload)/jobs/cancelUnpaidOrder";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -59,6 +62,9 @@ export default buildConfig({
       },
     },
   },
+  jobs: {
+    tasks: [CancelUnpaidOrder],
+  },
   collections: [
     Users,
     Media,
@@ -72,6 +78,8 @@ export default buildConfig({
     Orders,
     Favorites,
     ProductViews,
+    ProductOptions,
+    Brands,
   ],
   globals: [
     HomePage,

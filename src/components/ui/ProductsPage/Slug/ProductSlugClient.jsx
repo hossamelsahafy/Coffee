@@ -7,8 +7,7 @@ import SlugMethods from "@/actions/SlugMethods";
 import { useUser } from "@/Context/userContext";
 import { GlassyToast } from "@/components/shared/GlassyToast/GlassyToast";
 
-const HERO_VIDEO_URL =
-  "https://res.cloudinary.com/dnszjyuxi/video/upload/v1777996181/d07af386638640c5be2b435380d446de_zsllkn.mp4";
+const getProductId = (product) => String(product?.id ?? product?._id ?? "");
 
 const ProductSlugClient = ({
   dataBySlug,
@@ -16,6 +15,9 @@ const ProductSlugClient = ({
   importantProducts = [],
   locale,
   userFavorites,
+  HERO_VIDEO_URL,
+  rightSideImage,
+  pageData,
 }) => {
   const { user } = useUser();
 
@@ -28,55 +30,88 @@ const ProductSlugClient = ({
 
     return new Set(
       docs
-        .map((doc) => doc?.product?.id ?? doc?.product?._id ?? doc?.product)
-        .filter((id) => typeof id === "string" || typeof id === "number"),
+        .map((doc) =>
+          String(doc?.product?.id ?? doc?.product?._id ?? doc?.product ?? ""),
+        )
+        .filter(Boolean),
     );
   }, [userFavorites]);
 
-  const [currentProduct, setCurrentProduct] = useState(() => ({
-    ...dataBySlug,
-    isFavorite: favoriteIds.has(dataBySlug?.id || dataBySlug?._id),
-  }));
-
-  const [importantList, setImportantList] = useState(() =>
-    importantProducts.map((p) => ({
-      ...p,
-      isFavorite: favoriteIds.has(p?.id || p?._id),
-    })),
-  );
-
-  const [productsList, setProductsList] = useState(() =>
-    products.map((p) => ({
-      ...p,
-      isFavorite: favoriteIds.has(p?.id || p?._id),
-    })),
-  );
+  const [favoriteState, setFavoriteState] = useState({});
 
   const [loadingProductId, setLoadingProductId] = useState(null);
-  const [toast, setToast] = useState({ message: null, type: "" });
+
+  const [toast, setToast] = useState({
+    message: null,
+    type: "",
+  });
 
   useEffect(() => {
+    const state = {};
+
     if (dataBySlug) {
-      setCurrentProduct({
-        ...dataBySlug,
-        isFavorite: favoriteIds.has(dataBySlug?.id || dataBySlug?._id),
-      });
+      const id = getProductId(dataBySlug);
+
+      if (id) {
+        state[id] = favoriteIds.has(id);
+      }
     }
-    setImportantList(
-      importantProducts.map((p) => ({
-        ...p,
-        isFavorite: favoriteIds.has(p?.id || p?._id),
-      })),
-    );
-    setProductsList(
-      products.map((p) => ({
-        ...p,
-        isFavorite: favoriteIds.has(p?.id || p?._id),
-      })),
-    );
-  }, [dataBySlug, importantProducts, products, favoriteIds]);
+
+    products.forEach((product) => {
+      const id = getProductId(product);
+
+      if (id) {
+        state[id] = favoriteIds.has(id);
+      }
+    });
+
+    importantProducts.forEach((product) => {
+      const id = getProductId(product);
+
+      if (id) {
+        state[id] = favoriteIds.has(id);
+      }
+    });
+
+    setFavoriteState(state);
+  }, [dataBySlug, products, importantProducts, favoriteIds]);
+
+  const currentProduct = useMemo(() => {
+    if (!dataBySlug) return null;
+
+    const id = getProductId(dataBySlug);
+
+    return {
+      ...dataBySlug,
+      isFavorite: favoriteState[id] ?? favoriteIds.has(id),
+    };
+  }, [dataBySlug, favoriteState, favoriteIds]);
+
+  const importantList = useMemo(() => {
+    return importantProducts.map((product) => {
+      const id = getProductId(product);
+
+      return {
+        ...product,
+        isFavorite: favoriteState[id] ?? favoriteIds.has(id),
+      };
+    });
+  }, [importantProducts, favoriteState, favoriteIds]);
+
+  const productsList = useMemo(() => {
+    return products.map((product) => {
+      const id = getProductId(product);
+
+      return {
+        ...product,
+        isFavorite: favoriteState[id] ?? favoriteIds.has(id),
+      };
+    });
+  }, [products, favoriteState, favoriteIds]);
 
   const toggleFavorite = async (productId, currentIsFavorite) => {
+    const id = String(productId);
+
     if (!user) {
       setToast({
         message:
@@ -85,45 +120,30 @@ const ProductSlugClient = ({
             : "You need to login to add products to favorites",
         type: "error",
       });
+
       return;
     }
 
-    if (!productId || loadingProductId === productId) return;
-    const nextState = !currentIsFavorite;
+    if (loadingProductId === id) return;
 
-    const updateLocalState = (isFav) => {
-      setCurrentProduct((prev) => {
-        const curId = prev?.id || prev?._id;
-        if (curId === productId) {
-          return { ...prev, isFavorite: isFav };
-        }
-        return prev;
-      });
+    const previousState = favoriteState[id] ?? Boolean(currentIsFavorite);
 
-      setImportantList((prev) =>
-        prev.map((p) =>
-          p?.id === productId || p?._id === productId
-            ? { ...p, isFavorite: isFav }
-            : p,
-        ),
-      );
+    const nextState = !previousState;
 
-      // Related products list update
-      setProductsList((prev) =>
-        prev.map((p) =>
-          p?.id === productId || p?._id === productId
-            ? { ...p, isFavorite: isFav }
-            : p,
-        ),
-      );
-    };
+    // Optimistic update
+    setFavoriteState((prev) => ({
+      ...prev,
+      [id]: nextState,
+    }));
 
-    updateLocalState(nextState);
-    setLoadingProductId(productId);
+    setLoadingProductId(id);
 
     try {
       if (nextState) {
-        await SlugMethods("favorites", "POST", { product: productId });
+        await SlugMethods("favorites", "POST", {
+          product: id,
+        });
+
         setToast({
           message:
             locale === "ar"
@@ -132,10 +152,8 @@ const ProductSlugClient = ({
           type: "success",
         });
       } else {
-        await SlugMethods(
-          `favorites?where[product][equals]=${productId}`,
-          "DELETE",
-        );
+        await SlugMethods(`favorites?where[product][equals]=${id}`, "DELETE");
+
         setToast({
           message:
             locale === "ar"
@@ -146,7 +164,13 @@ const ProductSlugClient = ({
       }
     } catch (error) {
       console.error("Favorite toggle failed:", error);
-      updateLocalState(currentIsFavorite);
+
+      // Rollback
+      setFavoriteState((prev) => ({
+        ...prev,
+        [id]: previousState,
+      }));
+
       setToast({
         message:
           locale === "ar"
@@ -159,22 +183,48 @@ const ProductSlugClient = ({
     }
   };
 
+  const handleAddToCart = (isIn) => {
+    setToast({
+      message: isIn
+        ? locale === "ar"
+          ? "تمت إضافة المنتج إلى السلة"
+          : "Product added to cart"
+        : locale === "ar"
+          ? "المنتج غير متوفر"
+          : "Product is sold out",
+      type: isIn ? "success" : "error",
+    });
+  };
+
+  const websiteName =
+    locale === "en"
+      ? dataBySlug.headerTwo.websiteName
+      : dataBySlug.headerTwo.websiteNameAr;
+
   return (
     <>
-      <div className="border-t p-4 mt-20 border-base-border w-full">
+      <div className="w-full mb-10">
         <ProductSlug
           data={currentProduct}
           locale={locale}
           products={productsList}
           onToggleFavorite={toggleFavorite}
           loadingProductId={loadingProductId}
+          rightSideImage={rightSideImage}
+          pageData={pageData}
         />
+
         <div className="h-full w-full">
           <HeaderTwo
             onToggleFavorite={toggleFavorite}
             loadingProductId={loadingProductId}
             importantProducts={importantList}
             src={HERO_VIDEO_URL}
+            onAddToCart={handleAddToCart}
+            favoriteState={favoriteState}
+            websiteName={websiteName}
+            locale={locale}
+            secondHeader={dataBySlug.headerTwo}
           />
         </div>
       </div>
@@ -183,7 +233,12 @@ const ProductSlugClient = ({
         message={toast.message}
         type={toast.type || "success"}
         duration={5000}
-        onClose={() => setToast((prev) => ({ ...prev, message: null }))}
+        onClose={() =>
+          setToast((prev) => ({
+            ...prev,
+            message: null,
+          }))
+        }
       />
     </>
   );

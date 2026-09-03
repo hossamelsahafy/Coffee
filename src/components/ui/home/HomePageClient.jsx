@@ -28,6 +28,7 @@ export default function HomePageClient({
   const { user } = useUser();
   const [productList, setProductList] = useState(initialProducts || []);
   const [loadingProductId, setLoadingProductId] = useState(null);
+  const [favoriteState, setFavoriteState] = useState({});
   const [toast, setToast] = useState({
     message: null,
     type: "",
@@ -42,22 +43,31 @@ export default function HomePageClient({
             : "You need to login to add products to favorites",
         type: "error",
       });
+
       return;
     }
 
     if (loadingProductId === productId) return;
-    const nextState = !currentIsFavorite;
 
-    setProductList((prev) =>
-      prev.map((p) =>
-        p.id === productId ? { ...p, isFavorite: nextState } : p,
-      ),
-    );
+    const previousState =
+      favoriteState[productId] ?? currentIsFavorite ?? false;
+
+    const nextState = !previousState;
+
+    // Optimistic UI update
+    setFavoriteState((prev) => ({
+      ...prev,
+      [productId]: nextState,
+    }));
+
     setLoadingProductId(productId);
 
     try {
       if (nextState) {
-        await SlugMethods("favorites", "POST", { product: productId });
+        await SlugMethods("favorites", "POST", {
+          product: productId,
+        });
+
         setToast({
           message:
             locale === "ar"
@@ -70,6 +80,7 @@ export default function HomePageClient({
           `favorites?where[product][equals]=${productId}`,
           "DELETE",
         );
+
         setToast({
           message:
             locale === "ar"
@@ -80,11 +91,13 @@ export default function HomePageClient({
       }
     } catch (error) {
       console.error("Favorite toggle failed:", error);
-      setProductList((prev) =>
-        prev.map((p) =>
-          p.id === productId ? { ...p, isFavorite: currentIsFavorite } : p,
-        ),
-      );
+
+      // Rollback
+      setFavoriteState((prev) => ({
+        ...prev,
+        [productId]: previousState,
+      }));
+
       setToast({
         message:
           locale === "ar"
@@ -119,6 +132,7 @@ export default function HomePageClient({
         loadingProductId={loadingProductId}
         productsPagesData={productsPagesData}
         onAddToCart={handleAddToCart}
+        favoriteState={favoriteState}
       />
       <HeaderTwo
         importantProducts={importantProducts}
@@ -127,6 +141,7 @@ export default function HomePageClient({
         onToggleFavorite={toggleFavorite}
         loadingProductId={loadingProductId}
         onAddToCart={handleAddToCart}
+        favoriteState={favoriteState}
       />
       <ReviewsSection
         initialReviewsMap={initialReviewsMap}
@@ -143,6 +158,7 @@ export default function HomePageClient({
         discountSection={discountSection}
         locale={locale}
         onAddToCart={handleAddToCart}
+        favoriteState={favoriteState}
       />
       <BestSellingSection
         data={bestSellingProducts}
@@ -152,6 +168,7 @@ export default function HomePageClient({
         onAddToCart={handleAddToCart}
         bestSellingSectionData={BestSellingSectionData}
         websiteName={websiteName}
+        favoriteState={favoriteState}
       />
 
       <GlassyToast

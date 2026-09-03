@@ -9,18 +9,18 @@ export default async function GetDataWithPagination(
   sort: string = "",
   where: Record<string, any> = {},
   useCookies: boolean = false,
+  depth?: number,
 ) {
   try {
     const url = process.env.NEXT_PUBLIC_URL;
-
     const query = new URLSearchParams({
       page: String(page),
       limit: String(limit),
     });
 
-    if (sort) {
-      query.append("sort", sort);
-    }
+    if (sort) query.append("sort", sort);
+    if (depth !== undefined && depth !== null)
+      query.append("depth", String(depth));
 
     const appendWhereParams = (obj: any, prefix = "where") => {
       for (const key in obj) {
@@ -28,11 +28,7 @@ export default async function GetDataWithPagination(
           const value = obj[key];
           const paramKey = `${prefix}[${key}]`;
 
-          if (
-            value !== null &&
-            typeof value === "object" &&
-            !Array.isArray(value)
-          ) {
+          if (value !== null && typeof value === "object") {
             appendWhereParams(value, paramKey);
           } else if (value !== undefined) {
             query.append(paramKey, String(value));
@@ -49,16 +45,10 @@ export default async function GetDataWithPagination(
 
     if (useCookies) {
       const cookieStore = await cookies();
-
-      fetchOptions.headers = {
-        Cookie: cookieStore.toString(),
-      };
-
+      fetchOptions.headers = { Cookie: cookieStore.toString() };
       fetchOptions.cache = "no-store";
     } else {
-      fetchOptions.next = {
-        revalidate: 60,
-      };
+      fetchOptions.next = { revalidate: 60 };
     }
 
     const res = await fetch(
@@ -66,9 +56,7 @@ export default async function GetDataWithPagination(
       fetchOptions,
     );
 
-    if (!res.ok) {
-      throw new Error(`Fetch failed: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
 
     const data = await res.json();
 
@@ -82,7 +70,6 @@ export default async function GetDataWithPagination(
     };
   } catch (error) {
     console.error("GetDataWithPagination error:", error);
-
     return {
       docs: [],
       totalPages: 1,

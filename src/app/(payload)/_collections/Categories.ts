@@ -98,7 +98,7 @@ export const Categories: CollectionConfig = {
         }
 
         if (existing.totalDocs >= 4) {
-          return "Cannot have more than 4 best seller products";
+          return "Cannot have more than 4 Categories To Show In Home Page";
         }
 
         return true;
@@ -209,16 +209,16 @@ export const Categories: CollectionConfig = {
 
         {
           name: "ImageSource",
-          type: "select",
+          type: "radio",
           label: "SEO Image Source",
           defaultValue: "upload",
           options: [
             {
-              label: "URL",
+              label: "Paste Image URL",
               value: "Url",
             },
             {
-              label: "Select",
+              label: "Select Image",
               value: "upload",
             },
           ],

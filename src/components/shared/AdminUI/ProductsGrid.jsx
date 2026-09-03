@@ -123,7 +123,7 @@ const ProductsGrid = ({ gridState, getViewCountBadge, adminRoute }) => {
                         >
                           <div className="min-w-0 pr-2">
                             <span className="font-medium text-white! truncate block">
-                              {opt.value} / {opt.valueAr}
+                              {opt.value.name} / {opt.value.nameAr}
                             </span>
                             <span
                               className={`text-[10px] ${
@@ -153,7 +153,6 @@ const ProductsGrid = ({ gridState, getViewCountBadge, adminRoute }) => {
                   </div>
                 )}
 
-                {/* Total Views */}
                 <div className="flex items-center justify-between border-t border-white/5! pt-3">
                   <span className="text-gray-400!">Total Views Logged</span>
                   <span className="font-bold text-[#D8A46B]!">
@@ -161,7 +160,6 @@ const ProductsGrid = ({ gridState, getViewCountBadge, adminRoute }) => {
                   </span>
                 </div>
 
-                {/* Last Active */}
                 <div className="flex items-center justify-between border-t border-white/5! pt-3">
                   <span className="text-gray-400!">Last Active</span>
                   <span className="font-medium text-xs text-[#E8C6A7]/80!">

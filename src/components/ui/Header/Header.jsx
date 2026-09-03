@@ -17,8 +17,8 @@ const Header = ({ locale, websiteName, textAnimation, PartnerSection }) => {
   const partners = t("partners");
 
   return (
-    <div className="absolute inset-0 w-full flex flex-col justify-center items-center z-10">
-      <div className="relative w-full h-auto p-4 text-base-light flex flex-col items-center justify-center text-center">
+    <div className="absolute top-0 w-full min-h-screen flex flex-col justify-between items-center z-10">
+      <div className="relative w-full flex-1 p-4 text-base-light flex flex-col items-center justify-center text-center">
         <div
           className={`hidden md:flex flex-col lg:p-12 items-center absolute ${
             locale === "en" ? "left-4" : "right-4"
@@ -43,14 +43,17 @@ const Header = ({ locale, websiteName, textAnimation, PartnerSection }) => {
           <TextAnimation locale={locale} data={textAnimation} />
         </div>
       </div>
-      <Partners
-        locale={locale}
-        title={websiteName}
-        partners={partners}
-        fresh={fresh}
-        freshSpan={freshSpan}
-        data={ImageArray}
-      />
+
+      <div className="w-full mt-auto">
+        <Partners
+          locale={locale}
+          title={websiteName}
+          partners={partners}
+          fresh={fresh}
+          freshSpan={freshSpan}
+          data={ImageArray}
+        />
+      </div>
     </div>
   );
 };

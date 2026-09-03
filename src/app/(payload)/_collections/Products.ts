@@ -27,8 +27,8 @@ export const Products: CollectionConfig = {
     { name: "titleAr", type: "text" },
     { name: "subtitle", type: "text" },
     { name: "subtitleAr", type: "text" },
-    { name: "longDes", type: "text" },
-    { name: "longDesAr", type: "text" },
+    { name: "longDes", type: "richText" },
+    { name: "longDesAr", type: "richText" },
 
     {
       name: "slug",
@@ -159,8 +159,12 @@ export const Products: CollectionConfig = {
       required: true,
       hasMany: false,
     },
-    { name: "type", type: "text" },
-    { name: "typeAr", type: "text" },
+    {
+      name: "BrandName",
+      type: "relationship",
+      relationTo: "brands",
+      required: true,
+    },
 
     {
       name: "choices",
@@ -193,8 +197,26 @@ export const Products: CollectionConfig = {
           name: "options",
           type: "array",
           fields: [
-            { name: "value", type: "text", required: true },
-            { name: "valueAr", type: "text", required: true },
+            {
+              name: "value",
+              type: "relationship",
+              relationTo: "product-options",
+              required: true,
+
+              filterOptions: ({ siblingData, data }) => {
+                const choiceType = data?.choices?.choiceType;
+
+                if (!choiceType) {
+                  return true;
+                }
+
+                return {
+                  type: {
+                    equals: choiceType,
+                  },
+                };
+              },
+            },
             {
               name: "availability",
               type: "radio",
@@ -244,6 +266,65 @@ export const Products: CollectionConfig = {
         },
       ],
     },
+
+    {
+      name: "headerTwo",
+      type: "group",
+      fields: [
+        { name: "websiteName", type: "text" },
+        { name: "websiteNameAr", type: "text" },
+
+        { name: "title", type: "text" },
+        { name: "titleAr", type: "text" },
+
+        { name: "subtitle", type: "text" },
+        { name: "subtitleAr", type: "text" },
+        {
+          name: "HeaderTwoVideo",
+          type: "text",
+          label: "Paste Video To Show In Recent Products",
+        },
+        {
+          name: "ImageSource",
+          type: "radio",
+          defaultValue: "upload",
+          options: [
+            {
+              value: "Url",
+              label: "Paste Image Url",
+            },
+            {
+              value: "upload",
+              label: "Select Image",
+            },
+          ],
+        },
+        {
+          name: "rightSideImage",
+          type: "upload",
+          relationTo: "media",
+          label: "Select Image",
+          required: true,
+          admin: {
+            condition: (_, siblingData) =>
+              siblingData?.ImageSource === "upload",
+            components: {
+              Field: "@/components/admin/CustomMediaSelection",
+            },
+          },
+        },
+        {
+          name: "rightSideImageUrl",
+          type: "text",
+          label: "Paste Image Url",
+          required: true,
+          admin: {
+            condition: (_, siblingData) => siblingData?.ImageSource === "Url",
+          },
+        },
+      ],
+    },
+
     {
       name: "SEO",
       type: "group",

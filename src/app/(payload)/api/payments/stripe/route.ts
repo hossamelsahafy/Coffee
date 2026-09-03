@@ -37,7 +37,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Make sure this order belongs to the authenticated user.
     const result = await payload.find({
       collection: "orders",
       where: {
@@ -71,7 +70,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Cash orders cannot use Stripe.
     if (order.payment?.method === "cash") {
       return NextResponse.json(
         {
@@ -83,11 +81,20 @@ export async function POST(req: Request) {
       );
     }
 
-    // Already paid.
     if (order.payment?.status === "paid") {
       return NextResponse.json(
         {
           error: "Order is already paid",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+    if (order.status === "Cancelled") {
+      return NextResponse.json(
+        {
+          error: "Order Was Cancelled You Can't Pay For That Order",
         },
         {
           status: 400,
@@ -100,10 +107,6 @@ export async function POST(req: Request) {
     let paymentIntent: Stripe.PaymentIntent | null = null;
 
     const existingPaymentIntentId = order.payment?.stripePaymentIntentId;
-
-    // ============================================================
-    // TRY TO REUSE EXISTING PAYMENT INTENT
-    // ============================================================
     if (existingPaymentIntentId) {
       try {
         const existing = await stripe.paymentIntents.retrieve(

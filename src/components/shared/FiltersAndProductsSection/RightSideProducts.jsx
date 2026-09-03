@@ -41,7 +41,6 @@ const RightSideProducts = ({
   onPageChange,
   isFetching = false,
 }) => {
-  // Sort options matching Payload CMS API fields
   const sortOptions = [
     { value: "-createdAt", en: "Latest", ar: "الأحدث" },
     { value: "price", en: "Price: Low to High", ar: "السعر: من الأقل للأعلى" },

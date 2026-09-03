@@ -1,14 +1,18 @@
 import type { CollectionConfig } from "payload";
+
 import {
   orderAdminHTML,
   orderAdminSubject,
 } from "@/lib/Emails/OrderAdminConfirmation";
+
 import {
   orderConfirmationHTML,
   orderConfirmationSubject,
 } from "@/lib/Emails/OrderConfirmation";
+
 export const Orders: CollectionConfig = {
   slug: "orders",
+
   access: {
     read: ({ req }) => {
       if (!req.user) return false;
@@ -25,12 +29,15 @@ export const Orders: CollectionConfig = {
     create: ({ req }) => {
       return !!req.user;
     },
+
     update: ({ req }) => req.user?.role === "admin",
+
     delete: ({ req }) => req.user?.role === "admin",
   },
 
   admin: {
     useAsTitle: "orderNumber",
+
     components: {
       views: {
         list: {
@@ -38,6 +45,7 @@ export const Orders: CollectionConfig = {
         },
       },
     },
+
     pagination: {
       defaultLimit: 12,
       limits: [8, 12, 24, 50],
@@ -70,20 +78,45 @@ export const Orders: CollectionConfig = {
           relationTo: "products",
           required: true,
         },
-        { name: "title", type: "text" },
-        { name: "image", type: "text" },
-        { name: "quantity", type: "number", required: true, defaultValue: 1 },
-        { name: "price", type: "number" },
-        { name: "total", type: "number" },
+
         {
-          name: "selectedOptions",
+          name: "title",
           type: "text",
-          admin: {
-            hidden: true,
-          },
         },
-        { name: "optionType", type: "text" },
-        { name: "optionValue", type: "text" },
+
+        {
+          name: "image",
+          type: "text",
+        },
+
+        {
+          name: "quantity",
+          type: "number",
+          required: true,
+          defaultValue: 1,
+        },
+
+        {
+          name: "price",
+          type: "number",
+        },
+
+        {
+          name: "total",
+          type: "number",
+        },
+
+        {
+          name: "optionValue",
+          type: "relationship",
+          relationTo: "product-options",
+          required: true,
+        },
+
+        {
+          name: "optionType",
+          type: "text",
+        },
       ],
     },
 
@@ -92,6 +125,7 @@ export const Orders: CollectionConfig = {
       type: "number",
       label: "Total Price Of Products Without Shipping",
     },
+
     {
       name: "shipping",
       type: "group",
@@ -102,28 +136,50 @@ export const Orders: CollectionConfig = {
           relationTo: "shipping-zones",
           required: true,
         },
+
         {
           name: "city",
           type: "text",
         },
+
         {
           name: "price",
           type: "number",
         },
       ],
     },
-    { name: "total", type: "number", label: "Total Price With Shipping" },
+
+    {
+      name: "total",
+      type: "number",
+      label: "Total Price With Shipping",
+    },
 
     {
       name: "status",
       type: "select",
       defaultValue: "pending",
       options: [
-        { label: "Pending", value: "pending" },
-        { label: "Processing", value: "processing" },
-        { label: "Shipped", value: "shipped" },
-        { label: "Delivered", value: "delivered" },
-        { label: "Cancelled", value: "cancelled" },
+        {
+          label: "Pending",
+          value: "pending",
+        },
+        {
+          label: "Processing",
+          value: "processing",
+        },
+        {
+          label: "Shipped",
+          value: "shipped",
+        },
+        {
+          label: "Delivered",
+          value: "delivered",
+        },
+        {
+          label: "Cancelled",
+          value: "cancelled",
+        },
       ],
     },
 
@@ -136,19 +192,38 @@ export const Orders: CollectionConfig = {
           type: "select",
           required: true,
           options: [
-            { label: "Cash", value: "cash" },
-            { label: "Stripe", value: "stripe" },
+            {
+              label: "Cash",
+              value: "cash",
+            },
+            {
+              label: "Stripe",
+              value: "stripe",
+            },
           ],
         },
+
         {
           name: "status",
           type: "select",
           defaultValue: "pending",
           options: [
-            { label: "Pending", value: "pending" },
-            { label: "Paid", value: "paid" },
-            { label: "Failed", value: "failed" },
-            { label: "Refunded", value: "refunded" },
+            {
+              label: "Pending",
+              value: "pending",
+            },
+            {
+              label: "Paid",
+              value: "paid",
+            },
+            {
+              label: "Failed",
+              value: "failed",
+            },
+            {
+              label: "Refunded",
+              value: "refunded",
+            },
             {
               label: "Cash on Delivery",
               value: "cash_on_delivery",
@@ -156,23 +231,53 @@ export const Orders: CollectionConfig = {
           ],
         },
 
-        { name: "stripePaymentIntentId", type: "text" },
+        {
+          name: "stripePaymentIntentId",
+          type: "text",
+        },
       ],
     },
+
     {
       name: "customer",
       type: "group",
       fields: [
-        { name: "firstName", type: "text" },
-        { name: "lastName", type: "text" },
-        { name: "phone", type: "text" },
-        { name: "email", type: "email" },
+        {
+          name: "firstName",
+          type: "text",
+        },
+
+        {
+          name: "lastName",
+          type: "text",
+        },
+
+        {
+          name: "phone",
+          type: "text",
+        },
+
+        {
+          name: "email",
+          type: "email",
+        },
       ],
     },
 
-    { name: "paidAt", type: "date" },
-    { name: "shippedAt", type: "date" },
-    { name: "deliveredAt", type: "date" },
+    {
+      name: "paidAt",
+      type: "date",
+    },
+
+    {
+      name: "shippedAt",
+      type: "date",
+    },
+
+    {
+      name: "deliveredAt",
+      type: "date",
+    },
   ],
 
   hooks: {
@@ -188,6 +293,7 @@ export const Orders: CollectionConfig = {
           phone: req.user.phoneNumber,
           email: req.user.email,
         };
+
         if (operation === "create") {
           if (!data.orderNumber) {
             data.orderNumber = `ORD-${Date.now()}`;
@@ -195,12 +301,68 @@ export const Orders: CollectionConfig = {
 
           if (data.payment?.method === "cash") {
             data.payment.status = "cash_on_delivery";
-          } else if (
-            data.payment?.method === "stripe" &&
-            !data.payment.status
-          ) {
+          } else if (data.payment?.method === "stripe") {
             data.payment.status = "pending";
           }
+
+          data.items = await Promise.all(
+            data.items.map(async (item) => {
+              const product = await req.payload.findByID({
+                collection: "products",
+                id: item.product,
+              });
+
+              const option = product.choices.options?.find(
+                (opt) => String(opt.value?.id) === String(item.optionValue),
+              );
+
+              const price = option?.priceAfter ?? 0;
+
+              const image =
+                option?.ImageSource === "Url"
+                  ? option.imageUrl
+                  : option?.image?.url;
+
+              const optionType = product.choices.choiceType;
+              const quantity = Number(item.quantity) || 0;
+
+              return {
+                ...item,
+                price,
+                image,
+                optionType,
+                total: price * quantity,
+              };
+            }),
+          );
+
+          const itemsTotal =
+            data.items?.reduce((sum, item) => sum + (item.total || 0), 0) || 0;
+
+          let shippingPrice = 0;
+
+          const zoneId =
+            typeof data.shipping?.zone === "string"
+              ? data.shipping.zone
+              : data.shipping?.zone?.id;
+
+          if (zoneId) {
+            const zone = await req.payload.findByID({
+              collection: "shipping-zones",
+              id: zoneId,
+            });
+
+            shippingPrice = Number(zone?.shippingPrice || 0);
+
+            data.shipping = {
+              ...data.shipping,
+              city: zone.cityName,
+              price: shippingPrice,
+            };
+          }
+
+          data.subtotal = itemsTotal;
+          data.total = itemsTotal + shippingPrice;
         }
 
         if (operation === "update") {
@@ -211,66 +373,26 @@ export const Orders: CollectionConfig = {
           }
         }
 
-        data.items = await Promise.all(
-          data.items.map(async (item) => {
-            const product = await req.payload.findByID({
-              collection: "products",
-              id: item.product,
-            });
-
-            const option = product.choices.options?.find(
-              (opt) => String(opt.id) === String(item.selectedOptions),
-            );
-
-            const price = option?.priceAfter ?? 0;
-            const image =
-              option?.ImageSource === "Url"
-                ? option.imageUrl
-                : option?.image?.url;
-            const optionType = product.choices.choiceType;
-            const optionValue = option?.value;
-            const quantity = Number(item.quantity) || 0;
-
-            return {
-              ...item,
-              price: price,
-              image: image,
-              optionValue: optionValue,
-              optionType: optionType,
-              total: price * quantity,
-            };
-          }),
-        );
-        const itemsTotal =
-          data.items?.reduce((sum, item) => sum + (item.total || 0), 0) || 0;
-
-        let shippingPrice = 0;
-
-        const zoneId =
-          typeof data.shipping?.zone === "string"
-            ? data.shipping.zone
-            : data.shipping?.zone?.id;
-
-        if (zoneId) {
-          const zone = await req.payload.findByID({
-            collection: "shipping-zones",
-            id: zoneId,
-          });
-
-          shippingPrice = Number(zone?.shippingPrice || 0);
-          data.shipping.city = zone.cityName;
-          data.shipping.price = shippingPrice;
-        }
-
-        data.subtotal = itemsTotal;
-        data.total = itemsTotal + shippingPrice;
-
         return data;
       },
     ],
+
     afterChange: [
-      async ({ doc, operation, req }) => {
-        if (operation !== "create") return;
+      async ({ doc, req }) => {
+        if (
+          doc.payment?.method === "stripe" &&
+          doc.payment?.status === "pending"
+        ) {
+          await req.payload.jobs.queue({
+            task: "cancelUnpaidOrder",
+            input: {
+              orderId: doc.id,
+            },
+            waitUntil: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          });
+
+          console.log("⏰ 24H CANCELLATION JOB QUEUED:", doc.id);
+        }
 
         const paymentMethod =
           doc.payment?.method === "stripe" ? "Stripe" : "Cash";
@@ -281,7 +403,9 @@ export const Orders: CollectionConfig = {
         await Promise.all([
           req.payload.sendEmail({
             to: doc.customer.email,
+
             subject: orderConfirmationSubject(doc.orderNumber, orderState),
+
             html: orderConfirmationHTML({
               firstName: doc.customer.firstName,
               orderNumber: doc.orderNumber,
@@ -293,7 +417,9 @@ export const Orders: CollectionConfig = {
 
           req.payload.sendEmail({
             to: process.env.ADMIN_EMAIL!,
+
             subject: orderAdminSubject(doc.orderNumber),
+
             html: orderAdminHTML({
               firstName: doc.customer.firstName,
               lastName: doc.customer.lastName,

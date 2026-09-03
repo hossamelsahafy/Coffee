@@ -8,12 +8,15 @@ import AddToCartButton from "../Buttons/AddToCartButton";
 
 const ProductModal = ({ selectedProduct, locale, setOpenModel, openModel }) => {
   const options = selectedProduct?.choices?.options || [];
+
   const getInitialOption = () => {
     return options.find((o) => o.availability === "inStock") || options[0];
   };
-  const [selectOption, setSelectedOption] = useState(getInitialOption);
+
+  const [selectedOption, setSelectedOption] = useState(getInitialOption);
   const [quantity, setQuantity] = useState(1);
   const [swiper, setSwiper] = useState(null);
+
   const defaultBreakpoints = {
     0: {
       slidesPerView: 1,
@@ -32,21 +35,43 @@ const ProductModal = ({ selectedProduct, locale, setOpenModel, openModel }) => {
       spaceBetween: 20,
     },
   };
+
   const imagesData =
     selectedProduct?.choices?.options?.map((opt) => ({
-      id: opt.imageUrl || opt.image.url,
+      id: opt.value?.id || opt.value || opt.imageUrl || opt.image?.url,
       image: opt.ImageSource === "Url" ? opt.imageUrl : opt.image?.url,
       option: opt,
     })) || [];
-  const activeOption = selectOption || options[0];
+
+  const activeOption = selectedOption || options[0];
+
+  const handleOptionChange = (newOption) => {
+    if (!newOption) return;
+    setSelectedOption(newOption);
+
+    const index = imagesData.findIndex(
+      (img) =>
+        (img.option?.value?.id || img.option?.value || img.option) ===
+        (newOption?.value?.id || newOption?.value || newOption),
+    );
+    if (index !== -1) {
+      swiper?.slideTo(index);
+    }
+  };
+
   const increase = () => {
     setQuantity((prev) => prev + 1);
   };
   const decrease = () => {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   };
+
   const isIn = activeOption?.availability === "inStock";
   const SoldOut = locale === "en" ? "Sold Out" : "نفذت الكمية";
+
+  const activeValueLabel =
+    locale === "en" ? activeOption?.value?.name : activeOption?.value?.nameAr;
+
   return (
     <div
       className={`
@@ -89,16 +114,16 @@ const ProductModal = ({ selectedProduct, locale, setOpenModel, openModel }) => {
                 hidden={imagesData.length <= 1}
               />
             </div>
-            <div className="flex  w-full md:max-w-1/2 flex-col items-center md:items-start justify-center gap-4">
-              <h2 className="text-4xl font-bold text-base-dark line-clamp-1">
+            <div className="flex w-full md:max-w-1/2 flex-col items-center md:items-start justify-center gap-4">
+              <h2 className="text-2xl font-bold text-base-dark">
                 {locale === "en"
                   ? selectedProduct?.title
                   : selectedProduct?.titleAr}
               </h2>
               <p className="text-base text-base-dark line-clamp-3">
                 {locale === "en"
-                  ? selectedProduct?.longDes
-                  : selectedProduct?.longDesAr}
+                  ? selectedProduct?.subtitle
+                  : selectedProduct?.subtitleAr}
               </p>
               <p className="font-bold text-base text-base-dark capitalize text-start">
                 {locale === "en"
@@ -106,54 +131,55 @@ const ProductModal = ({ selectedProduct, locale, setOpenModel, openModel }) => {
                   : selectedProduct?.choices?.choiceTypeAr}
                 :
                 <span className="inline mx-2 font-medium">
-                  {locale === "en"
-                    ? activeOption?.value
-                    : activeOption?.valueAr}
+                  {activeValueLabel}
                 </span>
               </p>
               <div className="flex flex-row justify-start items-center gap-4">
-                {imagesData.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => {
-                      setSelectedOption(item.option);
+                {imagesData.map((item) => {
+                  const isItemActive =
+                    (activeOption?.value?.id ||
+                      activeOption?.value ||
+                      activeOption) ===
+                    (item.option?.value?.id ||
+                      item.option?.value ||
+                      item.option);
 
-                      const index = imagesData.findIndex(
-                        (img) => img.option?.id === item.option?.id,
-                      );
-
-                      swiper?.slideTo(index);
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <Image
-                      width={100}
-                      height={100}
-                      alt="image"
-                      src={item.image}
-                      className={`object-contain rounded-md border transition
-  
-  ${activeOption?.id === item.option?.id ? "border-base-light scale-105" : "border-base-dark"}
-`}
-                    />
-                  </div>
-                ))}
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => handleOptionChange(item.option)}
+                      className="cursor-pointer"
+                    >
+                      <Image
+                        width={100}
+                        height={100}
+                        alt="image"
+                        src={item.image}
+                        className={`object-contain rounded-md border transition ${
+                          isItemActive
+                            ? "border-base-light scale-105"
+                            : "border-base-dark"
+                        }`}
+                      />
+                    </div>
+                  );
+                })}
               </div>
               <div className="flex gap-2 text-2xl font-bold text-base-dark">
-                <p className="">{activeOption?.priceAfter.toFixed(2)}USD</p>
+                <p className="">{activeOption?.priceAfter?.toFixed(2)}USD</p>
                 <p className="relative before:absolute before:left-0 before:right-0 before:top-1/2 before:border-t-2 before:border-base-dark">
-                  {activeOption?.priceBefore.toFixed(2)}USD
+                  {activeOption?.priceBefore?.toFixed(2)}USD
                 </p>
               </div>
               {isIn ? (
                 <div className="flex justify-start gap-4">
-                  <button className="flex  justify-center items-center cursor-pointer gap-2 px-4 py-2 rounded-full bg-base-dark/80 hover:bg-base-dark transition-all duration-300 text-base-light">
+                  <button className="flex justify-center items-center cursor-pointer gap-2 px-4 py-2 rounded-full bg-base-dark/80 hover:bg-base-dark transition-all duration-300 text-base-light">
                     {locale === "en" ? "Add To Cart" : "اضف لعربة التسوق"}
                     <span className="">
                       <FaCartShopping className="text-base-light" />
                     </span>
                   </button>
-                  <button className="flex items-center w-24 border border-base-dark rounded-full text-base-light">
+                  <button className="flex items-center w-24 border border-base-dark rounded-full text-base-dark">
                     <span
                       className="flex-1 text-center cursor-pointer"
                       onClick={() => decrease()}

@@ -1,33 +1,72 @@
 "use client";
 
-import React from "react";
-import { useConfig, useListQuery } from "@payloadcms/ui";
+import React, { useState, useEffect, useCallback } from "react";
+import { useConfig } from "@payloadcms/ui";
 import Link from "next/link";
 import Pagination from "@/components/shared/AdminUI/Pagination";
 import OrdersFilteringAndSorting from "./ordersFilteringAndSorting";
+import GetDataWithPagination from "@/actions/GetDataWithPagination";
+import OrderSkelaton from "./OrderSkelaton";
 
 export const OrdersCustomGrid = () => {
   const { config } = useConfig();
   const adminRoute = config.routes?.admin || "/admin";
 
-  const {
-    data,
-    isLoading,
-    handlePageChange,
-    handleSortChange,
-    handleWhereChange,
-  } = useListQuery({ limit: 12 });
+  const [data, setData] = useState({
+    docs: [],
+    totalPages: 1,
+    page: 1,
+    totalDocs: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState("");
+  const [where, setWhere] = useState({});
 
-  const orders = data?.docs || [];
-  const page = data?.page || 1;
-  const totalPages = data?.totalPages || 1;
-  const hasPrevPage = data?.hasPrevPage || false;
-  const hasNextPage = data?.hasNextPage || false;
+  const limit = 12;
+
+  const fetchOrders = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await GetDataWithPagination(
+        "orders",
+        page,
+        limit,
+        sort,
+        where,
+        true,
+      );
+      setData(result);
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, sort, where]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const orders = data.docs;
+  const totalPages = data.totalPages;
+  const hasPrevPage = data.hasPrevPage;
+  const hasNextPage = data.hasNextPage;
 
   const onPageChange = (newPage) => {
-    if (typeof handlePageChange === "function") {
-      handlePageChange(newPage);
-    }
+    setPage(newPage);
+  };
+
+  const handleSortChange = (newSort) => {
+    setSort(newSort);
+    setPage(1);
+  };
+
+  const handleWhereChange = (newWhere) => {
+    setWhere(newWhere);
+    setPage(1);
   };
 
   const getOrderStatusBadge = (status) => {
@@ -101,9 +140,7 @@ export const OrdersCustomGrid = () => {
         />
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-48 text-[#e2cca6]/60!">
-            Fetching orders...
-          </div>
+          <OrderSkelaton limit={limit} />
         ) : orders.length === 0 ? (
           <div className="p-12 text-center text-[#e2cca6]/60 bg-[#2c1d15]! border border-[#6b4a37]/50! rounded-xl">
             No orders found matching your search.
@@ -168,7 +205,20 @@ export const OrdersCustomGrid = () => {
                               {order.items.length === 1 ? "item" : "items"}
                             </span>
                           </div>
-
+                          <div className="flex items-center justify-between border-t border-white/5! pt-3 font-semibold">
+                            <span className="text-gray-400!">Shipped To</span>
+                            <span className="text-base text-[#D8A46B]!">
+                              {order.shipping?.city || "--"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between border-t border-white/5! pt-3 font-semibold">
+                            <span className="text-gray-400!">
+                              Shipping Cost
+                            </span>
+                            <span className="text-base text-[#D8A46B]!">
+                              ${order.shipping?.price ?? 0}
+                            </span>
+                          </div>
                           <div className="space-y-2 max-h-40 overflow-y-auto rounded-xl border border-white/5! bg-black/20! p-3">
                             {order.items.map((item, index) => (
                               <div
@@ -181,7 +231,7 @@ export const OrdersCustomGrid = () => {
                                   </p>
                                   {item.optionValue && (
                                     <span className="text-[#E8C6A7]/60!">
-                                      {item.optionType}: {item.optionValue}
+                                      {item.optionType}: {item.optionValue.name}
                                     </span>
                                   )}
                                   <p className="text-gray-400!">
@@ -198,23 +248,25 @@ export const OrdersCustomGrid = () => {
                           </div>
                         </div>
                       )}
-
-                      <div className="flex items-center justify-between border-t border-white/5! pt-3 font-semibold">
-                        <span className="text-gray-400!">Total Amount</span>
-                        <span className="text-base text-[#D8A46B]!">
-                          ${order.total ?? 0}
-                        </span>
-                      </div>
                     </div>
                   </div>
 
-                  <div className="mt-6 flex justify-end border-t border-white/10! pt-4">
-                    <Link
-                      href={`${adminRoute}/collections/orders/${order.id}`}
-                      className="inline-flex items-center justify-center rounded-xl border border-[#C07A3B]/30! bg-[#6F3F1C]/40! px-4 py-2 text-sm font-medium text-[#E8C6A7]! shadow-sm transition-all hover:bg-[#C07A3B]! hover:text-white!"
-                    >
-                      View / Edit Order
-                    </Link>
+                  {/* Footer section containing Total Amount and Action Button */}
+                  <div className="mt-6 border-t border-white/15! pt-4 space-y-3">
+                    <div className="flex items-center justify-between font-semibold">
+                      <span className="text-gray-400!">Total Amount</span>
+                      <span className="text-base text-[#D8A46B]!">
+                        ${order.total ?? 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-end">
+                      <Link
+                        href={`${adminRoute}/collections/orders/${order.id}`}
+                        className="inline-flex items-center justify-center rounded-xl border border-[#C07A3B]/30! bg-[#6F3F1C]/40! px-4 py-2 text-sm font-medium text-[#E8C6A7]! shadow-sm transition-all hover:bg-[#C07A3B]! hover:text-white!"
+                      >
+                        View / Edit Order
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );

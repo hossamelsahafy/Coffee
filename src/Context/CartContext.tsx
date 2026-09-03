@@ -24,10 +24,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       title: product.title,
       titleAr: product.titleAr,
 
-      optionId: selectedOption.id,
+      optionId: selectedOption.value.id,
 
-      optionValue: selectedOption.value,
-      optionValueAr: selectedOption.valueAr,
+      optionValue: selectedOption.value.name,
+      optionValueAr: selectedOption.value.nameAr,
       optionType: product.choices.choiceType,
       optionTypeAr: product.choices.choiceTypeAr,
 

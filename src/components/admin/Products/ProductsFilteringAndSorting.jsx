@@ -8,34 +8,37 @@ const ProductsFilteringAndSorting = ({
   handleWhereChange,
   categories = [],
   adminRoute,
+  brands = [],
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [brandSearch, setBrandSearch] = useState("");
   const [priceSort, setPriceSort] = useState("none");
+
   const [booleanFilters, setBooleanFilters] = useState({
     isNewest: false,
     ShowInDiscountSection: false,
     important: false,
     isBestSeller: false,
   });
+  console.log(brands);
+  console.log(categories);
 
-  const updatePayloadWhere = (
+  const updatePayloadWhere = ({
     search = searchTerm,
     category = selectedCategory,
     brand = brandSearch,
     booleans = booleanFilters,
-  ) => {
+  } = {}) => {
     if (typeof handleWhereChange !== "function") return;
 
-    const AND = [];
+    const conditions = [];
+    const term = search.trim();
 
-    if (search.trim()) {
-      const term = search.trim();
-
-      AND.push({
+    // 1. Search Query
+    if (term) {
+      conditions.push({
         or: [
-          { id: { equals: term } },
           { title: { contains: term } },
           { titleAr: { contains: term } },
           { subtitle: { contains: term } },
@@ -44,78 +47,97 @@ const ProductsFilteringAndSorting = ({
       });
     }
 
-    if (category !== "all") {
-      AND.push({
-        category: {
-          equals: category,
-        },
+    if (category && category !== "all") {
+      conditions.push({
+        category: { equals: category },
       });
     }
 
-    if (brand.trim()) {
-      AND.push({
-        subtitle: {
-          contains: brand.trim(),
-        },
+    if (brand) {
+      conditions.push({
+        BrandName: { equals: brand },
       });
     }
 
     Object.entries(booleans).forEach(([key, value]) => {
       if (value) {
-        AND.push({
-          [key]: {
-            equals: true,
-          },
+        conditions.push({
+          [key]: { equals: true },
         });
       }
     });
 
-    handleWhereChange(AND.length ? { AND } : {});
+    const newWhere = conditions.length > 0 ? { and: conditions } : {};
+
+    handleWhereChange(newWhere);
   };
 
   const handleSearchChange = (e) => {
-    const val = e.target.value;
-    setSearchTerm(val);
-    updatePayloadWhere(val, selectedCategory, brandSearch, booleanFilters);
+    const value = e.target.value;
+
+    setSearchTerm(value);
+
+    updatePayloadWhere({
+      search: value,
+    });
   };
 
   const handleCategoryChange = (e) => {
-    const val = e.target.value;
-    setSelectedCategory(val);
-    updatePayloadWhere(searchTerm, val, brandSearch, booleanFilters);
+    const value = e.target.value;
+
+    setSelectedCategory(value);
+
+    updatePayloadWhere({
+      category: value,
+    });
   };
 
   const handleBrandChange = (e) => {
-    const val = e.target.value;
-    setBrandSearch(val);
-    updatePayloadWhere(searchTerm, selectedCategory, val, booleanFilters);
+    const value = e.target.value;
+
+    setBrandSearch(value);
+
+    updatePayloadWhere({
+      brand: value,
+    });
   };
 
   const handleCheckboxChange = (key) => {
-    const updatedBooleans = { ...booleanFilters, [key]: !booleanFilters[key] };
+    const updatedBooleans = {
+      ...booleanFilters,
+      [key]: !booleanFilters[key],
+    };
+
     setBooleanFilters(updatedBooleans);
-    updatePayloadWhere(
-      searchTerm,
-      selectedCategory,
-      brandSearch,
-      updatedBooleans,
-    );
+
+    updatePayloadWhere({
+      booleans: updatedBooleans,
+    });
   };
 
   const handleSortSelect = (e) => {
     const value = e.target.value;
+
     setPriceSort(value);
 
-    if (typeof handleSortChange === "function") {
-      if (value === "titleAsc") {
+    if (typeof handleSortChange !== "function") return;
+
+    switch (value) {
+      case "titleAsc":
         handleSortChange("title");
-      } else if (value === "titleDesc") {
+        break;
+
+      case "titleDesc":
         handleSortChange("-title");
-      } else if (value === "newest") {
+        break;
+
+      case "newest":
         handleSortChange("-createdAt");
-      } else {
+        break;
+
+      default:
         handleSortChange("");
-      }
+        break;
     }
   };
 
@@ -126,10 +148,12 @@ const ProductsFilteringAndSorting = ({
           <h1 className="text-2xl font-bold tracking-tight text-[#fff9f0]">
             Roastery & Products Dashboard
           </h1>
+
           <p className="text-sm text-[#e2cca6]/70">
             Manage, search, and filter coffee inventory globally
           </p>
         </div>
+
         <Link
           href={`${adminRoute}/collections/products/create`}
           className="px-4 py-2 bg-[#8c5a3c] hover:bg-[#a36a46] text-[#fff9f0] font-medium rounded-lg shadow transition-colors text-sm border border-[#6b4a37]"
@@ -154,6 +178,7 @@ const ProductsFilteringAndSorting = ({
             className="w-full px-3 py-2 bg-[#1f140e] border border-[#6b4a37] rounded-md text-sm text-[#fff9f0] focus:outline-none focus:ring-2 focus:ring-[#d4a373]"
           >
             <option value="all">All Categories</option>
+
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.title}
@@ -161,13 +186,20 @@ const ProductsFilteringAndSorting = ({
             ))}
           </select>
 
-          <input
-            type="text"
-            placeholder="Filter by Brand (Subtitle)..."
+          <select
             value={brandSearch}
             onChange={handleBrandChange}
-            className="w-full px-3 py-2 bg-[#1f140e] border border-[#6b4a37] rounded-md text-sm text-[#fff9f0] placeholder-[#e2cca6]/40 focus:outline-none focus:ring-2 focus:ring-[#d4a373]"
-          />
+            className="w-full px-3 py-2 bg-[#1f140e] border border-[#6b4a37] rounded-md text-sm text-[#fff9f0] focus:outline-none focus:ring-2 focus:ring-[#d4a373]"
+          >
+            <option value="">All Brands</option>
+
+            {brands.map((brand) => (
+              <option key={brand.id} value={brand.id}>
+                {brand.name}
+                {brand.nameAr ? ` / ${brand.nameAr}` : ""}
+              </option>
+            ))}
+          </select>
 
           <select
             value={priceSort}
@@ -185,11 +217,15 @@ const ProductsFilteringAndSorting = ({
           <span className="text-xs font-semibold text-[#d4a373] uppercase tracking-wider">
             Filter Badges:
           </span>
+
           {[
             { key: "isBestSeller", label: "Best Seller" },
             { key: "isNewest", label: "New Arrival" },
             { key: "important", label: "Important" },
-            { key: "ShowInDiscountSection", label: "Discounted" },
+            {
+              key: "ShowInDiscountSection",
+              label: "Discounted",
+            },
           ].map(({ key, label }) => (
             <label
               key={key}
@@ -201,6 +237,7 @@ const ProductsFilteringAndSorting = ({
                 onChange={() => handleCheckboxChange(key)}
                 className="w-4 h-4 rounded bg-[#1f140e] border-[#6b4a37] text-[#8c5a3c] focus:ring-[#d4a373]"
               />
+
               {label}
             </label>
           ))}

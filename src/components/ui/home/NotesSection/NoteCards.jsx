@@ -29,7 +29,7 @@ const NoteCards = ({ item, locale }) => {
         </div>
       </div>
       <p className="font-semibold">
-        {locale === "en" ? item.brandName : item.brandNameAr}
+        {locale === "en" ? item.BrandName?.name : item.BrandName.nameAr}
       </p>
       <p className="font-bold">{locale === "en" ? item.title : item.titleAr}</p>
       <p className="text-sm">{locale === "en" ? item.des : item.desAr}</p>

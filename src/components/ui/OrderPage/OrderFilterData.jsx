@@ -36,7 +36,6 @@ const OrdersFilterBar = ({
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-        {/* Order Status Filter */}
         <div className="flex items-center gap-2 bg-base-dark/50 border border-base-nav/40 rounded-xl px-3 py-2 w-full sm:w-auto md:min-w-[180px]">
           <FiFilter className="text-base-light/60 text-sm shrink-0" />
           <select

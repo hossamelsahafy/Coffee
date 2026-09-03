@@ -6,7 +6,7 @@ const MainPage = ({ dataLength, locale, title, des }) => {
 
   const backToHome = t("backToHome");
   return (
-    <div className="container-custom p-4 mt-10">
+    <div className="container-custom p-4">
       <Header
         backToHome={backToHome}
         title={title}

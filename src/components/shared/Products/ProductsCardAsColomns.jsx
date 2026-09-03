@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DiscountBadge from "@/components/shared/BadgeDiscount";
 import { useTranslations } from "next-intl";
 import { FaHeart } from "react-icons/fa";
@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SlugMethods from "@/actions/SlugMethods";
 import { useUser } from "@/Context/userContext";
+
 const ProductsCardAsColomns = ({
   product,
   locale,
@@ -24,16 +25,20 @@ const ProductsCardAsColomns = ({
   toggleFavorite,
   isLoading,
   onAddToCart,
+  isFavorite,
 }) => {
   const { user } = useUser();
   const { addToCart } = useCart();
   const t = useTranslations("discountSection");
   const options = product.choices.options;
+
   const getInitialOption = () => {
     return options.find((o) => o.availability === "inStock") || options[0];
   };
+
   const [selectedOption, setSelectedOption] = useState(getInitialOption);
   const stockFilter = selectedFilters?.availability;
+
   const filteredOptions =
     stockFilter?.length > 0
       ? options.filter((o) => {
@@ -51,8 +56,11 @@ const ProductsCardAsColomns = ({
       : options;
 
   const safeSelectedOption =
-    filteredOptions.find((o) => o.value === selectedOption?.value) ||
-    filteredOptions[0];
+    filteredOptions.find(
+      (o) =>
+        (o.value?.id || o.value) ===
+        (selectedOption?.value?.id || selectedOption?.value),
+    ) || filteredOptions[0];
 
   const isOutOfStock = safeSelectedOption?.availability === "outOfStock";
 
@@ -60,6 +68,7 @@ const ProductsCardAsColomns = ({
     if (!before) return 0;
     return ((before - after) / before) * 100;
   };
+
   const handleViewed = async () => {
     if (user) {
       try {
@@ -71,6 +80,26 @@ const ProductsCardAsColomns = ({
       }
     }
   };
+
+  const currentImageSrc =
+    safeSelectedOption?.ImageSource === "upload"
+      ? safeSelectedOption?.image?.url
+      : safeSelectedOption?.imageUrl;
+
+  const [displayImage, setDisplayImage] = useState(currentImageSrc);
+  const [isFading, setIsFading] = useState(false);
+
+  useEffect(() => {
+    if (currentImageSrc !== displayImage) {
+      setIsFading(true);
+      const timer = setTimeout(() => {
+        setDisplayImage(currentImageSrc);
+        setIsFading(false);
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [currentImageSrc, displayImage]);
+
   return (
     <div
       className={`flex flex-col items-stretch gap-4 w-full h-full ${isCustom ? `${customBgColor} ${customHoverBgColor} duration-300 transition-all cursor-pointer` : "bg-coffeText"} rounded-lg p-4 mt-4`}
@@ -79,8 +108,8 @@ const ProductsCardAsColomns = ({
         <div className="flex flex-col gap-2 items-center">
           <DiscountBadge
             value={getDiscount(
-              safeSelectedOption.priceBefore,
-              safeSelectedOption.priceAfter,
+              safeSelectedOption?.priceBefore || 0,
+              safeSelectedOption?.priceAfter || 0,
             )}
           />
           {product.isNewest && <DiscountBadge value={t("new")} />}
@@ -88,14 +117,12 @@ const ProductsCardAsColomns = ({
 
         <div className="flex max-h-50 justify-center relative h-50 w-50">
           <Image
-            src={
-              safeSelectedOption.ImageSource === "upload"
-                ? safeSelectedOption.image.url
-                : safeSelectedOption.imageUrl
-            }
+            src={displayImage}
             alt={product.title}
             fill
-            className="object-contain"
+            className={`object-contain transition-opacity duration-300 ease-in-out ${
+              isFading ? "opacity-0" : "opacity-100"
+            }`}
             sizes="200px"
           />
         </div>
@@ -113,7 +140,7 @@ const ProductsCardAsColomns = ({
           >
             {isLoading ? (
               <FiLoader className="text-sm animate-spin text-base-light" />
-            ) : product.isFavorite ? (
+            ) : isFavorite ? (
               <FaHeart className="text-sm text-base-lighter" />
             ) : (
               <FaRegHeart className="text-sm text-base-light" />
@@ -142,23 +169,37 @@ const ProductsCardAsColomns = ({
       </Link>
       <div className="relative w-full">
         <select
-          value={safeSelectedOption.value || safeSelectedOption.en}
+          value={
+            safeSelectedOption?.value?.id ||
+            safeSelectedOption?.value ||
+            safeSelectedOption?.en
+          }
           onChange={(e) =>
             setSelectedOption(
-              options.find((opt) => (opt.value || opt.en) === e.target.value),
+              options.find(
+                (opt) =>
+                  (opt.value?.id || opt.value || opt.en) === e.target.value,
+              ),
             )
           }
           className="SelectStyle"
         >
-          {filteredOptions.map((opt, idx) => (
-            <option
-              className="text-base-dark"
-              key={idx}
-              value={opt.value || opt.en}
-            >
-              {locale === "en" ? opt.value || opt.en : opt.ar || opt.valueAr}
-            </option>
-          ))}
+          {filteredOptions.map((opt, idx) => {
+            const optVal = opt.value?.id || opt.value || opt.en;
+            const optLabel =
+              locale === "en"
+                ? opt.value?.title || opt.value?.name || opt.value || opt.en
+                : opt.value?.titleAr ||
+                  opt.value?.nameAr ||
+                  opt.ar ||
+                  opt.valueAr;
+
+            return (
+              <option className="text-base-dark" key={idx} value={optVal}>
+                {optLabel}
+              </option>
+            );
+          })}
         </select>
         <FiChevronsDown
           className={`absolute ${locale === "en" ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 pointer-events-none text-base-light scale-x-150`}
@@ -166,7 +207,7 @@ const ProductsCardAsColomns = ({
       </div>
       <div className="flex justify-between w-full items-center font-bold">
         <div className="block">
-          <p className="priceAfter">{safeSelectedOption.priceAfter} USD</p>
+          <p className="priceAfter">{safeSelectedOption?.priceAfter} USD</p>
           <p
             className={
               isCustom
@@ -174,7 +215,7 @@ const ProductsCardAsColomns = ({
                 : `priceBefore`
             }
           >
-            {safeSelectedOption.priceBefore} USD
+            {safeSelectedOption?.priceBefore} USD
           </p>
         </div>
         <button

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import StripeModule from "./StripeModule";
 import GridSwiper from "@/components/shared/Swiper/GridSwiper";
 import NoItemsYet from "./NoItemsYet";
+import ShowOrderDetailsModule from "@/components/shared/Model/ShowOrderDetailsModule"; // 1. Import your details modal component
 
 const CheckoutPendingOrders = ({
   locale,
@@ -22,6 +23,9 @@ const CheckoutPendingOrders = ({
   const paymentM = useTranslations("PaymentMethod");
   const [stripeOrderId, setStripeOrderId] = useState();
   const [stripeOpen, setStripeOpen] = useState();
+  const [selectedData, setSelectedData] = useState();
+  const [openModule, setOpenModule] = useState(false);
+
   const breakpoints = {
     0: { slidesPerView: 1 },
     700: { slidesPerView: 2 },
@@ -60,19 +64,21 @@ const CheckoutPendingOrders = ({
                 paymentM={paymentM}
                 setStripeOrderId={setStripeOrderId}
                 setStripeOpen={setStripeOpen}
+                setSelectedData={setSelectedData}
+                setOpenModule={setOpenModule}
                 cash={cash}
               />
             );
           }}
         />
       </div>
+
       {stripeOpen && stripeOrderId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-3">
           <div
             className="absolute inset-0 bg-black/60"
             onClick={(e) => e.stopPropagation()}
           />
-
           <div className="relative z-10 w-full max-w-md sm:max-w-lg md:max-w-xl flex flex-col justify-center items-center">
             <StripeModule
               orderId={stripeOrderId}
@@ -82,6 +88,13 @@ const CheckoutPendingOrders = ({
           </div>
         </div>
       )}
+
+      <ShowOrderDetailsModule
+        locale={locale}
+        open={openModule}
+        onClose={() => setOpenModule(false)}
+        order={selectedData}
+      />
     </>
   );
 };

@@ -14,7 +14,7 @@ export default function NotesGrid() {
   const [docs, setDocs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [importantFilter, setImportantFilter] = useState("all"); // "all" | "true" | "false"
+  const [importantFilter, setImportantFilter] = useState("all");
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -104,7 +104,6 @@ export default function NotesGrid() {
         slug="Notes"
       />
 
-      {/* Filter pills for isImportant */}
       <div className="mb-4 flex flex-wrap items-center gap-3 px-1 mt-4">
         <span className="text-xs font-semibold tracking-wider text-[#9E8A78]">
           IMPORTANCE FILTER:
@@ -167,7 +166,6 @@ export default function NotesGrid() {
                   href={`${adminRoute}/collections/Notes/${note.id}`}
                   className="group flex flex-col justify-between items-center overflow-hidden rounded-xl border border-[#3A2A22] bg-[#120c0a] text-center no-underline transition-all duration-300 hover:border-[#8B5E3C] hover:shadow-xl relative"
                 >
-                  {/* Importance Badge */}
                   <div className="absolute top-2 left-2 z-10">
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-full shadow ${
@@ -180,7 +178,7 @@ export default function NotesGrid() {
                     </span>
                   </div>
 
-                  <div className="w-full">
+                  <div className="flex h-full w-full flex-col">
                     <div className="aspect-square w-full flex items-center justify-center overflow-hidden bg-[#241812]">
                       {image ? (
                         <img
@@ -194,7 +192,6 @@ export default function NotesGrid() {
                         </div>
                       )}
                     </div>
-
                     <div className="p-3">
                       <p
                         className="text-sm font-semibold text-[#E8D8C3] truncate"
@@ -209,11 +206,10 @@ export default function NotesGrid() {
                         </p>
                       )}
                     </div>
-
-                    <div className="flex p-2 text-xs w-full justify-between items-center border-t border-[#3A2A22] bg-[#1A120D] text-[#9E8A78]">
+                    <div className="flex p-2 text-xs mt-auto w-full justify-between items-center border-t border-[#3A2A22] bg-[#1A120D] text-[#9E8A78]">
                       <span>Brand</span>
                       <span className="text-[#E8D8C3] font-medium truncate max-w-[80px]">
-                        {note.brandName || "-"}
+                        {note.BrandName?.name || "-"}
                       </span>
                     </div>
                   </div>

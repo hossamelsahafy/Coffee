@@ -16,6 +16,7 @@ const BestSellingSection = ({
   onAddToCart,
   bestSellingSectionData,
   websiteName,
+  favoriteState = {},
 }) => {
   const t = useTranslations("BestSeller");
   const [openModel, setOpenModel] = useState(false);
@@ -68,8 +69,14 @@ const BestSellingSection = ({
                 locale={locale}
                 setOpenModel={setOpenModel}
                 setSelectedProduct={setSelectedProduct}
+                isFavorite={
+                  favoriteState[product.id] ?? product.isFavorite ?? false
+                }
                 toggleFavorite={() =>
-                  onToggleFavorite(product.id, product.isFavorite)
+                  onToggleFavorite(
+                    product.id,
+                    favoriteState[product.id] ?? product.isFavorite ?? false,
+                  )
                 }
                 isLoading={loadingProductId === product.id}
                 onAddToCart={onAddToCart}

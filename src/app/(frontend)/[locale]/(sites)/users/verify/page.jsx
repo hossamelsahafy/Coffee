@@ -15,7 +15,7 @@ export async function generateMetadata({ params }) {
   const isArabic = locale === "ar";
 
   return {
-    title: isArabic ? "تاكيد الاميل" : "Verify}",
+    title: isArabic ? "تاكيد الاميل" : "Verifying Email",
 
     robots: {
       index: false,
