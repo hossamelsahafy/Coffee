@@ -43,12 +43,16 @@ const Page = async ({ params, searchParams }: Props) => {
   const productsData = await GetDataWithPagination(
     "products",
     currentPage,
-    9,
+    12,
     currentSort,
   );
 
   const CurrentLocation = isArabic ? "جميع المنتجات" : "All Products";
-
+  const [brands, categories, productOptions] = await Promise.all([
+    GetDataWithPagination("brands", currentPage, 0, currentSort),
+    GetDataWithPagination("categories", currentPage, 0, currentSort),
+    GetDataWithPagination("product-options", currentPage, 0, currentSort),
+  ]);
   return (
     <div id="productPage" className="border-t mt-28 border-base-border w-full">
       <MainPage
@@ -69,6 +73,9 @@ const Page = async ({ params, searchParams }: Props) => {
             page: productsData.page,
           }}
           currentSort={currentSort}
+          brands={brands}
+          categories={categories}
+          productOptions={productOptions}
         />
       </div>
     </div>

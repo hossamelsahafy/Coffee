@@ -7,19 +7,31 @@ export const Collections: GlobalConfig = {
     read: () => true,
   },
   hooks: {
-    beforeChange: [
-      async ({ data, req }) => {
-        const productsCount = await req.payload.count({
-          collection: "products",
-        });
+    afterRead: [
+      async ({ doc, req }) => {
+        try {
+          const productsCount = await req.payload.count({
+            collection: "products",
+          });
 
-        return {
-          ...data,
-          allProducts: {
-            ...data.allProducts,
-            productsCount: String(productsCount.totalDocs),
-          },
-        };
+          return {
+            ...doc,
+            allProducts: {
+              ...doc.allProducts,
+              productsCount: String(productsCount.totalDocs),
+            },
+          };
+        } catch (error) {
+          console.error("Error fetching products count:", error);
+
+          return {
+            ...doc,
+            allProducts: {
+              ...doc.allProducts,
+              productsCount: "0",
+            },
+          };
+        }
       },
     ],
   },

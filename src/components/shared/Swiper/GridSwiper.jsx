@@ -7,7 +7,7 @@ import CoffeeLoader from "@/components/shared/loader/CoffeeLoader";
 import { FiChevronsLeft, FiChevronsRight } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
-
+import ProductsCardAsColomnsSkeleton from "@/components/shared/Skelatons/ProductsCardAsColomnsSkeleton";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -28,7 +28,7 @@ const GridSwiper = ({
   onPageChange,
   isLoading = false,
   rows = 2,
-  skeletonCount = 6,
+  skeletonCount = 12,
   errorMessage,
 }) => {
   const { locale } = useParams();
@@ -95,9 +95,13 @@ const GridSwiper = ({
           <div className="w-full text-center py-16 text-amber-950/70 font-medium">
             {errorMessage
               ? errorMessage
-              : locale === "en"
-                ? "No products found in this category."
-                : "لم يتم العثور على منتجات في هذه المجموعة"}
+              : enablePagePagination
+                ? locale === "en"
+                  ? "No products found related to your selected filters or options."
+                  : "لم يتم العثور على منتجات مرتبطة بالفلاتر أو الخيارات المحددة"
+                : locale === "en"
+                  ? "No products found in this category."
+                  : "لم يتم العثور على منتجات في هذه المجموعة"}
           </div>
         ) : (
           <motion.div
@@ -200,21 +204,12 @@ const GridSwiper = ({
                                   : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
                               } gap-6 w-full items-stretch`}
                             >
-                              {isCurrentActivePage &&
-                              isLoading &&
-                              !makeBulletsWhilePagePagination
+                              {isLoading && !makeBulletsWhilePagePagination
                                 ? Array.from({ length: skeletonCount }).map(
                                     (_, sIdx) => (
-                                      <div
-                                        key={`skeleton-${sIdx}`}
-                                        className="w-full h-[320px] bg-neutral-200/70 dark:bg-neutral-800/50 rounded-2xl animate-pulse p-4 flex flex-col justify-between"
-                                      >
-                                        <div className="w-full h-48 bg-neutral-300 dark:bg-neutral-700/60 rounded-xl" />
-                                        <div className="space-y-2 mt-4">
-                                          <div className="w-3/4 h-4 bg-neutral-300 dark:bg-neutral-700/60 rounded" />
-                                          <div className="w-1/2 h-4 bg-neutral-300 dark:bg-neutral-700/60 rounded" />
-                                        </div>
-                                      </div>
+                                      <ProductsCardAsColomnsSkeleton
+                                        key={sIdx}
+                                      />
                                     ),
                                   )
                                 : isCurrentActivePage

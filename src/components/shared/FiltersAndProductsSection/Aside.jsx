@@ -18,6 +18,7 @@ const Aside = ({
   toggleOption,
   resetFilter,
   onPriceChange,
+  onLoadMore,
 }) => {
   const [minPrice, setMinPrice] = useState(selectedFilters.minPrice || "");
   const [maxPrice, setMaxPrice] = useState(selectedFilters.maxPrice || "");
@@ -27,9 +28,9 @@ const Aside = ({
     setMaxPrice(selectedFilters.maxPrice || "");
   }, [selectedFilters.minPrice, selectedFilters.maxPrice]);
 
-  const handlePriceBlur = () => {
+  const handlePriceInput = (min, max) => {
     if (onPriceChange) {
-      onPriceChange(minPrice, maxPrice);
+      onPriceChange(min, max);
     }
   };
 
@@ -47,7 +48,6 @@ const Aside = ({
 
           return (
             <div key={filter.id} className="flex flex-col w-full gap-4 mb-4">
-              {/* Header section with toggle collapse button */}
               <div className="flex justify-between w-full items-center text-lg font-semibold">
                 <p>{filter.title?.[locale] || filter.title}</p>
 
@@ -61,7 +61,6 @@ const Aside = ({
                 </button>
               </div>
 
-              {/* Collapsible Content */}
               <div
                 className={`overflow-hidden transition-all duration-300 ease-in-out ${
                   collapsedFilters[filter.id]
@@ -97,8 +96,10 @@ const Aside = ({
                         <input
                           type="number"
                           value={minPrice}
-                          onChange={(e) => setMinPrice(e.target.value)}
-                          onBlur={handlePriceBlur}
+                          onChange={(e) => {
+                            setMinPrice(e.target.value);
+                            handlePriceInput(e.target.value, maxPrice);
+                          }}
                           placeholder="0"
                           className="w-full rounded-lg p-2 border border-base-light focus:outline-none focus:ring-1 focus:ring-base-coffee focus:border-base-coffee [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
@@ -112,8 +113,10 @@ const Aside = ({
                         <input
                           type="number"
                           value={maxPrice}
-                          onChange={(e) => setMaxPrice(e.target.value)}
-                          onBlur={handlePriceBlur}
+                          onChange={(e) => {
+                            setMaxPrice(e.target.value);
+                            handlePriceInput(minPrice, e.target.value);
+                          }}
                           placeholder="Max"
                           className="w-full rounded-lg p-2 border border-base-light focus:outline-none focus:ring-1 focus:ring-base-coffee focus:border-base-coffee [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
@@ -138,7 +141,6 @@ const Aside = ({
                       </button>
                     </div>
 
-                    {/* Filter Option List */}
                     <div className="pt-2 flex flex-col gap-3">
                       {filter.options?.map((o, i) => {
                         const isChecked = selectedItems.includes(o.value);
@@ -162,7 +164,12 @@ const Aside = ({
                                 )}
                               </button>
                               <span>
-                                {o.label?.[locale] || o.label || o.value}
+                                {typeof o.label === "object"
+                                  ? o.label?.[locale] ||
+                                    o.label?.en ||
+                                    o.label?.ar ||
+                                    o.value
+                                  : o.label || o.value}
                               </span>
                             </div>
 
@@ -174,6 +181,17 @@ const Aside = ({
                           </div>
                         );
                       })}
+
+                      {/* Load More Button */}
+                      {filter.hasMore && (
+                        <button
+                          type="button"
+                          onClick={() => onLoadMore && onLoadMore(filter.id)}
+                          className="text-xs font-semibold text-base-coffee mt-2 text-start hover:underline"
+                        >
+                          {locale === "ar" ? "+ تحميل المزيد" : "+ Load More"}
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}

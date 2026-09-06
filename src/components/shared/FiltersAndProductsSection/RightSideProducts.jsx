@@ -97,7 +97,7 @@ const RightSideProducts = ({
 
         <div className="flex-1 min-w-0">
           <GridSwiper
-            filteredProducts={sortedData}
+            filteredProducts={isFetching ? [] : sortedData}
             enablePagePagination={true}
             totalPages={totalPages}
             currentPage={currentPage}
@@ -132,7 +132,6 @@ const RightSideProducts = ({
         openModel={openModel}
       />
 
-      {/* Filter Modal Panel */}
       <div
         className={`fixed inset-0 z-50 flex transition-opacity duration-300 ${
           openFilterModal

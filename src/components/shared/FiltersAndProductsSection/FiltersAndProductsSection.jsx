@@ -6,12 +6,11 @@ import React, {
   useCallback,
   useEffect,
   useTransition,
+  useRef,
 } from "react";
 import { useTranslations } from "next-intl";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import RightSideProducts from "./RightSideProducts";
-import useAttributeCounts from "@/hooks/useAttributeCounts";
-import useFilterConfig from "@/lib/FilterConfig";
+
 import { useUser } from "@/Context/userContext";
 import Aside from "./Aside";
 import SlugMethods from "@/actions/SlugMethods";
@@ -25,29 +24,48 @@ const FiltersAndProductsSection = ({
   userFavorites = [],
   paginationInfo = { totalPages: 1, page: 1 },
   currentSort = "-createdAt",
+  brands,
+  categories,
+  productOptions,
 }) => {
   const t = useTranslations("FiltersAndProductsSection");
   const { user } = useUser();
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const [isPending, startTransition] = useTransition();
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [productList, setProductList] = useState(products);
   const [currentPage, setCurrentPage] = useState(paginationInfo?.page || 1);
   const [totalPages, setTotalPages] = useState(paginationInfo?.totalPages || 1);
+  const loadingTimerRef = useRef(null);
+  const [showSkeleton, setShowSkeleton] = useState(false);
+  const [filterLimits, setFilterLimits] = useState({
+    category: 5,
+    brand: 5,
+    color: 5,
+    quantity: 5,
+    types: 5,
+    size: 5,
+  });
 
   const [selectedFilters, setSelectedFilters] = useState({
     availability: [],
     minPrice: "",
     maxPrice: "",
     category: [],
-    type: [],
-    colors: [],
+    brand: [],
+    color: [],
     quantity: [],
-    sizes: [],
+    types: [],
+    size: [],
   });
+
+  const loadMoreFilter = useCallback((filterId) => {
+    setFilterLimits((prev) => ({
+      ...prev,
+      [filterId]: (prev[filterId] || 5) + 5,
+    }));
+  }, []);
+
   const favoriteIds = useMemo(() => {
     const rawList = userFavorites?.docs || userFavorites || [];
     const docs = Array.isArray(rawList) ? rawList : [];
@@ -80,8 +98,7 @@ const FiltersAndProductsSection = ({
         isFavorite: isFav,
       };
     });
-  }, [products, favoriteIds, favoriteOverrides]);
-
+  }, [productList, favoriteIds, favoriteOverrides]);
   const [loadingProductId, setLoadingProductId] = useState(null);
   const [toast, setToast] = useState({ message: null, type: "" });
 
@@ -93,56 +110,65 @@ const FiltersAndProductsSection = ({
   const fetchFilteredProducts = useCallback(
     (pageToFetch = 1, filters = selectedFilters, sort = currentSort) => {
       setIsLoadingPage(true);
+      setProductList([]);
+      if (loadingTimerRef.current) {
+        clearTimeout(loadingTimerRef.current);
+      }
 
+      loadingTimerRef.current = setTimeout(() => {
+        setShowSkeleton(true);
+      }, 200);
       startTransition(async () => {
         try {
           const where = {};
 
-          if (filters.availability?.length > 0) {
+          if (filters.availability?.length === 1) {
             where["choices.options.availability"] = {
-              ...(filters.availability.includes("in_stock") &&
-              !filters.availability.includes("out_stock")
-                ? { equals: "inStock" }
-                : {}),
-              ...(filters.availability.includes("out_stock") &&
-              !filters.availability.includes("in_stock")
-                ? { equals: "outOfStock" }
-                : {}),
+              equals:
+                filters.availability[0] === "in_stock"
+                  ? "inStock"
+                  : "outOfStock",
             };
           }
 
-          if (filters.minPrice) {
-            where.price = {
-              ...(where.price || {}),
+          if (filters.minPrice !== "") {
+            where["choices.options.priceAfter"] = {
+              ...(where["choices.options.priceAfter"] || {}),
               greater_than_equal: Number(filters.minPrice),
             };
           }
-          if (filters.maxPrice) {
-            where.price = {
-              ...(where.price || {}),
+
+          if (filters.maxPrice !== "") {
+            where["choices.options.priceAfter"] = {
+              ...(where["choices.options.priceAfter"] || {}),
               less_than_equal: Number(filters.maxPrice),
             };
+          }
+
+          if (filters.brand?.length > 0) {
+            where.BrandName = { in: filters.brand };
           }
 
           if (filters.category?.length > 0) {
             where.category = { in: filters.category };
           }
 
-          if (filters.type?.length > 0) {
-            where.type = { in: filters.type };
-          }
+          const optionTypes = ["color", "quantity", "types", "size"];
 
-          if (filters.colors?.length > 0) {
-            where["choices.options.value"] = { in: filters.colors };
-          }
-          if (filters.sizes?.length > 0) {
-            where["choices.options.value"] = { in: filters.sizes };
+          const selectedOptionValues = optionTypes.flatMap(
+            (type) => filters[type] || [],
+          );
+
+          if (selectedOptionValues.length > 0) {
+            where["choices.options.value"] = {
+              in: selectedOptionValues,
+            };
           }
 
           const result = await GetDataWithPagination(
             "products",
             pageToFetch,
-            9,
+            12,
             sort,
             where,
             true,
@@ -155,19 +181,23 @@ const FiltersAndProductsSection = ({
           }
         } catch (error) {
           console.error("Failed to fetch filtered products:", error);
+
           setToast({
             message:
               locale === "ar" ? "فشل تحميل البيانات" : "Failed to load data",
             type: "error",
           });
         } finally {
+          if (loadingTimerRef.current) {
+            clearTimeout(loadingTimerRef.current);
+          }
+          setShowSkeleton(false);
           setIsLoadingPage(false);
         }
       });
     },
     [selectedFilters, currentSort, locale],
   );
-
   useEffect(() => {
     fetchFilteredProducts(1, selectedFilters, currentSort);
   }, [selectedFilters, currentSort, fetchFilteredProducts]);
@@ -192,8 +222,6 @@ const FiltersAndProductsSection = ({
       fetchFilteredProducts,
     ],
   );
-
-  const currency = locale === "en" ? "USD" : "دولار";
 
   const toggleCollapse = useCallback((id) => {
     setCollapsedFilters((prev) => ({
@@ -223,23 +251,13 @@ const FiltersAndProductsSection = ({
     });
   }, []);
 
-  const dataType = useAttributeCounts(productList, productList, "type", true);
-  const dataColors = useAttributeCounts(productList, productList, "color");
-  const dataSizes = useAttributeCounts(productList, productList, "size");
-  const dataQuantity = useAttributeCounts(productList, productList, "quantity");
-  const categories = useAttributeCounts(productList, productList, "category");
-
-  const Filters = useFilterConfig({
-    inStock: 0,
-    outOfStock: 0,
-    HigherP: 1000,
-    currency,
-    categories,
-    dataType,
-    dataColors,
-    dataSizes,
-    dataQuantity,
-  });
+  const handlePriceChange = useCallback((min, max) => {
+    setSelectedFilters((prev) => ({
+      ...prev,
+      minPrice: min,
+      maxPrice: max,
+    }));
+  }, []);
 
   const toggleFavorite = useCallback(
     async (productId, currentIsFavorite) => {
@@ -303,8 +321,106 @@ const FiltersAndProductsSection = ({
     [user, locale, loadingProductId],
   );
 
-  const showSkeleton = isLoadingPage || isPending;
+  const Filters = useMemo(() => {
+    const options = productOptions?.docs || [];
 
+    const getOptionsByType = (type) => {
+      const allMatching = options
+        .filter((option) => option.type === type)
+        .map((option) => ({
+          value: option.id,
+          label: {
+            en: option.name,
+            ar: option.nameAr,
+          },
+        }));
+
+      const limit = filterLimits[type] || 5;
+      return {
+        sliced: allMatching.slice(0, limit),
+        hasMore: limit < allMatching.length,
+      };
+    };
+
+    const getMappedList = (list, type) => {
+      const all =
+        list?.docs?.map((item) => ({
+          value: item.id,
+          label: {
+            en: item.title || item.name,
+            ar: item.titleAr || item.nameAr,
+          },
+        })) || [];
+
+      const limit = filterLimits[type] || 5;
+      return {
+        sliced: all.slice(0, limit),
+        hasMore: limit < all.length,
+      };
+    };
+
+    const categoriesData = getMappedList(categories, "category");
+    const brandsData = getMappedList(brands, "brand");
+    const colorData = getOptionsByType("color");
+    const quantityData = getOptionsByType("quantity");
+    const typesData = getOptionsByType("types");
+    const sizeData = getOptionsByType("size");
+
+    return [
+      {
+        id: "availability",
+        title: { en: "Availability", ar: "التوفر" },
+        options: [
+          { value: "in_stock", label: { en: "In stock", ar: "متوفر" } },
+          {
+            value: "out_stock",
+            label: { en: "Out of stock", ar: "غير متوفر" },
+          },
+        ],
+      },
+      {
+        id: "Price",
+        title: { en: "Price", ar: "السعر" },
+      },
+      {
+        id: "category",
+        title: { en: "Collection", ar: "المجموعة" },
+        options: categoriesData.sliced,
+        hasMore: categoriesData.hasMore,
+      },
+      {
+        id: "brand",
+        title: { en: "Brand", ar: "العلامة التجارية" },
+        options: brandsData.sliced,
+        hasMore: brandsData.hasMore,
+      },
+      {
+        id: "color",
+        title: { en: "Color", ar: "اللون" },
+        options: colorData.sliced,
+        hasMore: colorData.hasMore,
+      },
+      {
+        id: "quantity",
+        title: { en: "Quantity", ar: "الكمية" },
+        options: quantityData.sliced,
+        hasMore: quantityData.hasMore,
+      },
+      {
+        id: "types",
+        title: { en: "Type", ar: "النوع" },
+        options: typesData.sliced,
+        hasMore: typesData.hasMore,
+      },
+      {
+        id: "size",
+        title: { en: "Size", ar: "الحجم" },
+        options: sizeData.sliced,
+        hasMore: sizeData.hasMore,
+      },
+    ];
+  }, [brands, categories, productOptions, filterLimits]);
+  const showSkeletonState = showSkeleton || isPending;
   return (
     <>
       <div className="container-custom p-4 md:min-h-screen h-auto flex flex-col">
@@ -324,6 +440,8 @@ const FiltersAndProductsSection = ({
               toggleOption={toggleOption}
               locale={locale}
               resetFilter={resetFilter}
+              onPriceChange={handlePriceChange}
+              onLoadMore={loadMoreFilter}
             />
           </div>
 
@@ -357,7 +475,7 @@ const FiltersAndProductsSection = ({
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
-            isLoading={showSkeleton}
+            isFetching={showSkeletonState}
           />
         </div>
       </div>
