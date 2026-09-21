@@ -10,9 +10,10 @@ import { GlassyToast } from "@/components/shared/GlassyToast/GlassyToast";
 import ProductModal from "@/components/shared/Model/ProductModal";
 import { useUser } from "@/Context/userContext";
 import SlugMethods from "@/actions/SlugMethods";
-
+import { useSiteSettings } from "@/Context/CurrencyContext";
 const DashboardClient = ({ locale, data, MostViwedProducts }) => {
   const t = useTranslations("DashboardData");
+  const { selectedCurrency, exchangeRate } = useSiteSettings();
   const title = t("title");
   const subtitle = t("subtitle");
   const MyAccount = t("MyAccount");
@@ -83,7 +84,6 @@ const DashboardClient = ({ locale, data, MostViwedProducts }) => {
         });
       }
     } catch (error) {
-      console.error("Favorite toggle failed:", error);
       setProductList((prev) =>
         prev.map((item) => {
           const prodId = item.product?.id || item.id;
@@ -110,112 +110,47 @@ const DashboardClient = ({ locale, data, MostViwedProducts }) => {
       setLoadingProductId(null);
     }
   };
-  const chartData = React.useMemo(() => {
-    if (!Array.isArray(data)) return [];
-
-    const map = {};
-
-    const formatDate = (dateStr) => {
-      if (!dateStr) return null;
-      return new Date(dateStr).toISOString().split("T")[0];
-    };
-
-    data.forEach((order) => {
-      if (order.createdAt && order.status !== "cancelled") {
-        const orderDate = formatDate(order.createdAt);
-        if (orderDate) {
-          if (!map[orderDate]) {
-            map[orderDate] = { date: orderDate, spent: 0, orders: 0 };
-          }
-          map[orderDate].orders += 1;
-        }
-      }
-
-      const isPaid = order.payment?.status === "paid";
-      const paidDateStr = order.paidAt;
-
-      if (isPaid && paidDateStr) {
-        const paidDate = formatDate(paidDateStr);
-        if (paidDate) {
-          if (!map[paidDate]) {
-            map[paidDate] = { date: paidDate, spent: 0, orders: 0 };
-          }
-          map[paidDate].spent += Number(order.total) || 0;
-        }
-      }
-    });
-
-    return Object.values(map).sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-    );
-  }, [data]);
+  const chartData = data?.chart;
 
   const cards = [
     {
       title: t("totalOrders"),
-      value: data?.length || 0,
+      value: data?.summary.totalOrders,
       type: "text",
     },
     {
       title: t("totalSpent"),
-      value: data
-        ?.filter((order) => order.payment?.status === "paid")
-        .reduce((acc, order) => acc + Number(order.total || 0), 0)
-        .toFixed(2),
-      suffix: locale === "en" ? "USD" : "دولار",
+      value: data.summary.totalSpent,
+      suffix: data?.currency || "USD",
       type: "money",
     },
     {
       title: t("cashOrders"),
-      value:
-        data?.filter((order) => order.payment?.method === "cash").length || 0,
+      value: data?.summary.cashOrders,
       type: "text",
     },
     {
       title: t("stripeOrders"),
-      value:
-        data?.filter((order) => order.payment?.method === "stripe").length || 0,
+      value: data?.summary.stripeOrders,
       type: "text",
     },
   ];
 
-  const isArabic = locale === "ar";
+  const categoryData = data.categories;
+  console.log(categoryData);
 
-  const categoryData = useMemo(() => {
-    if (!Array.isArray(data) || data.length === 0) return [];
-
-    const spendMap = new Map();
-
-    data.forEach((order) => {
-      if (!Array.isArray(order?.items)) return;
-
-      order.items.forEach((item) => {
-        const category = item?.product?.category;
-        if (!category) return;
-
-        const categoryId = category.id || category.title;
-        const categoryName = isArabic
-          ? category.titleAr || category.title
-          : category.title;
-
-        const qty = item.quantity && item.quantity > 0 ? item.quantity : 1;
-        const totalItemCost = (item.price || 0) * qty;
-
-        if (spendMap.has(categoryId)) {
-          const currentCategory = spendMap.get(categoryId);
-          currentCategory.value += totalItemCost;
-        } else {
-          spendMap.set(categoryId, {
-            name: categoryName,
-            value: totalItemCost,
-          });
-        }
-      });
+  const handleAddToCart = (isIn) => {
+    setToast({
+      message: isIn
+        ? locale === "ar"
+          ? "تمت إضافة المنتج إلى السلة"
+          : "Product added to cart"
+        : locale === "ar"
+          ? "المنتج غير متوفر"
+          : "Product is sold out",
+      type: isIn ? "success" : "error",
     });
-
-    return Array.from(spendMap.values()).sort((a, b) => b.value - a.value);
-  }, [data, isArabic]);
-
+  };
   return (
     <>
       <ContentLayout
@@ -249,13 +184,16 @@ const DashboardClient = ({ locale, data, MostViwedProducts }) => {
               },
             ]}
           />
-          <CategorySpendChart data={categoryData} />
+          <CategorySpendChart data={categoryData} currency={data.currency} />
           <MostViewedProducts
             data={productList}
             setOpenModel={setOpenModel}
             setSelectedProduct={setSelectedProduct}
             onToggleFavorite={toggleFavorite}
             loadingProductId={loadingProductId}
+            exchangeRate={exchangeRate}
+            currency={selectedCurrency.value}
+            onAddToCart={handleAddToCart}
           />
         </div>
       </ContentLayout>

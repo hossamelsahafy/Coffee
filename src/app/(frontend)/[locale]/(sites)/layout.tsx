@@ -10,7 +10,7 @@ import { CartProvider } from "@/Context/CartContext";
 import { UserProvider } from "@/Context/userContext";
 import { getUser } from "@/actions/getUser";
 import { getDataCache } from "@/lib/GetDataCache";
-
+import { SiteSettingsProvider } from "@/Context/CurrencyContext";
 import "@/styles/globals.css";
 
 const cairo = Cairo({
@@ -92,21 +92,24 @@ export default async function LocaleLayout({
 
   const user = await getUser();
   const messages = await getMessages({ locale });
+  const siteSettings = await getDataCache("globals/site-settings");
 
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body className={`${cairo.className} flex flex-col min-h-screen`}>
-        <CartProvider>
-          <UserProvider initialUser={user}>
-            <NextIntlClientProvider messages={messages} locale={locale}>
-              <NavBar locale={locale} />
+        <UserProvider initialUser={user}>
+          <SiteSettingsProvider siteSettings={siteSettings}>
+            <CartProvider>
+              <NextIntlClientProvider messages={messages} locale={locale}>
+                <NavBar locale={locale} />
 
-              <main className="flex-1">{children}</main>
+                <main className="flex-1">{children}</main>
 
-              <FooterData locale={locale} />
-            </NextIntlClientProvider>
-          </UserProvider>
-        </CartProvider>
+                <FooterData locale={locale} />
+              </NextIntlClientProvider>
+            </CartProvider>
+          </SiteSettingsProvider>
+        </UserProvider>
       </body>
     </html>
   );

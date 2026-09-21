@@ -5,11 +5,28 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const COLORS = ["#D8A46B", "#965015", "#C07A3B", "#6B3A10", "#E8C8A3"];
+const COLORS = [
+  "#D8A46B",
+  "#965015",
+  "#C07A3B",
+  "#6B3A10",
+  "#E8C8A3",
+  "#B86B3A",
+  "#7A5230",
+  "#D4B08C",
+  "#A85D32",
+  "#54301A",
+];
 
-export function CategorySpendChart({ data = [] }) {
+export function CategorySpendChart({ data = [], currency }) {
   const t = useTranslations("UserDashboard");
 
+  const getEntryName = (entry) =>
+    entry?.name || entry?.category?.title || "Unknown";
+  const chartData = data.map((entry) => ({
+    ...entry,
+    name: entry?.name || entry?.category?.title || "Unknown",
+  }));
   return (
     <Card className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#1A120D]/70 text-white backdrop-blur-md shadow-2xl">
       <CardHeader className="border-b border-white/10 py-5">
@@ -29,13 +46,14 @@ export function CategorySpendChart({ data = [] }) {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={data}
+                    data={chartData}
                     cx="50%"
                     cy="50%"
                     innerRadius={55}
                     outerRadius={80}
                     paddingAngle={4}
                     dataKey="value"
+                    nameKey="name"
                   >
                     {data.map((_, index) => (
                       <Cell
@@ -44,6 +62,7 @@ export function CategorySpendChart({ data = [] }) {
                       />
                     ))}
                   </Pie>
+
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "#1A120D",
@@ -53,7 +72,7 @@ export function CategorySpendChart({ data = [] }) {
                       boxShadow: "0 10px 25px -5px rgba(0,0,0,0.5)",
                     }}
                     formatter={(value, name) => [
-                      `$${Number(value).toFixed(2)}`,
+                      `${Number(value).toFixed(2)} ${currency}`,
                       name,
                     ]}
                   />
@@ -64,7 +83,7 @@ export function CategorySpendChart({ data = [] }) {
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-gray-300">
               {data.map((entry, index) => (
                 <div
-                  key={entry.name || index}
+                  key={entry?.category?.id || entry?.name || index}
                   className="flex items-center gap-1.5"
                 >
                   <span
@@ -73,7 +92,10 @@ export function CategorySpendChart({ data = [] }) {
                       backgroundColor: COLORS[index % COLORS.length],
                     }}
                   />
-                  <span className="truncate max-w-[120px]">{entry.name}</span>
+
+                  <span className="max-w-[120px] truncate">
+                    {getEntryName(entry)}
+                  </span>
                 </div>
               ))}
             </div>

@@ -43,6 +43,7 @@ export const VerifyEmailWithCode = ({
         setTimeout(() => {
           setVerifyEmailWithCodeModule(false);
           setMessage("");
+          setCode("");
         }, 5000);
       }
     } catch (error) {

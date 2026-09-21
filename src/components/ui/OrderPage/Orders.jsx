@@ -146,7 +146,6 @@ const Orders = ({
       `/api/auth/orders/${sseOrderId}/events`,
     );
 
-    // SSE lifetime
     const sseTimeout = setTimeout(
       () => {
         console.log("⏱️ SSE timeout - closing connection:", sseOrderId);

@@ -18,6 +18,9 @@ const ProductSlug = ({
   loadingProductId,
   rightSideImage,
   pageData,
+  setToast,
+  countriesData,
+  currency,
 }) => {
   const t = useTranslations("productSlug");
   const options = data?.choices?.options || [];
@@ -70,6 +73,7 @@ const ProductSlug = ({
             SoldOut={SoldOut}
             toggleFavorite={onToggleFavorite}
             loadingProductId={loadingProductId}
+            currency={currency}
           />
         </div>
       </div>
@@ -85,8 +89,15 @@ const ProductSlug = ({
         locale={locale}
         toggleFavorite={onToggleFavorite}
         loadingProductId={loadingProductId}
+        currency={currency}
       />
-      <ReviewsSection />
+      <ReviewsSection
+        productID={data.id}
+        locale={locale}
+        setToast={setToast}
+        selectedOption={selectOption}
+        countriesData={countriesData}
+      />
     </>
   );
 };

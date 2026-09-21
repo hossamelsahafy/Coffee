@@ -2,7 +2,6 @@ import React from "react";
 import { getUser } from "@/actions/getUser";
 import ContentLayout from "@/components/shared/Dashboard/ContentLayout";
 import { getTranslations } from "next-intl/server";
-import getDataServerSide from "@/actions/GetDataServerSide";
 import FavoritesData from "@/components/ui/Taps/FavoritesTap/FavoritesData";
 import GetDataWithPagination from "@/actions/GetDataWithPagination";
 export default async function ({ params }) {
@@ -14,7 +13,6 @@ export default async function ({ params }) {
   const MyAccount = t("MyAccount");
   const NotYet = t("NoData");
   const data = await GetDataWithPagination("/favorites", 1, 9, "", {}, true);
-  console.log(data);
 
   return (
     <div className="">

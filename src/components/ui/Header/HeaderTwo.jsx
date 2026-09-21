@@ -34,6 +34,8 @@ const HeaderTwo = ({
   onAddToCart,
   favoriteState,
   src,
+  currency,
+  exchangeRate,
 }) => {
   const t = useTranslations("headerTwo");
   const [openModel, setOpenModel] = useState(false);
@@ -64,6 +66,8 @@ const HeaderTwo = ({
       }
       isLoading={loadingProductId === product.id}
       onAddToCart={onAddToCart}
+      currency={currency}
+      exchangeRate={exchangeRate}
     />
   );
 
@@ -77,8 +81,8 @@ const HeaderTwo = ({
             className="absolute inset-0 w-full h-full object-cover"
           />
 
-          <div className="relative z-20 grid grid-cols-1 md:grid-cols-[40%_60%] items-center gap-6 p-6 md:p-8">
-            <div className="min-w-0 flex flex-col justify-center items-start gap-4">
+          <div className="relative z-20 flex flex-col md:flex-row w-full justify-between md:items-center items-start p-4">
+            <div className="md:w-1/2 w-full flex flex-col justify-center items-start gap-4">
               <p className="tracking-tighter text-2xl font-bold">
                 {websiteName}
               </p>

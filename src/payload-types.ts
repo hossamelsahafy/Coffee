@@ -188,6 +188,7 @@ export interface User {
   pendingEmail?: string | null;
   pendingEmailToken?: string | null;
   pendingEmailTokenExpiresAt?: string | null;
+  SelectedCurrency?: string | null;
   role: 'user' | 'admin';
   updatedAt: string;
   createdAt: string;
@@ -424,6 +425,7 @@ export interface Country {
   id: string;
   title: string;
   titleAr: string;
+  isApproved: boolean;
   reviewCount?: number | null;
   updatedAt: string;
   createdAt: string;
@@ -434,12 +436,12 @@ export interface Country {
  */
 export interface Review {
   id: string;
-  title: string;
+  title?: string | null;
   titleAr?: string | null;
-  subtitle: string;
+  subtitle?: string | null;
   subtitleAr?: string | null;
-  des: string;
-  desAr: string;
+  des?: string | null;
+  desAr?: string | null;
   country?: (string | null) | Country;
   rate?: number | null;
   ClientName?: (string | null) | User;
@@ -585,6 +587,38 @@ export interface Order {
     price?: number | null;
   };
   total?: number | null;
+  /**
+   * Base currency used when this order was created. This value is preserved for historical accuracy.
+   */
+  baseCurrency: string;
+  /**
+   * Currency used when this order was created.
+   */
+  currency: string;
+  /**
+   * Currency Symbol used when this order was created.
+   */
+  currencySymbol: string;
+  /**
+   * Exchange rate used when this order was created. This value is preserved for historical accuracy.
+   */
+  exchangeRate: number;
+  /**
+   * Historical currency rates captured when this order was created.
+   */
+  currencySnapshot: {
+    baseCurrency: string;
+    rates:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    capturedAt: string;
+  };
   status?: ('pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled') | null;
   payment: {
     method: 'cash' | 'stripe';
@@ -852,6 +886,7 @@ export interface UsersSelect<T extends boolean = true> {
   pendingEmail?: T;
   pendingEmailToken?: T;
   pendingEmailTokenExpiresAt?: T;
+  SelectedCurrency?: T;
   role?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1015,6 +1050,7 @@ export interface ProductsSelect<T extends boolean = true> {
 export interface CountriesSelect<T extends boolean = true> {
   title?: T;
   titleAr?: T;
+  isApproved?: T;
   reviewCount?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1139,6 +1175,17 @@ export interface OrdersSelect<T extends boolean = true> {
         price?: T;
       };
   total?: T;
+  baseCurrency?: T;
+  currency?: T;
+  currencySymbol?: T;
+  exchangeRate?: T;
+  currencySnapshot?:
+    | T
+    | {
+        baseCurrency?: T;
+        rates?: T;
+        capturedAt?: T;
+      };
   status?: T;
   payment?:
     | T
@@ -2171,6 +2218,33 @@ export interface SiteSetting {
   siteNameAr: string;
   description?: string | null;
   descriptionAr?: string | null;
+  currency: {
+    /**
+     * Main currency used for product prices and currency conversions.
+     */
+    baseCurrency: string;
+    /**
+     * Symbol of the selected base currency.
+     */
+    baseCurrencySymbol?: string | null;
+    currencies?:
+      | {
+          /**
+           * 3-letter ISO currency code, for example USD, EUR, GBP.
+           */
+          code: string;
+          symbol: string;
+          ImageSource: 'Url' | 'upload';
+          /**
+           * Currency image URL.
+           */
+          imageUrl?: string | null;
+          image?: (string | null) | Media;
+          enabled?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   ImageSource: 'Url' | 'upload';
   ImageUrl?: string | null;
   ImageUpload?: (string | null) | Media;
@@ -2741,6 +2815,23 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   siteNameAr?: T;
   description?: T;
   descriptionAr?: T;
+  currency?:
+    | T
+    | {
+        baseCurrency?: T;
+        baseCurrencySymbol?: T;
+        currencies?:
+          | T
+          | {
+              code?: T;
+              symbol?: T;
+              ImageSource?: T;
+              imageUrl?: T;
+              image?: T;
+              enabled?: T;
+              id?: T;
+            };
+      };
   ImageSource?: T;
   ImageUrl?: T;
   ImageUpload?: T;

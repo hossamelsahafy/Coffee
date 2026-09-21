@@ -82,14 +82,26 @@ const ProductOptionField = () => {
       choiceTypeAr: choiceGroup.choiceTypeAr,
     }));
   }, [product]);
+  const getImageId = (image) => {
+    if (!image) return null;
 
+    if (typeof image === "string") {
+      return image;
+    }
+
+    if (typeof image === "object" && image.id) {
+      return String(image.id);
+    }
+
+    return null;
+  };
   useEffect(() => {
     if (options.length > 0) {
       if (!value || !options.some((opt) => opt.id === value)) {
         const firstOption = options[0];
         setValue(firstOption.id);
         setImageSourceValue(firstOption.ImageSource || null);
-        setImageValue(firstOption.image || null);
+        setImageValue(getImageId(firstOption.image));
         setImageUrlValue(firstOption.imageUrl || null);
       }
     }
@@ -104,17 +116,27 @@ const ProductOptionField = () => {
 
   const selectedOption = useMemo(() => {
     if (options.length === 0) return null;
+
     return options.find((option) => option.id === value) || options[0];
   }, [options, value]);
 
   const getImageUrl = (opt) => {
     if (!opt) return null;
-    if (opt.ImageSource === "Url" && opt.imageUrl) {
-      return opt.imageUrl;
+
+    if (opt.ImageSource === "Url") {
+      return typeof opt.imageUrl === "string" ? opt.imageUrl : null;
     }
-    if (opt.ImageSource === "upload" && opt.image) {
-      return typeof opt.image === "object" ? opt.image.url : null;
+
+    if (opt.ImageSource === "upload") {
+      if (!opt.image) return null;
+
+      if (typeof opt.image === "object" && typeof opt.image.url === "string") {
+        return opt.image.url;
+      }
+
+      return null;
     }
+
     return null;
   };
 
@@ -131,10 +153,14 @@ const ProductOptionField = () => {
     }
 
     const chosen = options.find((opt) => opt.id === optionId);
+
     if (chosen) {
       setImageSourceValue(chosen.ImageSource || null);
-      setImageValue(chosen.image || null);
-      setImageUrlValue(chosen.imageUrl || null);
+
+      setImageValue(getImageId(chosen.image));
+      setImageUrlValue(
+        typeof chosen.imageUrl === "string" ? chosen.imageUrl : null,
+      );
     }
   };
 
@@ -176,14 +202,20 @@ const ProductOptionField = () => {
           <select
             value={value || options[0]?.id || ""}
             onChange={(event) => handleOptionChange(event.target.value)}
-            className="w-full rounded-lg items-center  border border-[#5D4037] bg-[#1E1210] px-3.5 py-2.5 text-sm font-medium text-[#EFEBE9] outline-none transition-all focus:border-[#8D6E63] focus:ring-2 focus:ring-[#5D4037] hover:border-[#6D4C41]"
+            className="w-full rounded-lg items-center border border-[#5D4037] bg-[#1E1210] px-3.5 py-2.5 text-sm font-medium text-[#EFEBE9] outline-none transition-all focus:border-[#8D6E63] focus:ring-2 focus:ring-[#5D4037] hover:border-[#6D4C41]"
           >
             {options.map((option) => {
+              console.log(option);
+
               const typeText = option.choiceType
                 ? `${option.choiceType} : `
                 : "";
-              const valText = option.value || "";
-              const valArText = option.valueAr ? ` (${option.valueAr})` : "";
+
+              const valText = option.value?.name || "";
+              const valArText = option.value?.nameAr
+                ? ` (${option.value.nameAr})`
+                : "";
+
               return (
                 <option
                   key={option.id}
@@ -205,7 +237,7 @@ const ProductOptionField = () => {
                   {selectedImageUrl ? (
                     <img
                       src={selectedImageUrl}
-                      alt={selectedOption.value}
+                      alt={selectedOption.value?.name || ""}
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -222,15 +254,17 @@ const ProductOptionField = () => {
                       ? ` / ${selectedOption.choiceTypeAr}`
                       : ""}
                   </span>
+
                   <div className="text-sm font-semibold text-[#EFEBE9]">
-                    {selectedOption.value}
+                    {selectedOption.value?.name || ""}
                   </div>
-                  {selectedOption.valueAr && (
+
+                  {selectedOption.value?.nameAr && (
                     <div
                       className="text-xs font-medium text-[#BCAAA4]"
                       dir="rtl"
                     >
-                      {selectedOption.valueAr}
+                      {selectedOption.value.nameAr}
                     </div>
                   )}
                 </div>
@@ -242,6 +276,7 @@ const ProductOptionField = () => {
                     ? `$${selectedOption.priceAfter}`
                     : ""}
                 </span>
+
                 {selectedOption.priceBefore &&
                   selectedOption.priceBefore > selectedOption.priceAfter && (
                     <span className="line-through text-xs text-[#8D6E63]">

@@ -22,6 +22,7 @@ const DescriptionSection = ({
   Quan,
   toggleFavorite,
   loadingProductId,
+  currency,
 }) => {
   const [Quantity, setQuantity] = useState(1);
   const increase = () => {
@@ -150,10 +151,10 @@ const DescriptionSection = ({
         </div>
         <div className="flex md:flex-row flex-col items-center gap-2">
           <p className="text-base-coffe text-2xl font-bold">
-            {activeOption?.priceAfter?.toFixed(2)} USD
+            {activeOption?.priceAfter?.toFixed(2)} {currency}
           </p>
           <p className="relative text-base-coffe text-2xl font-bold opacity-50 before:absolute before:left-0 before:right-0 before:top-1/2 before:border-t-2 before:border-base-coffe">
-            {activeOption?.priceBefore?.toFixed(2)} USD
+            {activeOption?.priceBefore?.toFixed(2)} {currency}
           </p>
         </div>
       </div>

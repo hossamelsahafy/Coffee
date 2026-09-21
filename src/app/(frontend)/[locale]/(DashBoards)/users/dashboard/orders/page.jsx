@@ -17,6 +17,7 @@ export default async function Page({ params }) {
   const PayNow = t("PayNow");
   const Paid = t("Paid");
   const cash = t("cash");
+
   return (
     <div className="relative">
       <ContentLayout

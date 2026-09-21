@@ -21,8 +21,6 @@ const ProductsFilteringAndSorting = ({
     important: false,
     isBestSeller: false,
   });
-  console.log(brands);
-  console.log(categories);
 
   const updatePayloadWhere = ({
     search = searchTerm,
@@ -35,7 +33,6 @@ const ProductsFilteringAndSorting = ({
     const conditions = [];
     const term = search.trim();
 
-    // 1. Search Query
     if (term) {
       conditions.push({
         or: [

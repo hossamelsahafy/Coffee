@@ -2,9 +2,16 @@ import type { CollectionConfig } from "payload";
 
 export const ProductViews: CollectionConfig = {
   slug: "product-views",
+  indexes: [
+    {
+      fields: ["user", "product"],
+      unique: true,
+    },
+  ],
   admin: {
     useAsTitle: "id",
     defaultColumns: ["user", "product", "views", "updatedAt"],
+
     components: {
       views: {
         list: {

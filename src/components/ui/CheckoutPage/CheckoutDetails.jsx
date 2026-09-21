@@ -7,10 +7,16 @@ import slugMethods from "@/actions/SlugMethods";
 import { useRouter } from "next/navigation";
 import StripeModule from "./StripeModule";
 import LoadingSpiner from "@/components/shared/Spiner/LoadingSpiner";
+import { useSiteSettings } from "@/Context/CurrencyContext";
+import { convertPrice } from "@/lib/currency/convertPrice";
 const CheckoutDetails = ({ locale, shippingData }) => {
   const t = useTranslations("Checkout");
   const { cart, clearCart } = useCart();
-
+  const [toast, setToast] = useState({
+    message: null,
+    type: "",
+  });
+  const { selectedCurrency, exchangeRate } = useSiteSettings();
   const [selectedCity, setSelectedCity] = useState(shippingData[0]);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [successMessage, setSuccessMessage] = useState("");
@@ -25,8 +31,7 @@ const CheckoutDetails = ({ locale, shippingData }) => {
 
   const shipping = selectedCity?.shippingPrice || 0;
   const total = subtotal + shipping;
-  let Currancy = "USD";
-
+  const Currency = selectedCurrency.value;
   const orderPayload = {
     items: cart.map((item) => ({
       product: item.productId,
@@ -34,6 +39,7 @@ const CheckoutDetails = ({ locale, shippingData }) => {
       quantity: item.quantity,
       optionValue: item.optionId,
     })),
+    currency: Currency,
     shipping: {
       zone: selectedCity.id,
     },
@@ -109,17 +115,26 @@ const CheckoutDetails = ({ locale, shippingData }) => {
                   </span>
 
                   <span className="text-sm text-base-coffe/70">
-                    {locale === "en" ? item.optionType : item.optionTypeAr} :{" "}
+                    {locale === "en" ? item.optionType : item.optionTypeAr} :
                     {locale === "en" ? item.optionValue : item.optionValueAr}
                   </span>
 
                   <div className="flex justify-between items-center mt-1">
-                    <span className="text-xs text-base-lighter">
-                      {item.quantity} × {item.price} {Currancy}
+                    <span className="text-xs text-base-lighter flex items-center gap-1">
+                      <span>{item.quantity}</span>
+                      <span>×</span>
+                      <span>{convertPrice(item.price ?? 0, exchangeRate)}</span>
+                      <span>{Currency}</span>
                     </span>
 
-                    <span className="text-base-light font-semibold">
-                      {item.quantity * item.price} {Currancy}
+                    <span className="text-base-light font-semibold flex gap-1">
+                      <span>
+                        {convertPrice(
+                          (item.quantity ?? 0) * (item.price ?? 0),
+                          exchangeRate,
+                        )}
+                      </span>
+                      <span>{Currency}</span>
                     </span>
                   </div>
                 </div>
@@ -197,21 +212,21 @@ const CheckoutDetails = ({ locale, shippingData }) => {
               <div className="flex justify-between text-base-light/80">
                 <span>{t("subtotal")}</span>
                 <span>
-                  {subtotal} {Currancy}
+                  {convertPrice(subtotal ?? 0, exchangeRate)} {Currency}{" "}
                 </span>
               </div>
 
               <div className="flex justify-between text-base-light/80">
                 <span>{t("shipping")}</span>
                 <span>
-                  +{shipping} {Currancy}
+                  +{convertPrice(shipping ?? 0, exchangeRate)} {Currency}
                 </span>
               </div>
 
               <div className="border-t border-base-light/20 pt-3 flex justify-between text-xl font-bold">
                 <span>{t("total")}</span>
                 <span>
-                  {total} {Currancy}
+                  {convertPrice(total ?? 0, exchangeRate)} {Currency}
                 </span>
               </div>
               {stripeOpen ? (
@@ -263,6 +278,7 @@ const CheckoutDetails = ({ locale, shippingData }) => {
               orderId={stripeOrderId}
               locale={locale}
               setStripeOpen={setStripeOpen}
+              setToast={setToast}
             />
           </div>
         </div>

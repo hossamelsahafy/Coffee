@@ -7,11 +7,12 @@ import ProductsGrid from "./ProductsGrid";
 import TrackOrderData from "@/components/ui/Taps/TrackOrderTap/TrackOrderData";
 import { ChartAreaInteractive } from "@/components/ui/Taps/DashboardTap/ChartAreaInteractive";
 import MostOrderedProducts from "./MostOrderedProducts";
-
+import GetAllData from "@/actions/GetAllData";
 export default function ProductsListView() {
   const { isLoading } = useListQuery();
   const { config } = useConfig();
   const { user } = useAuth();
+  const [settings, setSettings] = useState("");
 
   const apiRoute = config.routes?.api || "/api";
 
@@ -25,7 +26,20 @@ export default function ProductsListView() {
 
   const [productActivity, setProductActivity] = useState([]);
   const [mostOrdered, setMostOrdered] = useState([]);
+  useEffect(() => {
+    async function fetchsiteSettings() {
+      try {
+        const res = await GetAllData("/globals/site-settings", true);
+        console.log(res);
 
+        setSettings(res);
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    }
+
+    fetchsiteSettings();
+  }, []);
   useEffect(() => {
     async function fetchGlobalStats() {
       try {
@@ -55,7 +69,7 @@ export default function ProductsListView() {
 
     fetchGlobalStats();
   }, [apiRoute]);
-
+  const currency = settings?.currency?.baseCurrencySymbol;
   const productStatsCards = useMemo(() => {
     return [
       {
@@ -141,9 +155,9 @@ export default function ProductsListView() {
             />
           </div>
 
-          <MostOrderedProducts data={mostOrdered} />
+          <MostOrderedProducts data={mostOrdered} currency={currency} />
 
-          <ProductsGrid />
+          <ProductsGrid currency={currency} />
         </div>
       </ContentLayout>
     </div>

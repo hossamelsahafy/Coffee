@@ -37,10 +37,6 @@ export async function GET(
     return new Response("Order not found", { status: 404 });
   }
 
-  console.log("SSE order ID:", order.id);
-  console.log("SSE user ID:", user.id);
-  console.log("SSE order:", order);
-
   const encoder = new TextEncoder();
 
   let interval: ReturnType<typeof setInterval> | undefined;
@@ -97,14 +93,6 @@ export async function GET(
           const orderStatusChanged = currentOrder.status !== lastOrderStatus;
 
           if (updatedAtChanged || paymentStatusChanged || orderStatusChanged) {
-            console.log("📡 SSE ORDER CHANGE DETECTED:", {
-              orderId: currentOrder.id,
-              previousPaymentStatus: lastPaymentStatus,
-              newPaymentStatus: currentOrder.payment?.status,
-              previousStatus: lastOrderStatus,
-              newStatus: currentOrder.status,
-            });
-
             lastUpdatedAt = currentOrder.updatedAt;
             lastPaymentStatus = currentOrder.payment?.status;
             lastOrderStatus = currentOrder.status;
@@ -145,8 +133,6 @@ export async function GET(
   });
 
   req.signal.addEventListener("abort", () => {
-    console.log("🔌 SSE request aborted:", id);
-
     if (interval) {
       clearInterval(interval);
     }

@@ -9,15 +9,23 @@ import {
 export async function PATCH(req: Request) {
   const payload = await getPayload();
   const body = await req.json();
-  const { email, firstName, lastName, phoneNumber, gender, password } =
-    body as {
-      email?: string;
-      firstName?: string;
-      lastName?: string;
-      phoneNumber?: string;
-      gender?: "male" | "female";
-      password?: string;
-    };
+  const {
+    email,
+    firstName,
+    lastName,
+    phoneNumber,
+    gender,
+    password,
+    SelectedCurrency,
+  } = body as {
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    gender?: "male" | "female";
+    password?: string;
+    SelectedCurrency: string;
+  };
   let token: string | undefined;
   const { user } = await payload.auth({
     headers: req.headers,
@@ -58,6 +66,21 @@ export async function PATCH(req: Request) {
 
   if (password !== undefined) {
     data.password = password;
+  }
+  if (SelectedCurrency !== undefined) {
+    if (typeof SelectedCurrency !== "string" || !SelectedCurrency.trim()) {
+      return Response.json(
+        {
+          error: {
+            en: "Invalid currency.",
+            ar: "العملة غير صحيحة.",
+          },
+        },
+        { status: 400 },
+      );
+    }
+
+    data.SelectedCurrency = SelectedCurrency;
   }
   if (email && email !== user.email) {
     token = Math.floor(100000 + Math.random() * 900000).toString();

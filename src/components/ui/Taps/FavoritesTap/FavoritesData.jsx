@@ -9,11 +9,11 @@ import { GlassyToast } from "@/components/shared/GlassyToast/GlassyToast";
 import { useDashboard } from "@/Context/DashboardContext";
 import ProductsCardAsColomnsSkeleton from "@/components/shared/Skelatons/ProductsCardAsColomnsSkeleton";
 import GetDataWithPagination from "@/actions/GetDataWithPagination";
-
+import { useSiteSettings } from "@/context/CurrencyContext";
 const FavoritesData = ({ data = [], locale, NotYet, pagination }) => {
   const [openModel, setOpenModel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-
+  const { selectedCurrency, exchangeRate } = useSiteSettings();
   const [isPending, startTransition] = useTransition();
   const [isLoadingPage, setIsLoadingPage] = useState(false);
 
@@ -153,6 +153,8 @@ const FavoritesData = ({ data = [], locale, NotYet, pagination }) => {
                   isFavorite={product.isFavorite}
                   toggleFavorite={() => toggleFavorite(productId)}
                   isLoading={isLoading}
+                  currency={selectedCurrency.value}
+                  exchangeRate={exchangeRate}
                 />
               );
             }}

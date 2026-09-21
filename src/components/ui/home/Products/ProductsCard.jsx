@@ -11,7 +11,7 @@ import { useCart } from "@/Context/CartContext";
 import { useUser } from "@/Context/userContext";
 import { CgSpinner } from "react-icons/cg";
 import SlugMethods from "@/actions/SlugMethods";
-
+import { convertPrice } from "@/lib/currency/convertPrice";
 const ProductCard = ({
   product,
   locale,
@@ -22,6 +22,8 @@ const ProductCard = ({
   isLoading,
   onAddToCart,
   isFavorite,
+  currency,
+  exchangeRate,
 }) => {
   const { addToCart } = useCart();
   const options = product?.choices?.options || [];
@@ -180,16 +182,18 @@ const ProductCard = ({
             />
           </div>
 
-          <div className="flex gap-8 justify-between items-center w-full">
+          <div className="flex lg:gap-8 gap-5 justify-between items-center w-full">
             <div className="flex font-bold flex-col items-center min-w-0">
               <p className="whitespace-nowrap text-sm">
-                {selectedOption?.priceAfter} USD
+                {convertPrice(selectedOption?.priceAfter ?? 0, exchangeRate)}{" "}
+                {currency}
               </p>
               <p
                 className="relative text-gray-400 whitespace-nowrap text-sm
               before:absolute before:left-0 before:right-0 before:top-1/2 before:border-t-2 before:border-gray-400"
               >
-                {selectedOption?.priceBefore} USD
+                {convertPrice(selectedOption?.priceBefore ?? 0, exchangeRate)}{" "}
+                {currency}
               </p>
             </div>
 

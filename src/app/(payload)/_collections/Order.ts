@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-
+import { roundMoney } from "@/lib/currency/roundMoney";
 import {
   orderAdminHTML,
   orderAdminSubject,
@@ -9,7 +9,8 @@ import {
   orderConfirmationHTML,
   orderConfirmationSubject,
 } from "@/lib/Emails/OrderConfirmation";
-
+import { createCurrencySnapshot } from "@/lib/currency/createCurrencySnapshot";
+import { getExchangeRate } from "@/lib/currency/getExchangeRate";
 export const Orders: CollectionConfig = {
   slug: "orders",
 
@@ -154,6 +155,82 @@ export const Orders: CollectionConfig = {
       type: "number",
       label: "Total Price With Shipping",
     },
+    {
+      name: "baseCurrency",
+      type: "text",
+      required: true,
+      defaultValue: "USD",
+      admin: {
+        readOnly: true,
+        description:
+          "Base currency used when this order was created. This value is preserved for historical accuracy.",
+      },
+    },
+    {
+      name: "currency",
+      type: "text",
+      required: true,
+      defaultValue: "USD",
+      admin: {
+        readOnly: true,
+        description: "Currency used when this order was created.",
+      },
+    },
+    {
+      name: "currencySymbol",
+      type: "text",
+      required: true,
+      defaultValue: "$",
+      admin: {
+        readOnly: true,
+        description: "Currency Symbol used when this order was created.",
+      },
+    },
+    {
+      name: "exchangeRate",
+      type: "number",
+      required: true,
+      admin: {
+        readOnly: true,
+        description:
+          "Exchange rate used when this order was created. This value is preserved for historical accuracy.",
+      },
+    },
+    {
+      name: "currencySnapshot",
+      type: "group",
+      admin: {
+        readOnly: true,
+        description:
+          "Historical currency rates captured when this order was created.",
+      },
+      fields: [
+        {
+          name: "baseCurrency",
+          type: "text",
+          required: true,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: "rates",
+          type: "json",
+          required: true,
+          admin: {
+            readOnly: true,
+          },
+        },
+        {
+          name: "capturedAt",
+          type: "date",
+          required: true,
+          admin: {
+            readOnly: true,
+          },
+        },
+      ],
+    },
 
     {
       name: "status",
@@ -295,6 +372,63 @@ export const Orders: CollectionConfig = {
         };
 
         if (operation === "create") {
+          const siteSettings = await req.payload.findGlobal({
+            slug: "site-settings",
+            depth: 0,
+          });
+
+          const baseCurrency = siteSettings?.currency?.baseCurrency
+            ?.trim()
+            .toUpperCase();
+
+          if (!baseCurrency) {
+            throw new Error("Store base currency is not configured.");
+          }
+
+          const selectedCurrency = data.currency?.trim().toUpperCase();
+
+          const currencyCode = selectedCurrency || baseCurrency;
+
+          const currencies = siteSettings?.currency?.currencies || [];
+
+          const configuredCurrency = currencies.find(
+            (currency) => currency?.code?.trim().toUpperCase() === currencyCode,
+          );
+
+          if (!configuredCurrency) {
+            throw new Error(`Currency "${currencyCode}" is not configured.`);
+          }
+
+          if (configuredCurrency.enabled === false) {
+            throw new Error(`Currency "${currencyCode}" is not available.`);
+          }
+
+          const orderCreatedAt = new Date();
+
+          const orderDate = orderCreatedAt.toISOString().split("T")[0];
+
+          const currencySnapshot = await createCurrencySnapshot(
+            baseCurrency,
+            currencies.filter((currency) => currency?.enabled !== false),
+            orderDate,
+            orderCreatedAt.toISOString(),
+          );
+
+          const exchangeRate = currencySnapshot.rates[currencyCode];
+
+          if (!exchangeRate) {
+            throw new Error(
+              `Exchange rate for ${baseCurrency} to ${currencyCode} is not available.`,
+            );
+          }
+
+          data.currencySnapshot = currencySnapshot;
+
+          data.baseCurrency = baseCurrency;
+          data.currency = currencyCode;
+          data.currencySymbol = configuredCurrency.symbol;
+          data.exchangeRate = exchangeRate;
+
           if (!data.orderNumber) {
             data.orderNumber = `ORD-${Date.now()}`;
           }
@@ -315,6 +449,9 @@ export const Orders: CollectionConfig = {
               const option = product.choices.options?.find(
                 (opt) => String(opt.value?.id) === String(item.optionValue),
               );
+              const basePrice = Number(option.priceAfter ?? 0);
+
+              const convertedPrice = roundMoney(basePrice * exchangeRate);
 
               const price = option?.priceAfter ?? 0;
 
@@ -325,20 +462,23 @@ export const Orders: CollectionConfig = {
 
               const optionType = product.choices.choiceType;
               const quantity = Number(item.quantity) || 0;
-
+              const itemTotal = roundMoney(convertedPrice * quantity);
               return {
                 ...item,
-                price,
+                price: convertedPrice,
                 image,
                 optionType,
-                total: price * quantity,
+                total: itemTotal,
               };
             }),
           );
 
-          const itemsTotal =
-            data.items?.reduce((sum, item) => sum + (item.total || 0), 0) || 0;
-
+          const itemsTotal = roundMoney(
+            data.items?.reduce(
+              (sum, item) => sum + Number(item.total || 0),
+              0,
+            ) || 0,
+          );
           let shippingPrice = 0;
 
           const zoneId =
@@ -352,8 +492,8 @@ export const Orders: CollectionConfig = {
               id: zoneId,
             });
 
-            shippingPrice = Number(zone?.shippingPrice || 0);
-
+            const baseShippingPrice = Number(zone?.shippingPrice || 0);
+            shippingPrice = roundMoney(baseShippingPrice * exchangeRate);
             data.shipping = {
               ...data.shipping,
               city: zone.cityName,
@@ -362,7 +502,7 @@ export const Orders: CollectionConfig = {
           }
 
           data.subtotal = itemsTotal;
-          data.total = itemsTotal + shippingPrice;
+          data.total = roundMoney(itemsTotal + shippingPrice);
         }
 
         if (operation === "update") {
@@ -412,6 +552,7 @@ export const Orders: CollectionConfig = {
               total: doc.total,
               paymentMethod,
               orderState,
+              currencySymbol: doc.currencySymbol,
             }),
           }),
 
@@ -428,6 +569,7 @@ export const Orders: CollectionConfig = {
               orderNumber: doc.orderNumber,
               paymentMethod,
               total: doc.total,
+              currency: doc.currency,
             }),
           }),
         ]);

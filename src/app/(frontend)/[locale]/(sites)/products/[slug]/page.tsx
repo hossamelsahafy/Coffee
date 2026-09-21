@@ -6,7 +6,7 @@ import GetFilteredData from "@/actions/GetFilteredData";
 import ProductSlugClient from "@/components/ui/ProductsPage/Slug/ProductSlugClient";
 import { getUser } from "@/actions/getUser";
 import GetDataServerSide from "@/actions/GetDataServerSide";
-import GetAllData from "@/actions/GetAllData";
+import GetDataWithPagination from "@/actions/GetDataWithPagination";
 
 type Props = {
   params: Promise<{
@@ -104,6 +104,7 @@ const Page = async ({ params }: Props) => {
     slugName,
     filterValue: true,
   });
+  const countries = await GetDataWithPagination("countries", 1, 10);
 
   const importantProducts = await GetFilteredData({
     collection: "products",
@@ -129,6 +130,7 @@ const Page = async ({ params }: Props) => {
         HERO_VIDEO_URL={HERO_VIDEO_URL}
         rightSideImage={rightSideImage}
         pageData={dataBySlug.headerTwo}
+        countriesData={countries}
       />
     </div>
   );

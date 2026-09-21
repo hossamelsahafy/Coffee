@@ -13,6 +13,7 @@ export default function ShowOrderDetailsModule({
   const t = useTranslations("Orders");
 
   if (!open || !order) return null;
+  console.log(order);
 
   return (
     <div
@@ -75,11 +76,13 @@ export default function ShowOrderDetailsModule({
                     </span>
 
                     <span>
-                      {t("price")}: ${item.price}
+                      {t("price")}: {order.currencySymbol}
+                      {item.price}
                     </span>
 
                     <span className="font-medium">
-                      {t("total")}: ${item.total}
+                      {t("total")}: {order.currencySymbol}
+                      {order.total}
                     </span>
                   </div>
                 </div>

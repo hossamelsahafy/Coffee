@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useListQuery, useConfig } from "@payloadcms/ui";
 import Header from "@/components/shared/AdminUI/Header";
 import Pagination from "@/components/shared/AdminUI/Pagination";
-
+import GetAllData from "@/actions/GetAllData";
 export default function ShippingZonesGrid() {
   const { data, isLoading, handleWhereChange, handlePageChange } =
     useListQuery();
@@ -14,7 +14,7 @@ export default function ShippingZonesGrid() {
   const adminRoute = config.routes?.admin || "/admin";
 
   const [search, setSearch] = useState("");
-
+  const [setting, setSettings] = useState();
   const handleSearch = (value) => {
     setSearch(value);
 
@@ -33,10 +33,23 @@ export default function ShippingZonesGrid() {
     setSearch("");
     handleWhereChange({});
   };
+  useEffect(() => {
+    async function fetchsiteSettings() {
+      try {
+        const res = await GetAllData("/globals/site-settings", true);
 
+        setSettings(res);
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    }
+
+    fetchsiteSettings();
+  }, []);
   if (isLoading) {
     return <div className="p-6 text-[#E8D8C3]">Loading...</div>;
   }
+  const currency = setting?.currency?.baseCurrencySymbol;
 
   const docs = data?.docs || [];
   const page = data?.page || 1;
@@ -91,7 +104,7 @@ export default function ShippingZonesGrid() {
                     <div className="flex items-center justify-between border-t border-white/5 pt-2">
                       <span className="text-gray-400">Shipping Price:</span>
                       <span className="font-semibold text-[#E8C6A7]">
-                        ${data.shippingPrice}
+                        {currency} {data.shippingPrice}
                       </span>
                     </div>
                   </div>

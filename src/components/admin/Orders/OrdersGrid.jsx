@@ -188,6 +188,13 @@ export const OrdersCustomGrid = () => {
                           {order.payment?.method || "--"}
                         </span>
                       </div>
+                      <div className="flex items-center justify-between border-t border-white/5! pt-3">
+                        <span className="text-gray-400!">Paid Currency</span>
+
+                        <span className="font-medium text-gray-200! uppercase text-xs">
+                          {order.currency || "--"}
+                        </span>
+                      </div>
 
                       <div className="flex items-center justify-between border-t border-white/5! pt-3">
                         <span className="text-gray-400!">Payment Status</span>
@@ -216,7 +223,8 @@ export const OrdersCustomGrid = () => {
                               Shipping Cost
                             </span>
                             <span className="text-base text-[#D8A46B]!">
-                              ${order.shipping?.price ?? 0}
+                              {order.currencySymbol}
+                              {order.shipping?.price ?? 0}
                             </span>
                           </div>
                           <div className="space-y-2 max-h-40 overflow-y-auto rounded-xl border border-white/5! bg-black/20! p-3">
@@ -240,7 +248,8 @@ export const OrdersCustomGrid = () => {
                                 </div>
                                 <div className="text-right shrink-0">
                                   <p className="font-bold text-[#D8A46B]!">
-                                    ${item.total ?? 0}
+                                    {order.currencySymbol}
+                                    {item.total ?? 0}
                                   </p>
                                 </div>
                               </div>
@@ -251,12 +260,12 @@ export const OrdersCustomGrid = () => {
                     </div>
                   </div>
 
-                  {/* Footer section containing Total Amount and Action Button */}
                   <div className="mt-6 border-t border-white/15! pt-4 space-y-3">
                     <div className="flex items-center justify-between font-semibold">
                       <span className="text-gray-400!">Total Amount</span>
                       <span className="text-base text-[#D8A46B]!">
-                        ${order.total ?? 0}
+                        {order.currencySymbol}
+                        {order.total ?? 0}
                       </span>
                     </div>
                     <div className="flex justify-end">

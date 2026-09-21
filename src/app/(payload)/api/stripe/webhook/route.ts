@@ -116,14 +116,6 @@ export async function POST(req: Request) {
         const paymentIntent = event.data.object;
         const orderId = paymentIntent.metadata?.orderId;
 
-        console.log(
-          "Stripe webhook:",
-          event.id,
-          event.type,
-          paymentIntent.id,
-          orderId,
-        );
-
         if (!orderId) {
           break;
         }
@@ -148,7 +140,7 @@ export async function POST(req: Request) {
             String(paymentIntent.id);
 
         if (!alreadyFailed) {
-          const updatedOrder = await payload.update({
+          await payload.update({
             collection: "orders",
             id: orderId,
             data: {
@@ -160,11 +152,6 @@ export async function POST(req: Request) {
             },
             overrideAccess: true,
           });
-          console.log("🟢 WEBHOOK UPDATED ORDER:", {
-            id: updatedOrder.id,
-            status: updatedOrder.status,
-            paymentStatus: updatedOrder.payment?.status,
-          });
         }
         break;
       }
@@ -172,14 +159,6 @@ export async function POST(req: Request) {
       case "payment_intent.canceled": {
         const paymentIntent = event.data.object;
         const orderId = paymentIntent.metadata?.orderId;
-
-        console.log(
-          "Stripe webhook:",
-          event.id,
-          event.type,
-          paymentIntent.id,
-          orderId,
-        );
 
         if (!orderId) {
           break;
@@ -203,10 +182,6 @@ export async function POST(req: Request) {
           order.payment?.status === "pending" &&
           String(order.payment?.stripePaymentIntentId) ===
             String(paymentIntent.id);
-        console.log("🔴 WEBHOOK ABOUT TO UPDATE ORDER:", {
-          orderId,
-          paymentIntentId: paymentIntent.id,
-        });
 
         if (!alreadyPending) {
           await payload.update({

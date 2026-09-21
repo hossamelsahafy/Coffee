@@ -6,7 +6,7 @@ import HeaderTwo from "@/components/ui/Header/HeaderTwo";
 import SlugMethods from "@/actions/SlugMethods";
 import { useUser } from "@/Context/userContext";
 import { GlassyToast } from "@/components/shared/GlassyToast/GlassyToast";
-
+import { useSiteSettings } from "@/Context/CurrencyContext";
 const getProductId = (product) => String(product?.id ?? product?._id ?? "");
 
 const ProductSlugClient = ({
@@ -18,9 +18,11 @@ const ProductSlugClient = ({
   HERO_VIDEO_URL,
   rightSideImage,
   pageData,
+  countriesData,
 }) => {
   const { user } = useUser();
-
+  const { selectedCurrency, exchangeRate } = useSiteSettings();
+  const currency = selectedCurrency.value;
   const favoriteIds = useMemo(() => {
     const docs = Array.isArray(userFavorites?.docs)
       ? userFavorites.docs
@@ -130,7 +132,6 @@ const ProductSlugClient = ({
 
     const nextState = !previousState;
 
-    // Optimistic update
     setFavoriteState((prev) => ({
       ...prev,
       [id]: nextState,
@@ -165,7 +166,6 @@ const ProductSlugClient = ({
     } catch (error) {
       console.error("Favorite toggle failed:", error);
 
-      // Rollback
       setFavoriteState((prev) => ({
         ...prev,
         [id]: previousState,
@@ -212,6 +212,9 @@ const ProductSlugClient = ({
           loadingProductId={loadingProductId}
           rightSideImage={rightSideImage}
           pageData={pageData}
+          setToast={setToast}
+          countriesData={countriesData}
+          currency={currency}
         />
 
         <div className="h-full w-full">
@@ -225,6 +228,8 @@ const ProductSlugClient = ({
             websiteName={websiteName}
             locale={locale}
             secondHeader={dataBySlug.headerTwo}
+            currency={currency}
+            exchangeRate={exchangeRate}
           />
         </div>
       </div>

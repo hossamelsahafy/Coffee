@@ -10,7 +10,7 @@ import GetDataWithPagination from "@/actions/GetDataWithPagination";
 import GetAllData from "@/actions/GetAllData";
 import { useNav } from "@payloadcms/ui";
 
-export const ProductsCustomGrid = () => {
+export const ProductsCustomGrid = ({ currency }) => {
   const { config } = useConfig();
   const adminRoute = config.routes?.admin || "/admin";
 
@@ -29,6 +29,7 @@ export const ProductsCustomGrid = () => {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("");
   const [where, setWhere] = useState({});
+
   const { navOpen } = useNav();
   useEffect(() => {
     async function fetchCategories() {
@@ -43,6 +44,7 @@ export const ProductsCustomGrid = () => {
 
     fetchCategories();
   }, []);
+
   useEffect(() => {
     async function fetchBrands() {
       try {
@@ -102,7 +104,6 @@ export const ProductsCustomGrid = () => {
   const totalPages = data?.totalPages || 1;
   const hasPrevPage = data?.hasPrevPage || false;
   const hasNextPage = data?.hasNextPage || false;
-
   return (
     <>
       <div className="p-4 font-sans min-h-screen text-[#fff9f0]!">
@@ -254,12 +255,12 @@ export const ProductsCustomGrid = () => {
 
                                 <div className="text-right">
                                   <p className="font-bold text-[#D8A46B]!">
-                                    ${option.priceAfter}
+                                    {currency} {option.priceAfter}
                                   </p>
 
                                   {option.priceBefore > option.priceAfter && (
                                     <p className="text-xs text-gray-500! line-through">
-                                      ${option.priceBefore}
+                                      {currency} {option.priceBefore}
                                     </p>
                                   )}
                                 </div>

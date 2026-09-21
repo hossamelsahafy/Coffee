@@ -37,6 +37,8 @@ import { default as default_0cf35c30ced6e026cef4949a7ed5a2db } from '@/component
 import { default as default_8fc940da610cf2fa86c160c33708ecb6 } from '@/components/admin/ProductsViews/ViewsList'
 import { default as default_a5dae29c92b5ebd2bf161c2264c48613 } from '@/components/admin/ProductOptions/ProductOptionsCustomView'
 import { default as default_a160467123780a84664b6437cf7d0121 } from '@/components/admin/brands/brandsGrid'
+import { default as default_1583385f23c6e296a755b66441502478 } from '@/components/admin/BaseCurrencyField'
+import { default as default_3bb270f8da09f95ae32e0c84b46a67c0 } from '@/components/admin/BaseCurrencySaveButton'
 import { default as default_57ed2342ea1d8b2b1e8c752d6158ebca } from '@/components/admin/CustomLogo'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -80,6 +82,8 @@ export const importMap = {
   "@/components/admin/ProductsViews/ViewsList#default": default_8fc940da610cf2fa86c160c33708ecb6,
   "@/components/admin/ProductOptions/ProductOptionsCustomView#default": default_a5dae29c92b5ebd2bf161c2264c48613,
   "@/components/admin/brands/brandsGrid#default": default_a160467123780a84664b6437cf7d0121,
+  "@/components/admin/BaseCurrencyField#default": default_1583385f23c6e296a755b66441502478,
+  "@/components/admin/BaseCurrencySaveButton#default": default_3bb270f8da09f95ae32e0c84b46a67c0,
   "@/components/admin/CustomLogo#default": default_57ed2342ea1d8b2b1e8c752d6158ebca,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

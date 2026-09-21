@@ -8,7 +8,7 @@ const NotesCard = ({ item, locale }) => {
 
   const title = isArabic ? item.titleAr : item.title;
   const description = isArabic ? item.desAr : item.des;
-  const brandName = isArabic ? item.brandNameAr : item.brandName;
+  const brandName = isArabic ? item.brandName.nameAr : item.brandName.name;
   const slug = isArabic ? item.slugAr : item.slug;
 
   let imageUrl = "";

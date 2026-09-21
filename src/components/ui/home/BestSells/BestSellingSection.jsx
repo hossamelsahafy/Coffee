@@ -17,6 +17,8 @@ const BestSellingSection = ({
   bestSellingSectionData,
   websiteName,
   favoriteState = {},
+  currency,
+  exchangeRate,
 }) => {
   const t = useTranslations("BestSeller");
   const [openModel, setOpenModel] = useState(false);
@@ -80,6 +82,8 @@ const BestSellingSection = ({
                 }
                 isLoading={loadingProductId === product.id}
                 onAddToCart={onAddToCart}
+                currency={currency}
+                exchangeRate={exchangeRate}
               />
             ))}
           </div>

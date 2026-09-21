@@ -16,6 +16,8 @@ const HightLightedProducts = ({
   productsPagesData,
   onAddToCart,
   favoriteState = {},
+  currency,
+  exchangeRate,
 }) => {
   const [openModel, setOpenModel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -148,6 +150,7 @@ const HightLightedProducts = ({
                 locale={locale}
                 setOpenModel={setOpenModel}
                 setSelectedProduct={setSelectedProduct}
+                currency={currency}
                 isFavorite={
                   favoriteState[product.id] ?? product.isFavorite ?? false
                 }
@@ -159,6 +162,7 @@ const HightLightedProducts = ({
                 }
                 isLoading={loadingProductId === product.id}
                 onAddToCart={onAddToCart}
+                exchangeRate={exchangeRate}
               />
             )}
           />

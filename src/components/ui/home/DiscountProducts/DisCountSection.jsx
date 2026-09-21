@@ -16,6 +16,8 @@ const DisCountSection = ({
   discountSection,
   onAddToCart,
   favoriteState,
+  currency,
+  exchangeRate,
 }) => {
   const t = useTranslations("discountSection");
   const { locale } = useParams();
@@ -76,6 +78,8 @@ const DisCountSection = ({
                 }
                 isLoading={loadingProductId === item.id}
                 onAddToCart={onAddToCart}
+                currency={currency}
+                exchangeRate={exchangeRate}
               />
             </div>
           )}

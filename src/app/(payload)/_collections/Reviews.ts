@@ -6,7 +6,16 @@ import {
 export const Reviews: CollectionConfig = {
   slug: "reviews",
   access: {
-    read: () => true,
+    read: ({ req }) => {
+      if (req.user?.role === "admin") {
+        return true;
+      }
+      return {
+        isApproved: {
+          equals: true,
+        },
+      };
+    },
 
     create: ({ req }) => Boolean(req.user),
 
@@ -16,11 +25,21 @@ export const Reviews: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      async ({ data, req }) => {
+      async ({ data, req, operation }) => {
+        if (!req.user || req.user.role !== "admin") {
+          data.isApproved = false;
+        }
+        if (req.user) {
+          if (operation === "create") {
+            data.ClientName = req.user.id;
+          }
+        }
+
         if (data?.product && data?.productOption) {
           try {
             const productId =
               typeof data.product === "object" ? data.product.id : data.product;
+
             const product = await req.payload.findByID({
               collection: "products",
               id: productId,
@@ -33,10 +52,28 @@ export const Reviews: CollectionConfig = {
               );
 
               if (matchedOption) {
+                let imageId = null;
+
+                if (matchedOption.image) {
+                  if (typeof matchedOption.image === "string") {
+                    imageId = matchedOption.image;
+                  } else if (
+                    typeof matchedOption.image === "object" &&
+                    matchedOption.image.id
+                  ) {
+                    imageId = String(matchedOption.image.id);
+                  }
+                }
+
                 data.image = {
-                  ImageSource: matchedOption.ImageSource || null,
-                  image: matchedOption.image || null,
-                  imageUrl: matchedOption.imageUrl || null,
+                  ImageSource: matchedOption.ImageSource || "upload",
+
+                  image: imageId,
+
+                  imageUrl:
+                    typeof matchedOption.imageUrl === "string"
+                      ? matchedOption.imageUrl
+                      : null,
                 };
               }
             }
@@ -44,6 +81,7 @@ export const Reviews: CollectionConfig = {
             console.error("Error auto-syncing product option image:", error);
           }
         }
+
         return data;
       },
     ],
@@ -64,7 +102,6 @@ export const Reviews: CollectionConfig = {
     {
       name: "title",
       type: "text",
-      required: true,
     },
     {
       name: "titleAr",
@@ -73,7 +110,6 @@ export const Reviews: CollectionConfig = {
     {
       name: "subtitle",
       type: "text",
-      required: true,
     },
     {
       name: "subtitleAr",
@@ -82,12 +118,10 @@ export const Reviews: CollectionConfig = {
     {
       name: "des",
       type: "text",
-      required: true,
     },
     {
       name: "desAr",
       type: "text",
-      required: true,
     },
     {
       name: "country",
@@ -99,11 +133,25 @@ export const Reviews: CollectionConfig = {
       type: "number",
       min: 0,
       max: 5,
+      validate: (value) => {
+        if (value > 5) {
+          return "Rating cannot exceed 5.";
+        }
+
+        if (value < 0) {
+          return "Rating cannot be less than 0.";
+        }
+
+        return true;
+      },
     },
     {
       name: "ClientName",
       type: "relationship",
       relationTo: "users",
+      admin: {
+        readOnly: true,
+      },
     },
 
     {
@@ -138,7 +186,7 @@ export const Reviews: CollectionConfig = {
         {
           name: "ImageSource",
           type: "select",
-          defaultValue: "Upload",
+          defaultValue: "upload",
 
           options: [
             { value: "upload", label: "Upload" },
@@ -153,6 +201,8 @@ export const Reviews: CollectionConfig = {
           type: "upload",
           relationTo: "media",
           admin: {
+            condition: (_, siblingData) =>
+              siblingData?.ImageSource === "upload",
             readOnly: true,
           },
         },
@@ -160,6 +210,7 @@ export const Reviews: CollectionConfig = {
           name: "imageUrl",
           type: "text",
           admin: {
+            condition: (_, siblingData) => siblingData?.ImageSource === "Url",
             readOnly: true,
           },
         },

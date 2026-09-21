@@ -6,7 +6,9 @@ import Image from "next/image";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-const CartDetails = ({ locale, data }) => {
+import { useSiteSettings } from "@/Context/CurrencyContext";
+import { convertPrice } from "@/lib/currency/convertPrice";
+const CartDetails = ({ locale }) => {
   const { cart, increaseQuantity, decreaseQuantity, removeFromCart } =
     useCart();
 
@@ -28,6 +30,9 @@ const CartDetails = ({ locale, data }) => {
       </p>
     );
   }
+  const { selectedCurrency, exchangeRate } = useSiteSettings();
+  const symbol = selectedCurrency.symbol;
+
   return (
     <div className="container-custom p-8 relative">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8">
@@ -57,8 +62,9 @@ const CartDetails = ({ locale, data }) => {
                     {locale === "en" ? c.optionTitle : c.optionTitleAr}
                   </p>
 
-                  <p className="font-bold text-[#6F4E37]">
-                    ${c.price * c.quantity}
+                  <p className="font-bold text-[#6F4E37] flex gap-1">
+                    <span>{symbol}</span>
+                    {convertPrice((c.price ?? 0) * c.quantity, exchangeRate)}
                   </p>
                 </div>
               </div>
@@ -112,8 +118,10 @@ const CartDetails = ({ locale, data }) => {
                   {locale === "en" ? item.title : item.titleAr}
                 </span>
 
-                <span className="font-medium text-[#6B5B4D]">
-                  ${item.price * item.quantity}
+                <span className="font-medium text-[#6B5B4D] flex gap-1">
+                  <span>{symbol}</span>
+                  {convertPrice(item.price ?? 0, exchangeRate) *
+                    item.quantity}{" "}
                 </span>
               </div>
             ))}
@@ -121,7 +129,10 @@ const CartDetails = ({ locale, data }) => {
             <div className="border-t border-[#E8E0D1] pt-4 flex justify-between text-lg font-bold text-[#3E2C23]">
               <span>{t("Total")}</span>
 
-              <span>${total}</span>
+              <span className="flex gap-1">
+                <span className="">{symbol}</span>
+                {convertPrice(total ?? 0, exchangeRate)}
+              </span>
             </div>
 
             <Link

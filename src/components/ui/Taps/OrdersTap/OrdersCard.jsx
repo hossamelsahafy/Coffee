@@ -73,7 +73,7 @@ const OrderCard = ({
 
         <div className="flex w-full justify-between items-center">
           <p>
-            {subtotal}: {d.subtotal}
+            {subtotal}: {d.subtotal} {d.currency}
           </p>
           {isUpdating ? (
             <div className="flex items-center gap-2 px-3 py-1">
@@ -91,7 +91,7 @@ const OrderCard = ({
 
         <div className="w-full flex justify-between items-center">
           <p>
-            {shippingCost}: {d.shipping.price}
+            {shippingCost}: {d.shipping.price} {d.currency}
           </p>
           <p className="py-1 px-3">
             {locale === "en"
@@ -102,7 +102,7 @@ const OrderCard = ({
 
         <div className="w-full flex justify-between items-center">
           <p>
-            {total}: {d.total}
+            {total}: {d.total} {d.currency}
           </p>
           <p className="py-1 px-3">{paymentM(d.payment.method)}</p>
         </div>

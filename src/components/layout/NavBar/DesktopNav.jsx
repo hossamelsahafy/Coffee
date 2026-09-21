@@ -32,7 +32,7 @@ const DesktopNav = ({
             />
           </Link>
 
-          <nav className="flex min-w-0 flex-1 items-center justify-end gap-3 lg:gap-5">
+          <nav className="flex min-w-0 flex-1 items-center justify-center gap-3 lg:gap-5">
             <div className="flex items-center gap-3 lg:gap-5">
               {navLinks.map((link) => (
                 <div key={link.id} className="relative group shrink-0">

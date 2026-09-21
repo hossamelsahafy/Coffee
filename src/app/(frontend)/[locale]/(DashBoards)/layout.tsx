@@ -8,7 +8,8 @@ import { UserProvider } from "@/Context/userContext";
 import { getUser } from "@/actions/getUser";
 import { DashboardProvider } from "@/Context/DashboardContext";
 import "@/styles/globals.css";
-
+import { SiteSettingsProvider } from "@/Context/CurrencyContext";
+import { getDataCache } from "@/lib/GetDataCache";
 const cairo = Cairo({ subsets: ["arabic"] });
 
 export default async function LocaleLayout({
@@ -19,6 +20,7 @@ export default async function LocaleLayout({
   params: { locale: string };
 }) {
   const user = await getUser();
+  const siteSettings = await getDataCache("globals/site-settings");
 
   const { locale } = await params;
   const messages = await getMessages({ locale });
@@ -33,16 +35,18 @@ export default async function LocaleLayout({
         className={`${cairo.className} min-h-screen bg-base-dark text-white`}
       >
         <DashboardProvider>
-          <CartProvider>
-            <NextIntlClientProvider messages={messages} locale={locale}>
-              <UserProvider initialUser={user}>
-                <div className="flex min-h-screen w-full relative">
-                  <DashboardClient locale={locale} />
-                  <main className="flex-1 min-w-0 w-full">{children}</main>
-                </div>
-              </UserProvider>
-            </NextIntlClientProvider>
-          </CartProvider>
+          <UserProvider initialUser={user}>
+            <SiteSettingsProvider siteSettings={siteSettings}>
+              <CartProvider>
+                <NextIntlClientProvider messages={messages} locale={locale}>
+                  <div className="flex min-h-screen w-full relative">
+                    <DashboardClient locale={locale} />
+                    <main className="flex-1 min-w-0 w-full">{children}</main>
+                  </div>
+                </NextIntlClientProvider>
+              </CartProvider>
+            </SiteSettingsProvider>
+          </UserProvider>
         </DashboardProvider>
       </body>
     </html>

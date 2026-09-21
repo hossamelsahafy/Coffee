@@ -8,7 +8,7 @@ import ReviewsSection from "@/components/ui/home/Reviews/ReviewsSection";
 import SlugMethods from "@/actions/SlugMethods";
 import { useUser } from "@/Context/userContext";
 import { GlassyToast } from "@/components/shared/GlassyToast/GlassyToast";
-
+import { useSiteSettings } from "@/Context/CurrencyContext";
 export default function HomePageClient({
   initialProducts,
   categories,
@@ -33,7 +33,8 @@ export default function HomePageClient({
     message: null,
     type: "",
   });
-
+  const { selectedCurrency, exchangeRate } = useSiteSettings();
+  const currency = selectedCurrency.value;
   const toggleFavorite = async (productId, currentIsFavorite) => {
     if (!user) {
       setToast({
@@ -54,7 +55,6 @@ export default function HomePageClient({
 
     const nextState = !previousState;
 
-    // Optimistic UI update
     setFavoriteState((prev) => ({
       ...prev,
       [productId]: nextState,
@@ -133,6 +133,8 @@ export default function HomePageClient({
         productsPagesData={productsPagesData}
         onAddToCart={handleAddToCart}
         favoriteState={favoriteState}
+        currency={currency}
+        exchangeRate={exchangeRate}
       />
       <HeaderTwo
         importantProducts={importantProducts}
@@ -142,6 +144,8 @@ export default function HomePageClient({
         loadingProductId={loadingProductId}
         onAddToCart={handleAddToCart}
         favoriteState={favoriteState}
+        currency={currency}
+        exchangeRate={exchangeRate}
       />
       <ReviewsSection
         initialReviewsMap={initialReviewsMap}
@@ -159,6 +163,8 @@ export default function HomePageClient({
         locale={locale}
         onAddToCart={handleAddToCart}
         favoriteState={favoriteState}
+        currency={currency}
+        exchangeRate={exchangeRate}
       />
       <BestSellingSection
         data={bestSellingProducts}
@@ -169,6 +175,8 @@ export default function HomePageClient({
         bestSellingSectionData={BestSellingSectionData}
         websiteName={websiteName}
         favoriteState={favoriteState}
+        currency={currency}
+        exchangeRate={exchangeRate}
       />
 
       <GlassyToast

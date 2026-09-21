@@ -8,7 +8,7 @@ export const Notes: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     pagination: {
-      defaultLimit: 6,
+      defaultLimit: 12,
       limits: [8, 12, 24, 50],
     },
     components: {

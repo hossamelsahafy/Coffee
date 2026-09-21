@@ -7,7 +7,7 @@ import OrdersGrid from "./OrdersGrid";
 import TrackOrderData from "@/components/ui/Taps/TrackOrderTap/TrackOrderData";
 import { ChartAreaInteractive } from "@/components/ui/Taps/DashboardTap/ChartAreaInteractive";
 import { CategorySpendChart } from "@/components/ui/Taps/DashboardTap/CategorySpendChart";
-
+import GetAllData from "@/actions/GetAllData";
 export default function OrdersListView() {
   const { isLoading } = useListQuery();
   const { config } = useConfig();
@@ -28,17 +28,19 @@ export default function OrdersListView() {
 
   const [orderActivity, setOrderActivity] = useState([]);
   const [categorySpendRaw, setCategorySpendRaw] = useState([]);
-
+  const [settings, setSettings] = useState("");
   useEffect(() => {
     async function fetchGlobalStats() {
       try {
         const res = await fetch(`${apiRoute}/order-stats`);
+        const settings = await GetAllData("globals/site-settings", true);
 
         if (!res.ok) {
           throw new Error("Failed to fetch order stats");
         }
 
         const data = await res.json();
+        setSettings(settings);
 
         setGlobalStats({
           totalOrders: data.stats?.totalOrders || 0,
@@ -70,6 +72,7 @@ export default function OrdersListView() {
 
     fetchGlobalStats();
   }, [apiRoute]);
+  const currency = settings?.currency?.baseCurrency;
 
   const categoryData = useMemo(() => {
     if (!Array.isArray(categorySpendRaw)) return [];
@@ -87,21 +90,21 @@ export default function OrdersListView() {
         titleAr: "إجمالي المدفوعات المستلمة",
         value: globalStats.loading ? "..." : globalStats.totalPaymentReceived,
         type: "money",
-        suffix: "USD",
+        suffix: currency,
       },
       {
         title: "Total Paid via Stripe",
         titleAr: "المسدد عبر استرايب",
         value: globalStats.loading ? "..." : globalStats.totalPaidOnStripe,
         type: "money",
-        suffix: "USD",
+        suffix: currency,
       },
       {
         title: "Total Paid Cash",
         titleAr: "المسدد نقداً",
         value: globalStats.loading ? "..." : globalStats.totalPaidOnCash,
         type: "money",
-        suffix: "USD",
+        suffix: currency,
       },
       {
         title: "Total Orders",
@@ -221,7 +224,7 @@ export default function OrdersListView() {
             />
           </div>
 
-          <CategorySpendChart data={categoryData} />
+          <CategorySpendChart data={categoryData} currency={currency} />
 
           <OrdersGrid />
         </div>

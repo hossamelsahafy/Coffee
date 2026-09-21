@@ -8,9 +8,9 @@ export default function MostOrderedProducts({
   data = [],
   title,
   locale = "en",
+  currency,
 }) {
   const isArabic = locale === "ar";
-  console.log(data);
 
   return (
     <Card className="relative transition-all ease-in-out duration-300 overflow-hidden pt-0 w-full rounded-3xl border border-white/10 bg-[#1A120D]/70 backdrop-blur-md shadow-2xl text-white">
@@ -95,7 +95,7 @@ export default function MostOrderedProducts({
                       {isArabic ? "الإيرادات" : "Revenue"}
                     </p>
                     <p className="font-bold text-[#D8A46B]">
-                      ${item.totalRevenue?.toLocaleString() || 0}
+                      {currency} {item.totalRevenue?.toLocaleString() || 0}
                     </p>
                   </div>
                 </div>

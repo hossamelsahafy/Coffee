@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SlugMethods from "@/actions/SlugMethods";
 import { useUser } from "@/Context/userContext";
-
+import { convertPrice } from "@/lib/currency/convertPrice";
 const ProductsCardAsColomns = ({
   product,
   locale,
@@ -26,6 +26,8 @@ const ProductsCardAsColomns = ({
   isLoading,
   onAddToCart,
   isFavorite,
+  currency,
+  exchangeRate,
 }) => {
   const { user } = useUser();
   const { addToCart } = useCart();
@@ -207,7 +209,10 @@ const ProductsCardAsColomns = ({
       </div>
       <div className="flex justify-between w-full items-center font-bold">
         <div className="block">
-          <p className="priceAfter">{safeSelectedOption?.priceAfter} USD</p>
+          <p className="priceAfter">
+            {convertPrice(safeSelectedOption?.priceAfter ?? 0, exchangeRate)}{" "}
+            {currency}
+          </p>
           <p
             className={
               isCustom
@@ -215,7 +220,8 @@ const ProductsCardAsColomns = ({
                 : `priceBefore`
             }
           >
-            {safeSelectedOption?.priceBefore} USD
+            {convertPrice(safeSelectedOption?.priceBefore ?? 0, exchangeRate)}{" "}
+            {currency}
           </p>
         </div>
         <button

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getPayload } from "@/lib/payloadClient";
-
+import getStripeAmount from "@/lib/GetStripeCurrency";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: Request) {
@@ -80,6 +80,48 @@ export async function POST(req: Request) {
         },
       );
     }
+    const currencyCode = order.currency.trim().toLowerCase();
+
+    if (!currencyCode) {
+      return NextResponse.json(
+        {
+          error: "Order currency is not configured.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    const stripeAccountCountry = process.env.STRIPE_ACCOUNT_COUNTRY;
+
+    if (!stripeAccountCountry) {
+      return NextResponse.json(
+        {
+          error: "Stripe account country is not configured.",
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
+    const countrySpec = await stripe.countrySpecs.retrieve(
+      stripeAccountCountry.toUpperCase(),
+    );
+
+    const supportedCurrencies = countrySpec.supported_payment_currencies;
+
+    if (!supportedCurrencies.includes(currencyCode)) {
+      return NextResponse.json(
+        {
+          error: `The currency ${currencyCode.toUpperCase()} is not supported by your Stripe account country.`,
+        },
+        {
+          status: 400,
+        },
+      );
+    }
 
     if (order.payment?.status === "paid") {
       return NextResponse.json(
@@ -101,8 +143,7 @@ export async function POST(req: Request) {
         },
       );
     }
-
-    const amount = Math.round(Number(order.total) * 100);
+    const amount = getStripeAmount(Number(order.total), currencyCode);
 
     let paymentIntent: Stripe.PaymentIntent | null = null;
 
@@ -113,10 +154,13 @@ export async function POST(req: Request) {
           existingPaymentIntentId,
         );
 
-        if (existing.status !== "canceled" && existing.status !== "succeeded") {
+        if (
+          existing.status !== "canceled" &&
+          existing.status !== "succeeded" &&
+          existing.currency === currencyCode
+        ) {
           paymentIntent = existing;
 
-          // Update amount if necessary.
           if (existing.amount !== amount) {
             paymentIntent = await stripe.paymentIntents.update(existing.id, {
               amount,
@@ -128,13 +172,10 @@ export async function POST(req: Request) {
       }
     }
 
-    // ============================================================
-    // CREATE NEW PAYMENT INTENT
-    // ============================================================
     if (!paymentIntent) {
       paymentIntent = await stripe.paymentIntents.create({
         amount,
-        currency: "usd",
+        currency: currencyCode,
 
         metadata: {
           orderId: String(order.id),

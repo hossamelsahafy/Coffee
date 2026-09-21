@@ -10,6 +10,7 @@ export const orderAdminHTML = ({
   orderNumber,
   total,
   paymentMethod,
+  currency,
 }: {
   firstName: string;
   lastName: string;
@@ -18,8 +19,8 @@ export const orderAdminHTML = ({
   orderNumber: string;
   total: number;
   paymentMethod: string;
+  currency: string;
 }) => {
-  let currency = "USD";
   return `
   <div style="
     font-family:Arial,sans-serif;

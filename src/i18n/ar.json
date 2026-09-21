@@ -133,7 +133,45 @@
   "ReviewsSection": {
     "H2": "تقييمات العملاء",
     "BeFirst": "كن أول من يكتب تقييمًا",
-    "Write": "اكتب تقييما"
+    "Write": "اكتب تقييما",
+    "CloseForm": "إغلاق النموذج"
+  },
+  "ReviewForm": {
+    "Heading": "اكتب تقييمًا",
+    "TitleLabel": "العنوان",
+    "TitlePlaceholder": "أدخل عنوان تقييمك",
+    "TitleRequired": "العنوان مطلوب.",
+    "SubtitleLabel": "العنوان الفرعي",
+    "SubtitlePlaceholder": "أدخل العنوان الفرعي",
+    "SubtitleRequired": "العنوان الفرعي مطلوب.",
+    "DescLabel": "الوصف",
+    "DescPlaceholder": "اكتب تقييمك",
+    "DescRequired": "الوصف مطلوب.",
+    "RatingLabel": "التقييم",
+    "RatingRequired": "يرجى اختيار التقييم.",
+    "InvalidText": "يسمح بالحروف العربية والأرقام والمسافات فقط.",
+    "ValidationError": "يرجى تصحيح الأخطاء في النموذج.",
+    "CountryLabel": "الدولة",
+    "CountryPlaceholder": "اختر دولتك",
+    "CountrySearchPlaceholder": "ابحث عن دولة...",
+    "CountryRequired": "يرجى اختيار دولتك.",
+    "NoCountriesFound": "لم يتم العثور على دول.",
+    "LoadingCountries": "جاري تحميل المزيد من الدول...",
+    "NoMoreCountries": "لا توجد دول أخرى.",
+    "SubmittingBtn": "جاري الإرسال...",
+    "SubmitBtn": "إرسال التقييم",
+    "SuccessMsg": "تم إرسال تقييمك بنجاح.",
+    "ErrorDefault": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "LoginRequiredError": "يجب تسجيل الدخول لإرسال تقييم.",
+    "OtherButton": "أخرى",
+    "AddNewCountry": "إضافة دولة جديدة",
+    "Cancel": "إلغاء",
+    "CountryNameEn": "الاسم بالإنجليزية",
+    "CountryNameAr": "الاسم بالعربية",
+    "CountryNameRequired": "يرجى إدخال اسم الدولة.",
+    "FailedToCreateCountry": "فشل في إنشاء الدولة. يرجى المحاولة مرة أخرى.",
+    "Saving": "جاري الحفظ...",
+    "SaveAndSelect": "حفظ وتحديد"
   },
   "Collection": {
     "Collections": "المجموعات"
@@ -232,6 +270,11 @@
     "title": "المفضلة",
     "subtitle": "تصفح جميع المنتجات التي قمت بحفظها. يمكنك إضافتها إلى سلة التسوق أو إزالتها من المفضلة في أي وقت.",
     "NoData": "لم يتم اضافة منتجات للمفضللات بعد"
+  },
+  "ReviewsDashBoard": {
+    "title": "تقييماتي",
+    "subtitle": "إدارة وعرض تقييمات المنتجات والتقييمات التي قمت بتقديمها.",
+    "MyAccount": "حسابي"
   },
   "Orders": {
     "MyAccount": "الطلبات",

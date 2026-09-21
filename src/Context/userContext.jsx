@@ -1,12 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const UserContext = createContext(null);
 
 export function UserProvider({ children, initialUser }) {
   const [user, setUser] = useState(initialUser);
-
+  useEffect(() => {
+    setUser(initialUser);
+  }, [initialUser]);
   return (
     <UserContext.Provider
       value={{

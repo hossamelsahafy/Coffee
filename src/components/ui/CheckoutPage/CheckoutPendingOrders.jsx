@@ -25,7 +25,10 @@ const CheckoutPendingOrders = ({
   const [stripeOpen, setStripeOpen] = useState();
   const [selectedData, setSelectedData] = useState();
   const [openModule, setOpenModule] = useState(false);
-
+  const [toast, setToast] = useState({
+    message: null,
+    type: "",
+  });
   const breakpoints = {
     0: { slidesPerView: 1 },
     700: { slidesPerView: 2 },
@@ -34,7 +37,7 @@ const CheckoutPendingOrders = ({
 
   return (
     <>
-      <div className="w-full max-w-6xl mx-auto mt-4 ">
+      <div className="w-full max-w-7xl mx-auto mt-4 ">
         <NoItemsYet
           text="Complete Your Pending Orders"
           textAr="أكمل طلباتك المعلقة"
@@ -84,6 +87,7 @@ const CheckoutPendingOrders = ({
               orderId={stripeOrderId}
               locale={locale}
               setStripeOpen={setStripeOpen}
+              setToast={setToast}
             />
           </div>
         </div>

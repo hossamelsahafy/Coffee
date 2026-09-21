@@ -37,7 +37,6 @@ const Page = async ({ params, searchParams }: Props) => {
   const backToHome = isArabic ? "الرجوع للصفحة الرئيسية" : "Back To Home";
 
   const allproducts = categoriesData?.allProducts;
-  console.log(allproducts);
 
   return (
     <div className="border-t mt-28 border-base-border w-full">

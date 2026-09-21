@@ -15,12 +15,14 @@ export const orderConfirmationHTML = ({
   total,
   paymentMethod,
   orderState,
+  currencySymbol,
 }: {
   firstName: string;
   orderNumber: string;
   total: number;
   paymentMethod: string;
   orderState: "pending_payment" | "confirmed";
+  currencySymbol: string;
 }) => {
   const isPending = orderState === "pending_payment";
 
@@ -85,7 +87,7 @@ export const orderConfirmationHTML = ({
         </p>
 
         <p style="margin:6px 0;">
-          <strong style="color:#d4a373;">Total:</strong> $${total}
+          <strong style="color:#d4a373;">Total:</strong> ${currencySymbol} ${total}
         </p>
 
         <p style="margin:6px 0;">

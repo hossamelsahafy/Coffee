@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import auth from "@/actions/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoginOptions from "@/components/ui/LoginPage/LoginOptions";
-
+import SlugMethods from "@/actions/SlugMethods";
+import { useUser } from "@/Context/userContext";
 const regexPatterns = {
   name: /^[A-Za-z\u0600-\u06FF\s]{2,30}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -28,7 +29,7 @@ const UserForm = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-
+  const { setUser } = useUser();
   const validate = () => {
     const newErrors = {};
 
@@ -86,6 +87,10 @@ const UserForm = ({
         );
         setFormData({});
       } else if (endpoint === "users/login") {
+        if (response?.user) {
+          setUser(response.user);
+        }
+
         setSuccess(
           locale === "en"
             ? "Login successful! Redirecting..."
@@ -94,7 +99,7 @@ const UserForm = ({
 
         setTimeout(() => {
           router.push(`/${locale}/users/dashboard/account`);
-        }, 5000);
+        }, 1000);
       } else if (endpoint === "auth/signup") {
         setSuccess(
           locale === "en"
@@ -126,6 +131,9 @@ const UserForm = ({
         endpoint === "users/reset-password" &&
         response?.message === "Password reset successfully."
       ) {
+        if (response?.user) {
+          setUser(response.user);
+        }
         setSuccess(
           locale === "en"
             ? "Password reset successfully! Redirecting to account page..."

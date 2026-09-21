@@ -48,17 +48,63 @@ export const Users: CollectionConfig = {
       };
     },
 
-    delete: ({ req, doc }) => {
-      if (!req.user) return false;
-
-      if (req.user.role === "admin") return true;
-
-      if (!doc) return false;
-
-      return req.user.id === doc.id;
+    delete: ({ req }) => {
+      return req.user?.role === "admin";
     },
   },
+  hooks: {
+    beforeValidate: [
+      async ({ data, req, operation }) => {
+        if (!data) return data;
 
+        const siteSettings = await req.payload.findGlobal({
+          slug: "site-settings",
+          depth: 0,
+        });
+
+        const siteCurrency = siteSettings?.currency;
+
+        const baseCurrency = siteCurrency?.baseCurrency?.trim().toUpperCase();
+
+        const currencies = siteCurrency?.currencies || [];
+
+        const enabledCurrencies = currencies
+          .filter((currency) => currency?.enabled !== false)
+          .map((currency) => currency?.code?.trim().toUpperCase())
+          .filter(Boolean);
+
+        if (operation === "create" && !data.SelectedCurrency) {
+          if (!baseCurrency) {
+            throw new Error("Site base currency is not configured.");
+          }
+
+          if (!enabledCurrencies.includes(baseCurrency)) {
+            throw new Error(
+              `Site base currency "${baseCurrency}" is not enabled.`,
+            );
+          }
+
+          data.SelectedCurrency = baseCurrency;
+        }
+
+        if (data.SelectedCurrency !== undefined) {
+          const selectedCurrency = data.SelectedCurrency?.trim().toUpperCase();
+
+          if (!selectedCurrency) {
+            throw new Error("Selected currency is required.");
+          }
+
+          if (!enabledCurrencies.includes(selectedCurrency)) {
+            throw new Error(`Currency "${selectedCurrency}" is not available.`);
+          }
+
+          data.SelectedCurrency = selectedCurrency;
+        }
+
+        return data;
+      },
+    ],
+  },
   auth: {
     verify: {
       generateEmailHTML: (args) => {
@@ -126,6 +172,10 @@ export const Users: CollectionConfig = {
     {
       name: "pendingEmailTokenExpiresAt",
       type: "date",
+    },
+    {
+      name: "SelectedCurrency",
+      type: "text",
     },
     {
       name: "role",

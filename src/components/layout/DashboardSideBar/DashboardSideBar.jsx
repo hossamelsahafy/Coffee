@@ -12,8 +12,15 @@ const DashboardSideBar = ({
   firstName,
 }) => {
   const links = [
-    { id: "account", name: "Account", nameAr: "الحساب", href: "/account" },
     { id: "dashboard", name: "Dashboard", nameAr: "لوحة التحكم", href: "" },
+    { id: "account", name: "Account", nameAr: "الحساب", href: "/account" },
+    {
+      id: "reviews",
+      name: "Reviews",
+      nameAr: "تقييماتي",
+      href: "/reviews",
+    },
+
     {
       id: "favorites",
       name: "Favorites",

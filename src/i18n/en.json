@@ -132,7 +132,45 @@
   "ReviewsSection": {
     "H2": "Customer Reviews",
     "BeFirst": "Be the first to write a review",
-    "Write": "Write A Review"
+    "Write": "Write A Review",
+    "CloseForm": "Close Form"
+  },
+  "ReviewForm": {
+    "Heading": "Write a Review",
+    "TitleLabel": "Title",
+    "TitlePlaceholder": "Enter your review title",
+    "TitleRequired": "Title is required.",
+    "SubtitleLabel": "Subtitle",
+    "SubtitlePlaceholder": "Enter a subtitle",
+    "SubtitleRequired": "Subtitle is required.",
+    "DescLabel": "Description",
+    "DescPlaceholder": "Write your review",
+    "DescRequired": "Description is required.",
+    "RatingLabel": "Rating",
+    "RatingRequired": "Please select a rating.",
+    "InvalidText": "Only English letters, numbers, and spaces are allowed.",
+    "ValidationError": "Please correct the errors in the form.",
+    "CountryLabel": "Country",
+    "CountryPlaceholder": "Select your country",
+    "CountrySearchPlaceholder": "Search countries...",
+    "CountryRequired": "Please select your country.",
+    "NoCountriesFound": "No countries found.",
+    "LoadingCountries": "Loading more countries...",
+    "NoMoreCountries": "No more countries.",
+    "SubmittingBtn": "Submitting...",
+    "SubmitBtn": "Submit Review",
+    "SuccessMsg": "Your review has been submitted successfully.",
+    "ErrorDefault": "Something went wrong. Please try again.",
+    "LoginRequiredError": "You must be logged in to submit a review.",
+    "OtherButton": "Other",
+    "AddNewCountry": "Add New Country",
+    "Cancel": "Cancel",
+    "CountryNameEn": "English Name",
+    "CountryNameAr": "Arabic Name (العربية)",
+    "CountryNameRequired": "Please enter the country name.",
+    "FailedToCreateCountry": "Failed to create country. Please try again.",
+    "Saving": "Saving...",
+    "SaveAndSelect": "Save & Select"
   },
   "Collection": {
     "Collections": "Collections"
@@ -225,7 +263,11 @@
     "VerificationFailed": "Unable to verify your email.",
     "CodeRequired": "Please enter the verification code."
   },
-
+  "ReviewsDashBoard": {
+    "title": "My Reviews",
+    "subtitle": "Manage and view your submitted product reviews and ratings.",
+    "MyAccount": "My Account"
+  },
   "Favorites": {
     "MyAccount": "Favorites",
     "title": "Favorites",

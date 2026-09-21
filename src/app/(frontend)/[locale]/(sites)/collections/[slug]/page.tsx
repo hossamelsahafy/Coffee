@@ -7,6 +7,7 @@ import FiltersAndProductsSection from "@/components/shared/FiltersAndProductsSec
 import GetDataServerSide from "@/actions/GetDataServerSide";
 import { getUser } from "@/actions/getUser";
 import { GetDataBySlugCache } from "@/lib/GetDataBySlugCache";
+import GetDataWithPagination from "@/actions/GetDataWithPagination";
 
 type Props = {
   params: Promise<{
@@ -102,10 +103,16 @@ const Page = async ({ params, searchParams }: Props) => {
     ? await GetDataServerSide("favorites?depth=1", "GET")
     : null;
 
+  const category = await GetDataBySlugCache("categories", slug, locale);
+
+  if (!category) {
+    return;
+  }
+
   const result = await GetFilteredData({
     collection: "products",
-    filterKey: locale === "en" ? "category.slug" : "category.slugAr",
-    filterValue: decodeURIComponent(slug),
+    filterKey: "category",
+    filterValue: category.id,
     page: currentPage,
     limit: 9,
     sort: currentSort,
@@ -118,11 +125,12 @@ const Page = async ({ params, searchParams }: Props) => {
     page: result?.page || 1,
   };
 
-  const currentLocation =
-    locale === "en"
-      ? products[0]?.category?.title
-      : products[0]?.category?.titleAr;
-
+  const currentLocation = locale === "en" ? category.title : category.titleAr;
+  const [brands, categories, productOptions] = await Promise.all([
+    GetDataWithPagination("brands", currentPage, 0, currentSort),
+    GetDataWithPagination("categories", currentPage, 0, currentSort),
+    GetDataWithPagination("product-options", currentPage, 0, currentSort),
+  ]);
   return (
     <div className="border-t mt-28 border-base-border w-full">
       <CollectionElements data={products} locale={locale} />
@@ -135,6 +143,10 @@ const Page = async ({ params, searchParams }: Props) => {
           userFavorites={favorites}
           paginationInfo={paginationInfo}
           currentSort={currentSort}
+          brands={brands}
+          categories={categories}
+          productOptions={productOptions}
+          currentCategoryId={category.id}
         />
       </div>
     </div>

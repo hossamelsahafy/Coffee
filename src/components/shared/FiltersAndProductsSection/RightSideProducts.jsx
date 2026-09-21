@@ -40,17 +40,30 @@ const RightSideProducts = ({
   totalPages = 1,
   onPageChange,
   isFetching = false,
+  currency,
+  onAddToCart,
 }) => {
   const sortOptions = [
     { value: "-createdAt", en: "Latest", ar: "الأحدث" },
-    { value: "price", en: "Price: Low to High", ar: "السعر: من الأقل للأعلى" },
-    { value: "-price", en: "Price: High to Low", ar: "السعر: من الأعلى للأقل" },
+    {
+      value: "choices.options.priceAfter",
+      en: "Price: Low to High",
+      ar: "السعر: من الأقل للأعلى",
+    },
+    {
+      value: "-choices.options.priceAfter",
+      en: "Price: High to Low",
+      ar: "السعر: من الأعلى للأقل",
+    },
     { value: "title", en: "A → Z", ar: "من الألف إلى الياء" },
     { value: "-title", en: "Z → A", ar: "من الياء إلى الألف" },
   ];
 
   const handleSortChange = (e) => {
     setSortType(e.target.value);
+    const newSortType = e.target.value;
+
+    setSortType(newSortType);
   };
 
   useLockBodyScroll(openModel);
@@ -119,6 +132,8 @@ const RightSideProducts = ({
                   toggleFavorite(product.id, product.isFavorite)
                 }
                 isLoading={loadingProductId === product.id}
+                currency={currency}
+                onAddToCart={onAddToCart}
               />
             )}
           />

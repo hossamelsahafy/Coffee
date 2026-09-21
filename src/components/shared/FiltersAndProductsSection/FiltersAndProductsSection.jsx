@@ -10,12 +10,12 @@ import React, {
 } from "react";
 import { useTranslations } from "next-intl";
 import RightSideProducts from "./RightSideProducts";
-
 import { useUser } from "@/Context/userContext";
 import Aside from "./Aside";
 import SlugMethods from "@/actions/SlugMethods";
 import { GlassyToast } from "@/components/shared/GlassyToast/GlassyToast";
 import GetDataWithPagination from "@/actions/GetDataWithPagination";
+import { useSiteSettings } from "@/Context/CurrencyContext";
 
 const FiltersAndProductsSection = ({
   CurrentLocation,
@@ -27,10 +27,11 @@ const FiltersAndProductsSection = ({
   brands,
   categories,
   productOptions,
+  currentCategoryId,
 }) => {
   const t = useTranslations("FiltersAndProductsSection");
   const { user } = useUser();
-
+  const [sortType, setSortType] = useState(currentSort);
   const [isPending, startTransition] = useTransition();
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [productList, setProductList] = useState(products);
@@ -59,6 +60,8 @@ const FiltersAndProductsSection = ({
     size: [],
   });
 
+  const { selectedCurrency } = useSiteSettings();
+  const currency = selectedCurrency.value;
   const loadMoreFilter = useCallback((filterId) => {
     setFilterLimits((prev) => ({
       ...prev,
@@ -108,7 +111,7 @@ const FiltersAndProductsSection = ({
   const [openFilterModal, setOpenFilterModal] = useState(false);
 
   const fetchFilteredProducts = useCallback(
-    (pageToFetch = 1, filters = selectedFilters, sort = currentSort) => {
+    (pageToFetch = 1, filters = selectedFilters, sort = sortType) => {
       setIsLoadingPage(true);
       setProductList([]);
       if (loadingTimerRef.current) {
@@ -149,8 +152,16 @@ const FiltersAndProductsSection = ({
             where.BrandName = { in: filters.brand };
           }
 
+          if (currentCategoryId) {
+            where.category = {
+              equals: currentCategoryId,
+            };
+          }
+
           if (filters.category?.length > 0) {
-            where.category = { in: filters.category };
+            where.category = {
+              in: filters.category,
+            };
           }
 
           const optionTypes = ["color", "quantity", "types", "size"];
@@ -196,31 +207,22 @@ const FiltersAndProductsSection = ({
         }
       });
     },
-    [selectedFilters, currentSort, locale],
+    [selectedFilters, sortType, locale],
   );
   useEffect(() => {
-    fetchFilteredProducts(1, selectedFilters, currentSort);
-  }, [selectedFilters, currentSort, fetchFilteredProducts]);
+    fetchFilteredProducts(1, selectedFilters, sortType);
+  }, [selectedFilters, sortType, fetchFilteredProducts]);
 
-  const handleSortChange = useCallback(
-    (newSortValue) => {
-      fetchFilteredProducts(1, selectedFilters, newSortValue);
-    },
-    [selectedFilters, fetchFilteredProducts],
-  );
+  const handleSortChange = useCallback((newSortValue) => {
+    setSortType(newSortValue);
+  }, []);
 
   const handlePageChange = useCallback(
     (newPage) => {
       if (newPage === currentPage || isPending) return;
-      fetchFilteredProducts(newPage, selectedFilters, currentSort);
+      fetchFilteredProducts(newPage, selectedFilters, sortType);
     },
-    [
-      currentPage,
-      isPending,
-      selectedFilters,
-      currentSort,
-      fetchFilteredProducts,
-    ],
+    [currentPage, isPending, selectedFilters, sortType, fetchFilteredProducts],
   );
 
   const toggleCollapse = useCallback((id) => {
@@ -421,6 +423,18 @@ const FiltersAndProductsSection = ({
     ];
   }, [brands, categories, productOptions, filterLimits]);
   const showSkeletonState = showSkeleton || isPending;
+  const handleAddToCart = (isIn) => {
+    setToast({
+      message: isIn
+        ? locale === "ar"
+          ? "تمت إضافة المنتج إلى السلة"
+          : "Product added to cart"
+        : locale === "ar"
+          ? "المنتج غير متوفر"
+          : "Product is sold out",
+      type: isIn ? "success" : "error",
+    });
+  };
   return (
     <>
       <div className="container-custom p-4 md:min-h-screen h-auto flex flex-col">
@@ -452,7 +466,7 @@ const FiltersAndProductsSection = ({
             locale={locale}
             CurrentLocation={CurrentLocation}
             setSelectedProduct={setSelectedProduct}
-            sortType={currentSort}
+            sortType={sortType}
             setSortType={handleSortChange}
             openModel={openModel}
             selectedProduct={selectedProduct}
@@ -476,6 +490,8 @@ const FiltersAndProductsSection = ({
             totalPages={totalPages}
             onPageChange={handlePageChange}
             isFetching={showSkeletonState}
+            currency={currency}
+            onAddToCart={handleAddToCart}
           />
         </div>
       </div>

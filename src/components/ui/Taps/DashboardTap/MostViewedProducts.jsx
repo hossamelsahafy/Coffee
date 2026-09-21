@@ -12,10 +12,12 @@ export function MostViewedProducts({
   setOpenModel,
   setSelectedProduct,
   CardsTitle,
+  currency,
+  exchangeRate,
+  onAddToCart,
 }) {
   const t = useTranslations("UserDashboard");
   const locale = useLocale();
-  console.log(data);
 
   return (
     <>
@@ -50,6 +52,10 @@ export function MostViewedProducts({
                       onToggleFavorite?.(product.id, product.isFavorite)
                     }
                     isLoading={isCurrentlyLoading}
+                    currency={currency}
+                    exchangeRate={exchangeRate}
+                    onAddToCart={onAddToCart}
+                    isFavorite={product.isFavorite}
                   />
                 );
               })}
