@@ -10,15 +10,14 @@ import GetReviews from "@/actions/GetReviews";
 import GetDataWithPagination from "@/actions/GetDataWithPagination";
 import { getDataCache } from "@/lib/GetDataCache";
 import type { Metadata } from "next";
-
 type Props = {
   params: Promise<{
     locale: string;
   }>;
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     sort?: string;
-  };
+  }>;
 };
 
 interface Product {
