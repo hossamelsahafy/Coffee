@@ -1,7 +1,10 @@
 import payload from "payload";
+
 import config from "@/payload.config";
 
-let cached = global as any;
+const cached = globalThis as typeof globalThis & {
+  payload?: typeof payload;
+};
 
 export async function getPayload() {
   if (!cached.payload) {
