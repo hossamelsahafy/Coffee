@@ -60,7 +60,7 @@ const FiltersAndProductsSection = ({
     size: [],
   });
 
-  const { selectedCurrency } = useSiteSettings();
+  const { selectedCurrency, exchangeRate } = useSiteSettings();
   const currency = selectedCurrency.value;
   const loadMoreFilter = useCallback((filterId) => {
     setFilterLimits((prev) => ({
@@ -492,6 +492,7 @@ const FiltersAndProductsSection = ({
             isFetching={showSkeletonState}
             currency={currency}
             onAddToCart={handleAddToCart}
+            exchangeRate={exchangeRate}
           />
         </div>
       </div>

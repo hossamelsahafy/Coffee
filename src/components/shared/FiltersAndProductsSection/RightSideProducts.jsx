@@ -42,6 +42,7 @@ const RightSideProducts = ({
   isFetching = false,
   currency,
   onAddToCart,
+  exchangeRate,
 }) => {
   const sortOptions = [
     { value: "-createdAt", en: "Latest", ar: "الأحدث" },
@@ -134,6 +135,7 @@ const RightSideProducts = ({
                 isLoading={loadingProductId === product.id}
                 currency={currency}
                 onAddToCart={onAddToCart}
+                exchangeRate={exchangeRate}
               />
             )}
           />

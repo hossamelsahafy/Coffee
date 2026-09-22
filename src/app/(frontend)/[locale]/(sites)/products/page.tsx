@@ -76,6 +76,7 @@ const Page = async ({ params, searchParams }: Props) => {
           brands={brands}
           categories={categories}
           productOptions={productOptions}
+          currentCategoryId={""}
         />
       </div>
     </div>
