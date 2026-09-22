@@ -9,7 +9,7 @@ import { GlassyToast } from "@/components/shared/GlassyToast/GlassyToast";
 import { useDashboard } from "@/Context/DashboardContext";
 import ProductsCardAsColomnsSkeleton from "@/components/shared/Skelatons/ProductsCardAsColomnsSkeleton";
 import GetDataWithPagination from "@/actions/GetDataWithPagination";
-import { useSiteSettings } from "@/context/CurrencyContext";
+import { useSiteSettings } from "@/Context/CurrencyContext";
 const FavoritesData = ({ data = [], locale, NotYet, pagination }) => {
   const [openModel, setOpenModel] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
