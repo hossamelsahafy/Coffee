@@ -17,6 +17,10 @@ type Currency = {
   symbol?: string;
   flag?: string;
 };
+type CurrencyUser = {
+  id?: string | number | null;
+  SelectedCurrency?: string | null;
+};
 
 type SiteSettingsContextType = {
   siteSettings: any;
@@ -46,7 +50,9 @@ export function SiteSettingsProvider({
   children: React.ReactNode;
   siteSettings: any;
 }) {
-  const { user } = useUser();
+  const { user } = useUser() as {
+    user: CurrencyUser | null | undefined;
+  };
 
   const currencies = useMemo<Currency[]>(() => {
     const currencySettings = siteSettings?.currency;
@@ -61,20 +67,22 @@ export function SiteSettingsProvider({
 
     const enabledCurrencies = configuredCurrencies
       .filter((currency: any) => currency?.enabled !== false)
-      .map((currency: any) => ({
-        value: currency.code?.trim().toUpperCase(),
-        label: currency.code?.trim().toUpperCase(),
-        symbol: currency.symbol,
-        flag:
-          currency.ImageSource === "Url"
-            ? currency.imageUrl
-            : typeof currency.image === "object"
-              ? currency.image?.url
-              : undefined,
-      }))
+      .map(
+        (currency: any): Currency => ({
+          value: currency.code?.trim().toUpperCase() || "",
+          label: currency.code?.trim().toUpperCase() || "",
+          symbol: currency.symbol,
+          flag:
+            currency.ImageSource === "Url"
+              ? currency.imageUrl
+              : typeof currency.image === "object"
+                ? currency.image?.url
+                : undefined,
+        }),
+      )
       .filter((currency: Currency) => currency.value);
 
-    enabledCurrencies.sort((a, b) => {
+    enabledCurrencies.sort((a: Currency, b: Currency) => {
       if (a.value === baseCurrency) return -1;
       if (b.value === baseCurrency) return 1;
       return 0;
