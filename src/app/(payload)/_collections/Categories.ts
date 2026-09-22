@@ -41,7 +41,7 @@ export const Categories: CollectionConfig = {
       type: "text",
       required: true,
       unique: true,
-      validate: (value) => {
+      validate: (value: string | null | undefined) => {
         if (!value) return "Slug is required";
 
         const isValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
@@ -58,7 +58,7 @@ export const Categories: CollectionConfig = {
       type: "text",
       required: true,
       unique: true,
-      validate: (value) => {
+      validate: (value: string | null | undefined) => {
         if (!value) return "Slug is required";
 
         const isValid = /^[\u0600-\u06FF0-9]+(?:-[\u0600-\u06FF0-9]+)*$/.test(
@@ -90,8 +90,10 @@ export const Categories: CollectionConfig = {
         });
 
         if (operation === "update") {
+          const currentData = data as { id?: string | number };
+
           const isSameDoc = existing.docs.some(
-            (doc) => String(doc.id) === String(data?.id),
+            (doc) => String(doc.id) === String(currentData.id),
           );
 
           if (isSameDoc) return true;
