@@ -15,8 +15,9 @@ export default function BaseCurrencyField() {
       <FieldLabel label="Base Currency" path="currency.baseCurrency" />
 
       <TextInput
+        path="currency.baseCurrency"
         value={currentValue}
-        onChange={(event) => {
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
           setValue(event.target.value.toUpperCase());
         }}
       />

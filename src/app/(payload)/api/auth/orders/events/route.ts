@@ -40,17 +40,7 @@ export async function GET(req: Request) {
       send("connected", {
         userId,
       });
-
-      // console.log("🔌 Orders SSE connected:", userId);
-
       unsubscribe = subscribeToUserOrders(userId, ({ order }) => {
-        // console.log("📤 Sending order update:", {
-        //   userId,
-        //   orderId: order.id,
-        //   status: order.status,
-        //   paymentStatus: order.payment?.status,
-        // });
-
         const success = send("order.updated", order);
 
         if (!success) {
@@ -64,9 +54,6 @@ export async function GET(req: Request) {
         }
       });
 
-      // console.log("📡 Orders SSE subscribed:", userId);
-
-      // Keep the connection alive.
       heartbeat = setInterval(() => {
         try {
           controller.enqueue(encoder.encode(": heartbeat\n\n"));
