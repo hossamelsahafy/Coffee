@@ -657,6 +657,7 @@ export interface ProductView {
   user: string | User;
   product: string | Product;
   views: number;
+  lastViewed: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -1226,6 +1227,7 @@ export interface ProductViewsSelect<T extends boolean = true> {
   user?: T;
   product?: T;
   views?: T;
+  lastViewed?: T;
   updatedAt?: T;
   createdAt?: T;
 }

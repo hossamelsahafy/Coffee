@@ -94,6 +94,16 @@ export const ProductViews: CollectionConfig = {
       defaultValue: 1,
       min: 1,
     },
+    {
+      name: "lastViewed",
+      type: "date",
+      required: true,
+      admin: {
+        date: {
+          pickerAppearance: "dayAndTime",
+        },
+      },
+    },
   ],
 
   timestamps: true,
