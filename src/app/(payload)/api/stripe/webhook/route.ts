@@ -82,7 +82,7 @@ export async function POST(req: Request) {
               stripePaymentIntentId: paymentIntent.id,
             },
             status: "processing",
-            paidAt: new Date(),
+            paidAt: new Date().toISOString(),
           },
           overrideAccess: true,
         });
@@ -96,7 +96,10 @@ export async function POST(req: Request) {
           emitOrderUpdated(String(userId), updatedOrder);
         }
 
-        // Customer email
+        if (typeof order.total !== "number") {
+          console.error("Order total is missing:", order.id);
+          break;
+        }
         try {
           await payload.sendEmail({
             to: order.customer?.email ?? undefined,
@@ -138,9 +141,6 @@ export async function POST(req: Request) {
         break;
       }
 
-      // =========================================================
-      // PAYMENT FAILED
-      // =========================================================
       case "payment_intent.payment_failed": {
         const paymentIntent = event.data.object;
         const orderId = paymentIntent.metadata?.orderId;
@@ -158,8 +158,6 @@ export async function POST(req: Request) {
         if (!order) {
           break;
         }
-
-        // Never overwrite a successfully paid order.
         if (order.payment?.status === "paid") {
           break;
         }
@@ -197,10 +195,6 @@ export async function POST(req: Request) {
 
         break;
       }
-
-      // =========================================================
-      // PAYMENT INTENT CANCELED
-      // =========================================================
       case "payment_intent.canceled": {
         const paymentIntent = event.data.object;
         const orderId = paymentIntent.metadata?.orderId;
@@ -218,8 +212,6 @@ export async function POST(req: Request) {
         if (!order) {
           break;
         }
-
-        // Never overwrite a successfully paid order.
         if (order.payment?.status === "paid") {
           break;
         }
