@@ -10,7 +10,6 @@ const NoteCards = ({ item, locale }) => {
       year: "numeric",
     },
   );
-  console.log(item);
 
   return (
     <div className="flex flex-col justify-center gap-2 w-fit bg-base-light rounded-lg p-4 text-base-dark">

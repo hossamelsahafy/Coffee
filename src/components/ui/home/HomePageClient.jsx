@@ -92,7 +92,6 @@ export default function HomePageClient({
     } catch (error) {
       console.error("Favorite toggle failed:", error);
 
-      // Rollback
       setFavoriteState((prev) => ({
         ...prev,
         [productId]: previousState,
