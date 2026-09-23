@@ -6,6 +6,7 @@ import { buildConfig } from "payload";
 import { fileURLToPath } from "url";
 import sharp from "sharp";
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
+// @ts-ignore
 import nodemailer from "nodemailer";
 import { Users } from "@/app/(payload)/_collections/Users";
 import { Media } from "@/app/(payload)/_collections/Media";
