@@ -42,12 +42,13 @@ export const CustomMediaSelection: React.FC<CustomMediaSelectionProps> = ({
   const limit = 20;
 
   useEffect(() => {
-    const payloadValue =
-      typeof value === "string"
-        ? value
-        : Array.isArray(value) && value.length > 0
-          ? String(value[0])
-          : null;
+    let payloadValue: string | null = null;
+
+    if (typeof value === "string") {
+      payloadValue = value;
+    } else if (Array.isArray(value) && (value as unknown[]).length > 0) {
+      payloadValue = String((value as unknown[])[0]);
+    }
 
     setSelectedId(payloadValue);
   }, [value]);
