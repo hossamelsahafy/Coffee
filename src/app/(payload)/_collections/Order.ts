@@ -548,19 +548,34 @@ export const Orders: CollectionConfig = {
     ],
 
     afterChange: [
-      async ({ doc, req }) => {
+      async ({ doc, req, operation }) => {
+        console.log("🔥 ORDERS afterChange:", {
+          operation,
+          orderId: doc.id,
+          paymentMethod: doc.payment?.method,
+          paymentStatus: doc.payment?.status,
+        });
+
         if (
+          operation === "create" &&
           doc.payment?.method === "stripe" &&
           (doc.payment?.status === "pending" ||
             doc.payment?.status === "failed")
         ) {
-          const job = await req.payload.jobs.queue({
+          console.log("⏰ QUEUING CANCEL JOB:", {
+            orderId: doc.id,
+            runAt: new Date(Date.now() + 3 * 60 * 1000),
+          });
+
+          await req.payload.jobs.queue({
             task: "cancelUnpaidOrder",
             input: {
               orderId: doc.id,
             },
             waitUntil: new Date(Date.now() + 3 * 60 * 1000),
           });
+
+          console.log("✅ CANCEL JOB QUEUED:", doc.id);
         }
 
         const paymentMethod =

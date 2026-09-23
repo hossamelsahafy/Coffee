@@ -1,5 +1,18 @@
 import type { GlobalConfig } from "payload";
+type SiteCurrency = {
+  code?: string;
+  symbol?: string;
+  ImageSource?: "Url" | "upload";
+  imageUrl?: string;
+  image?: string;
+  enabled?: boolean;
+};
 
+type CurrencyGroup = {
+  baseCurrency?: string;
+  baseCurrencySymbol?: string;
+  currencies?: SiteCurrency[];
+};
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
   admin: {
@@ -17,11 +30,13 @@ export const SiteSettings: GlobalConfig = {
   hooks: {
     beforeChange: [
       async ({ data }) => {
-        const incomingBaseCurrency = data?.currency?.baseCurrency
+        const currency = data?.currency as CurrencyGroup | undefined;
+
+        const incomingBaseCurrency = currency?.baseCurrency
           ?.trim()
           .toUpperCase();
 
-        const currencies = data?.currency?.currencies || [];
+        const currencies = currency?.currencies || [];
 
         if (!incomingBaseCurrency) {
           throw new Error("Base currency is required.");
@@ -56,12 +71,8 @@ export const SiteSettings: GlobalConfig = {
           ...data,
           currency: {
             ...data.currency,
-
             baseCurrency: incomingBaseCurrency,
-
-            // Get symbol from the existing currency data
             baseCurrencySymbol: baseCurrencyData.symbol,
-
             currencies: normalizedCurrencies,
           },
         };
@@ -121,7 +132,10 @@ export const SiteSettings: GlobalConfig = {
             },
           },
 
-          validate: (value, { siblingData }) => {
+          validate: (
+            value: string | null | undefined,
+            { siblingData }: { siblingData?: CurrencyGroup },
+          ) => {
             if (!value) {
               return "Base currency is required.";
             }
@@ -171,7 +185,7 @@ export const SiteSettings: GlobalConfig = {
                   "3-letter ISO currency code, for example USD, EUR, GBP.",
               },
 
-              validate: (value) => {
+              validate: (value: string | null | undefined) => {
                 if (!value) {
                   return "Currency code is required.";
                 }

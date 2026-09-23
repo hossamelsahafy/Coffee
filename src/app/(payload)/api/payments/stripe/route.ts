@@ -133,7 +133,7 @@ export async function POST(req: Request) {
         },
       );
     }
-    if (order.status === "Cancelled") {
+    if (order?.status === "cancelled") {
       return NextResponse.json(
         {
           error: "Order Was Cancelled You Can't Pay For That Order",

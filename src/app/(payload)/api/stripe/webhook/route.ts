@@ -4,6 +4,7 @@ import {
   paymentSuccessSubject,
   paymentSuccessHTML,
 } from "@/lib/Emails/PaidConfirmationEmail";
+import { emitOrderUpdated } from "@/lib/OrderEvents";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -37,6 +38,9 @@ export async function POST(req: Request) {
     const payload = await getPayload();
 
     switch (event.type) {
+      // =========================================================
+      // PAYMENT SUCCEEDED
+      // =========================================================
       case "payment_intent.succeeded": {
         const paymentIntent = event.data.object;
         const orderId = paymentIntent.metadata?.orderId;
@@ -68,7 +72,7 @@ export async function POST(req: Request) {
           break;
         }
 
-        await payload.update({
+        const updatedOrder = await payload.update({
           collection: "orders",
           id: orderId,
           data: {
@@ -80,22 +84,39 @@ export async function POST(req: Request) {
             status: "processing",
             paidAt: new Date(),
           },
+          overrideAccess: true,
         });
 
+        const userId =
+          typeof updatedOrder.user === "object"
+            ? updatedOrder.user.id
+            : updatedOrder.user;
+
+        if (userId) {
+          emitOrderUpdated(String(userId), updatedOrder);
+        }
+
+        // Customer email
         try {
           await payload.sendEmail({
-            to: order.customer.email,
+            to: order.customer?.email ?? undefined,
             subject: paymentSuccessSubject(order.orderNumber),
             html: paymentSuccessHTML({
-              firstName: order.customer.firstName,
+              firstName: order.customer?.firstName ?? undefined,
               orderNumber: order.orderNumber,
               total: order.total,
               paymentMethod: "stripe",
               isAdmin: false,
             }),
           });
-        } catch (emailError) {}
+        } catch (emailError) {
+          console.error(
+            "Failed to send payment success email to customer:",
+            emailError,
+          );
+        }
 
+        // Admin email
         try {
           await payload.sendEmail({
             to: process.env.ADMIN_EMAIL!,
@@ -107,11 +128,19 @@ export async function POST(req: Request) {
               isAdmin: true,
             }),
           });
-        } catch (emailError) {}
+        } catch (emailError) {
+          console.error(
+            "Failed to send payment success email to admin:",
+            emailError,
+          );
+        }
 
         break;
       }
 
+      // =========================================================
+      // PAYMENT FAILED
+      // =========================================================
       case "payment_intent.payment_failed": {
         const paymentIntent = event.data.object;
         const orderId = paymentIntent.metadata?.orderId;
@@ -130,6 +159,7 @@ export async function POST(req: Request) {
           break;
         }
 
+        // Never overwrite a successfully paid order.
         if (order.payment?.status === "paid") {
           break;
         }
@@ -139,23 +169,38 @@ export async function POST(req: Request) {
           String(order.payment?.stripePaymentIntentId) ===
             String(paymentIntent.id);
 
-        if (!alreadyFailed) {
-          await payload.update({
-            collection: "orders",
-            id: orderId,
-            data: {
-              payment: {
-                status: "failed",
-                method: "stripe",
-                stripePaymentIntentId: paymentIntent.id,
-              },
-            },
-            overrideAccess: true,
-          });
+        if (alreadyFailed) {
+          break;
         }
+
+        const updatedOrder = await payload.update({
+          collection: "orders",
+          id: orderId,
+          data: {
+            payment: {
+              status: "failed",
+              method: "stripe",
+              stripePaymentIntentId: paymentIntent.id,
+            },
+          },
+          overrideAccess: true,
+        });
+
+        const userId =
+          typeof updatedOrder.user === "object"
+            ? updatedOrder.user.id
+            : updatedOrder.user;
+
+        if (userId) {
+          emitOrderUpdated(String(userId), updatedOrder);
+        }
+
         break;
       }
 
+      // =========================================================
+      // PAYMENT INTENT CANCELED
+      // =========================================================
       case "payment_intent.canceled": {
         const paymentIntent = event.data.object;
         const orderId = paymentIntent.metadata?.orderId;
@@ -174,6 +219,7 @@ export async function POST(req: Request) {
           break;
         }
 
+        // Never overwrite a successfully paid order.
         if (order.payment?.status === "paid") {
           break;
         }
@@ -183,19 +229,30 @@ export async function POST(req: Request) {
           String(order.payment?.stripePaymentIntentId) ===
             String(paymentIntent.id);
 
-        if (!alreadyPending) {
-          await payload.update({
-            collection: "orders",
-            id: orderId,
-            data: {
-              payment: {
-                status: "pending",
-                method: "stripe",
-                stripePaymentIntentId: paymentIntent.id,
-              },
+        if (alreadyPending) {
+          break;
+        }
+
+        const updatedOrder = await payload.update({
+          collection: "orders",
+          id: orderId,
+          data: {
+            payment: {
+              status: "pending",
+              method: "stripe",
+              stripePaymentIntentId: paymentIntent.id,
             },
-          });
-        } else {
+          },
+          overrideAccess: true,
+        });
+
+        const userId =
+          typeof updatedOrder.user === "object"
+            ? updatedOrder.user.id
+            : updatedOrder.user;
+
+        if (userId) {
+          emitOrderUpdated(String(userId), updatedOrder);
         }
 
         break;

@@ -296,6 +296,7 @@
     "trackOrder": "تتبع الطلب"
   },
   "OrderStatus": {
+    "Cancelled": "ملغي",
     "pending": "قيد الانتظار",
     "processing": "قيد التجهيز",
     "shipped": "تم الشحن",

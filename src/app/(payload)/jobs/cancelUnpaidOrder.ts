@@ -16,43 +16,37 @@ const cancelUnpaidOrderHandler: TaskHandler<"cancelUnpaidOrder"> = async ({
   req,
 }) => {
   const { orderId } = input as CancelUnpaidOrderInput;
-  console.log("🚨 CANCEL JOB STARTED:", orderId);
 
   const order = await req.payload.findByID({
     collection: "orders",
     id: orderId,
     overrideAccess: true,
   });
-
-  console.log("🔍 ORDER BEFORE CANCELLATION:", {
-    id: order.id,
+  console.log("🔎 CANCEL JOB ORDER:", {
+    orderId: order.id,
     status: order.status,
     paymentMethod: order.payment?.method,
     paymentStatus: order.payment?.status,
-    user: typeof order.user === "object" ? order.user?.id : order.user,
   });
-  if (
-    order.payment?.method !== "stripe" ||
-    order.payment?.status !== "pending"
-  ) {
-    console.log("⛔ JOB STOPPED:", {
-      reason: "already_paid_or_not_stripe",
-      paymentMethod: order.payment?.method,
-      paymentStatus: order.payment?.status,
-    });
-    return {
-      output: {
-        cancelled: false,
-        reason: "already_paid_or_not_stripe",
-      },
-    };
-  }
-
+  // Order was already cancelled.
   if (order.status === "cancelled") {
     return {
       output: {
         cancelled: false,
         reason: "already_cancelled",
+      },
+    };
+  }
+
+  // Only cancel unpaid Stripe orders.
+  if (
+    order.payment?.method !== "stripe" ||
+    (order.payment?.status !== "pending" && order.payment?.status !== "failed")
+  ) {
+    return {
+      output: {
+        cancelled: false,
+        reason: "already_paid_or_not_stripe",
       },
     };
   }
@@ -68,17 +62,15 @@ const cancelUnpaidOrderHandler: TaskHandler<"cancelUnpaidOrder"> = async ({
     },
     overrideAccess: true,
   });
-  console.log("✅ ORDER CANCELLED:", {
-    id: updatedOrder.id,
-    status: updatedOrder.status,
-    paymentStatus: updatedOrder.payment?.status,
-  });
+
+  // Notify the user's global Orders SSE connection.
   const userId = typeof order.user === "object" ? order.user.id : order.user;
 
   if (userId) {
     emitOrderUpdated(String(userId), updatedOrder);
   }
 
+  // Customer cancellation email.
   try {
     await req.payload.sendEmail({
       to: order.customer?.email ?? undefined,
@@ -98,6 +90,7 @@ const cancelUnpaidOrderHandler: TaskHandler<"cancelUnpaidOrder"> = async ({
     );
   }
 
+  // Admin cancellation email.
   try {
     await req.payload.sendEmail({
       to: process.env.ADMIN_EMAIL!,

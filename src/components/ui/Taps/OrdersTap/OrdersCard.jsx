@@ -22,6 +22,7 @@ const OrderCard = ({
   setToast,
   cash,
   isUpdating,
+  Cancelled,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -187,12 +188,14 @@ const OrderCard = ({
           disabled={
             isUpdating ||
             d.payment.status === "paid" ||
-            d.payment.status === "cash_on_delivery"
+            d.payment.status === "cash_on_delivery" ||
+            d.status === "cancelled"
           }
           className={`rounded-lg w-full px-5 py-2 text-sm font-medium text-white active:scale-[0.98] flex items-center justify-center gap-2 ${
             isUpdating ||
             d.payment.status === "paid" ||
-            d.payment.status === "cash_on_delivery"
+            d.payment.status === "cash_on_delivery" ||
+            d.status === "cancelled"
               ? "bg-gray-500 cursor-not-allowed opacity-60"
               : "bg-primary hover:opacity-90 cursor-pointer"
           }`}
@@ -202,6 +205,8 @@ const OrderCard = ({
               <LoadingSpiner customBorder="w-4 h-4 border-2" />
               <span>{PayNow}</span>
             </>
+          ) : d.status === "cancelled" ? (
+            Cancelled
           ) : d.payment.status === "paid" ? (
             Paid
           ) : d.payment.method === "cash" ? (

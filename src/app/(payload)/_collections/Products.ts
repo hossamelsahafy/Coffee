@@ -35,7 +35,7 @@ export const Products: CollectionConfig = {
       type: "text",
       required: true,
       unique: true,
-      validate: (value) => {
+      validate: (value: string | null | undefined) => {
         if (!value) return "Slug is required";
 
         const isValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
@@ -52,7 +52,7 @@ export const Products: CollectionConfig = {
       type: "text",
       required: true,
       unique: true,
-      validate: (value) => {
+      validate: (value: string | null | undefined) => {
         if (!value) return "Slug is required";
 
         const isValid = /^[\u0600-\u06FF0-9]+(?:-[\u0600-\u06FF0-9]+)*$/.test(
@@ -79,16 +79,22 @@ export const Products: CollectionConfig = {
       type: "checkbox",
       defaultValue: false,
       required: true,
+
       validate: async (value, { req, operation, siblingData }) => {
         if (!value) return true;
 
         const count = await req.payload.find({
           collection: "products",
-          where: { ShowInDiscountSection: { equals: true } },
+          where: {
+            ShowInDiscountSection: {
+              equals: true,
+            },
+          },
           limit: 0,
         });
 
-        const currentId = siblingData?.id;
+        const currentId = (siblingData as { id?: string })?.id;
+
         const total =
           currentId && operation === "update"
             ? count.totalDocs - 1
@@ -106,16 +112,22 @@ export const Products: CollectionConfig = {
       type: "checkbox",
       label: "Important Product",
       defaultValue: false,
+
       validate: async (value, { req, operation, siblingData }) => {
         if (!value) return true;
 
         const count = await req.payload.find({
           collection: "products",
-          where: { important: { equals: true } },
+          where: {
+            important: {
+              equals: true,
+            },
+          },
           limit: 0,
         });
 
-        const currentId = siblingData?.id;
+        const currentId = (siblingData as { id?: string })?.id;
+
         const total =
           currentId && operation === "update"
             ? count.totalDocs - 1
@@ -132,20 +144,28 @@ export const Products: CollectionConfig = {
       name: "isBestSeller",
       defaultValue: false,
       type: "checkbox",
+
       validate: async (value, { req, operation, data }) => {
         if (!value) return true;
 
         const existing = await req.payload.find({
           collection: "products",
           where: {
-            isBestSeller: { equals: true },
+            isBestSeller: {
+              equals: true,
+            },
           },
         });
 
         if (existing.totalDocs === 0) return true;
 
         if (operation === "update") {
-          const isSameDoc = existing.docs.some((doc) => doc.id === data?.id);
+          const currentId = (data as { id?: string })?.id;
+
+          const isSameDoc = existing.docs.some(
+            (doc) => String((doc as { id?: string }).id) === String(currentId),
+          );
+
           if (isSameDoc) return true;
         }
 

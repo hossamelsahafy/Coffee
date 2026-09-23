@@ -28,6 +28,7 @@ const Orders = ({
   const t = useTranslations("OrderStatus");
   const paymentT = useTranslations("PaymentStatus");
   const paymentM = useTranslations("PaymentMethod");
+  const Cancelled = t("Cancelled");
   const { cart, clearCart } = useCart();
   const searchParams = useSearchParams();
   const [stripeOrderId, setStripeOrderId] = useState("");
@@ -37,12 +38,11 @@ const Orders = ({
   const [openModule, setOpenModule] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const { openSidebar } = useDashboard();
-  const [hasNewOrderData, setHasNewOrderData] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
-  const [sseOrderId, setSseOrderId] = useState("");
+
   const [isFailed, setIsFailed] = useState(false);
   useEffect(() => {
     const fromPayment = searchParams.get("payment");
@@ -140,56 +140,68 @@ const Orders = ({
   const showSkeleton = isLoadingPage || isPending;
 
   useEffect(() => {
-    if (!sseOrderId) return;
+    console.log("🔌 Opening global Orders SSE connection");
 
-    console.log("🔌 Opening SSE connection:", sseOrderId);
+    const eventSource = new EventSource("/api/auth/orders/events");
 
-    const eventSource = new EventSource(
-      `/api/auth/orders/${sseOrderId}/events`,
-    );
+    const handleConnected = (event) => {
+      try {
+        const connectionData = JSON.parse(event.data);
 
-    const sseTimeout = setTimeout(
-      () => {
-        console.log("⏱️ SSE timeout - closing connection:", sseOrderId);
-
-        eventSource.close();
-
-        setSseOrderId("");
-      },
-      5 * 60 * 1000,
-    );
+        console.log("✅ Orders SSE connected:", connectionData);
+      } catch (error) {
+        console.error("❌ Failed to parse connected event:", error);
+      }
+    };
 
     const handleStatusUpdate = (event) => {
       try {
         const updatedOrder = JSON.parse(event.data);
-        setHasNewOrderData(true);
-        console.log("📥 SSE ORDER EVENT RECEIVED:", {
-          id: updatedOrder.id,
-          paymentStatus: updatedOrder.payment?.status,
-          orderStatus: updatedOrder.status,
-        });
 
-        setOrders((prevOrders) =>
-          prevOrders.map((item) => {
-            const itemId = item.id || item._id;
-
-            if (String(itemId) !== String(updatedOrder.id)) {
-              return item;
-            }
-
-            return updatedOrder;
-          }),
-        );
+        const updatedOrderId = String(updatedOrder.id || updatedOrder._id);
 
         const paymentStatus = updatedOrder.payment?.status;
 
-        console.log("💳 CURRENT PAYMENT STATUS FROM SSE:", paymentStatus);
+        const orderStatus = updatedOrder.status;
+
+        console.log("📥 GLOBAL SSE ORDER UPDATE:", {
+          orderId: updatedOrderId,
+          paymentStatus,
+          orderStatus,
+        });
+
+        setOrders((prevOrders) => {
+          return prevOrders.map((item) => {
+            const itemId = String(item.id || item._id);
+
+            if (itemId !== updatedOrderId) {
+              return item;
+            }
+
+            return {
+              ...item,
+              ...updatedOrder,
+
+              payment: {
+                ...item.payment,
+                ...updatedOrder.payment,
+              },
+            };
+          });
+        });
+
+        setUpdatingOrderId((currentId) => {
+          if (currentId && String(currentId) === updatedOrderId) {
+            return null;
+          }
+
+          return currentId;
+        });
 
         if (paymentStatus === "failed") {
-          console.log("🚨 SSE FAILED RECEIVED");
+          console.log("🚨 GLOBAL SSE PAYMENT FAILED:", updatedOrderId);
 
           setIsFailed(true);
-          setUpdatingOrderId(null);
 
           setToast({
             type: "error",
@@ -199,14 +211,11 @@ const Orders = ({
                 : "فشلت عملية الدفع أو تم رفضها. يرجى تجربة بطاقة أخرى.",
           });
 
-          clearTimeout(sseTimeout);
-          eventSource.close();
-          setSseOrderId("");
-
           return;
         }
+
         if (paymentStatus === "paid") {
-          setUpdatingOrderId(null);
+          console.log("✅ GLOBAL SSE PAYMENT PAID:", updatedOrderId);
 
           setToast({
             type: "success",
@@ -216,19 +225,14 @@ const Orders = ({
                 : "تم إتمام عملية الدفع بنجاح.",
           });
 
-          clearTimeout(sseTimeout);
-
-          eventSource.close();
-
-          setSseOrderId("");
           setStripeOpen(false);
           setStripeOrderId("");
 
           return;
         }
 
-        if (updatedOrder.status === "cancelled") {
-          setUpdatingOrderId(null);
+        if (orderStatus === "cancelled") {
+          console.log("🚨 GLOBAL SSE ORDER CANCELLED:", updatedOrderId);
 
           setToast({
             type: "error",
@@ -238,11 +242,6 @@ const Orders = ({
                 : "تم إلغاء طلبك لأن عملية الدفع لم تكتمل خلال 24 ساعة.",
           });
 
-          clearTimeout(sseTimeout);
-
-          eventSource.close();
-
-          setSseOrderId("");
           setStripeOpen(false);
           setStripeOrderId("");
 
@@ -253,24 +252,31 @@ const Orders = ({
       }
     };
 
+    eventSource.addEventListener("connected", handleConnected);
+
     eventSource.addEventListener("order.updated", handleStatusUpdate);
 
-    eventSource.onerror = (error) => {};
+    eventSource.onerror = (error) => {
+      console.error("❌ Global Orders SSE error:", error);
+    };
 
     return () => {
-      clearTimeout(sseTimeout);
+      console.log("🔌 Closing global Orders SSE connection");
+
+      eventSource.removeEventListener("connected", handleConnected);
 
       eventSource.removeEventListener("order.updated", handleStatusUpdate);
 
       eventSource.close();
     };
-  }, [sseOrderId, locale]);
+  }, [locale]);
   const handleStripeClose = (reason) => {
     setStripeOpen(false);
     setStripeOrderId("");
 
-    if (reason === "cancel" || (reason === "failed" && !hasNewOrderData)) {
-      setSseOrderId("");
+    console.log("Stripe closed:", reason);
+
+    if (reason === "cancel") {
       setUpdatingOrderId(null);
     }
   };
@@ -317,6 +323,7 @@ const Orders = ({
                   key={orderId}
                   d={order}
                   locale={locale}
+                  Cancelled={Cancelled}
                   total={total}
                   subtotal={subtotal}
                   shippingCost={shippingCost}
@@ -329,11 +336,13 @@ const Orders = ({
                   paymentT={paymentT}
                   paymentM={paymentM}
                   setStripeOrderId={(id) => {
+                    const orderId = String(id);
+
+                    console.log("🔄 START ORDER PAYMENT:", orderId);
+
                     setIsFailed(false);
-                    setStripeOrderId(id);
-                    setSseOrderId(id);
-                    setUpdatingOrderId(id);
-                    setHasNewOrderData(false);
+                    setStripeOrderId(orderId);
+                    setUpdatingOrderId(orderId);
                   }}
                   setStripeOpen={setStripeOpen}
                   cash={cash}

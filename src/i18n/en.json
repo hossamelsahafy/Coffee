@@ -294,6 +294,7 @@
     "trackOrder": "Track Order"
   },
   "OrderStatus": {
+    "Cancelled": "Cancelled",
     "pending": "Pending",
     "processing": "Processing",
     "shipped": "Shipped",
