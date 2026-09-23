@@ -41,15 +41,15 @@ export async function GET(req: Request) {
         userId,
       });
 
-      console.log("🔌 Orders SSE connected:", userId);
+      // console.log("🔌 Orders SSE connected:", userId);
 
       unsubscribe = subscribeToUserOrders(userId, ({ order }) => {
-        console.log("📤 Sending order update:", {
-          userId,
-          orderId: order.id,
-          status: order.status,
-          paymentStatus: order.payment?.status,
-        });
+        // console.log("📤 Sending order update:", {
+        //   userId,
+        //   orderId: order.id,
+        //   status: order.status,
+        //   paymentStatus: order.payment?.status,
+        // });
 
         const success = send("order.updated", order);
 
@@ -64,7 +64,7 @@ export async function GET(req: Request) {
         }
       });
 
-      console.log("📡 Orders SSE subscribed:", userId);
+      // console.log("📡 Orders SSE subscribed:", userId);
 
       // Keep the connection alive.
       heartbeat = setInterval(() => {
@@ -85,7 +85,7 @@ export async function GET(req: Request) {
     },
 
     cancel() {
-      console.log("🔌 Orders SSE connection closed:", userId);
+      // console.log("🔌 Orders SSE connection closed:", userId);
 
       if (unsubscribe) {
         unsubscribe();
@@ -100,7 +100,7 @@ export async function GET(req: Request) {
   });
 
   req.signal.addEventListener("abort", () => {
-    console.log("🔌 Orders SSE request aborted:", userId);
+    // console.log("🔌 Orders SSE request aborted:", userId);
 
     if (unsubscribe) {
       unsubscribe();
