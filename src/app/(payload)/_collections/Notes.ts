@@ -27,7 +27,7 @@ export const Notes: CollectionConfig = {
       type: "text",
       required: true,
       unique: true,
-      validate: (value) => {
+      validate: (value: string | null | undefined) => {
         if (!value) return "Slug is required";
 
         const isValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
@@ -44,7 +44,7 @@ export const Notes: CollectionConfig = {
       type: "text",
       unique: true,
       required: true,
-      validate: (value) => {
+      validate: (value: string | null | undefined) => {
         if (!value) return "Slug is required";
 
         const isValid = /^[\u0600-\u06FF0-9]+(?:-[\u0600-\u06FF0-9]+)*$/.test(

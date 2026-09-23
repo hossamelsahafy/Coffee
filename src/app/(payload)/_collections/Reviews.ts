@@ -133,7 +133,9 @@ export const Reviews: CollectionConfig = {
       type: "number",
       min: 0,
       max: 5,
-      validate: (value) => {
+      validate: (value: number | null | undefined) => {
+        if (value == null) return true;
+
         if (value > 5) {
           return "Rating cannot exceed 5.";
         }

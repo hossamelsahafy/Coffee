@@ -12,6 +12,8 @@ export default function StripeModule({
   setStripeOpen,
   isEndPoint,
   setToast,
+  isFailed,
+  setIsFailed,
 }) {
   const [clientSecret, setClientSecret] = useState("");
   const calledRef = useRef(false);
@@ -59,12 +61,14 @@ export default function StripeModule({
   return (
     <StripeElements clientSecret={clientSecret}>
       <CheckoutForm
+        isFailed={isFailed}
         locale={locale}
         setStripeOpen={setStripeOpen}
         orderID={orderId}
         isEndPoint={isEndPoint}
         clientSecret={clientSecret}
         setToast={setToast}
+        setIsFailed={setIsFailed}
       />
     </StripeElements>
   );

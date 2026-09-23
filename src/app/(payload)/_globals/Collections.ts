@@ -76,7 +76,7 @@ export const Collections: GlobalConfig = {
           type: "text",
           required: true,
           unique: true,
-          validate: (value) => {
+          validate: (value: string | null | undefined) => {
             if (!value) return "Slug is required";
 
             const isValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
@@ -93,7 +93,7 @@ export const Collections: GlobalConfig = {
           type: "text",
           required: true,
           unique: true,
-          validate: (value) => {
+          validate: (value: string | null | undefined) => {
             if (!value) return "Slug is required";
 
             const isValid =

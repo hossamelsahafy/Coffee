@@ -46,7 +46,14 @@ export const Favorites: CollectionConfig = {
           return Response.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { productId } = req.routeParams;
+        const productId = req.routeParams?.productId;
+
+        if (!productId || typeof productId !== "string") {
+          return Response.json(
+            { error: "Product ID is required" },
+            { status: 400 },
+          );
+        }
 
         const result = await req.payload.delete({
           collection: "favorites",

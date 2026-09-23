@@ -10,7 +10,16 @@ import {
   orderConfirmationSubject,
 } from "@/lib/Emails/OrderConfirmation";
 import { createCurrencySnapshot } from "@/lib/currency/createCurrencySnapshot";
-import { getExchangeRate } from "@/lib/currency/getExchangeRate";
+type OrderItemData = {
+  product: string | { id: string };
+  optionValue: string | { id: string };
+  quantity?: number | null;
+  title?: string | null;
+  image?: string | null;
+  price?: number | null;
+  total?: number | null;
+  optionType?: string | null;
+};
 export const Orders: CollectionConfig = {
   slug: "orders",
 
@@ -440,29 +449,49 @@ export const Orders: CollectionConfig = {
           }
 
           data.items = await Promise.all(
-            data.items.map(async (item) => {
+            (data.items as OrderItemData[]).map(async (item) => {
+              const productId =
+                typeof item.product === "string"
+                  ? item.product
+                  : item.product.id;
+
+              const optionValueId =
+                typeof item.optionValue === "string"
+                  ? item.optionValue
+                  : item.optionValue.id;
+
               const product = await req.payload.findByID({
                 collection: "products",
-                id: item.product,
+                id: productId,
               });
 
-              const option = product.choices.options?.find(
-                (opt) => String(opt.value?.id) === String(item.optionValue),
-              );
-              const basePrice = Number(option.priceAfter ?? 0);
+              const option = product.choices.options?.find((opt) => {
+                const valueId =
+                  typeof opt.value === "string" ? opt.value : opt.value?.id;
 
+                return String(valueId) === String(optionValueId);
+              });
+
+              if (!option) {
+                throw new Error(
+                  `Product option "${optionValueId}" was not found for product "${product.id}".`,
+                );
+              }
+
+              const basePrice = Number(option.priceAfter ?? 0);
               const convertedPrice = roundMoney(basePrice * exchangeRate);
 
-              const price = option?.priceAfter ?? 0;
-
               const image =
-                option?.ImageSource === "Url"
+                option.ImageSource === "Url"
                   ? option.imageUrl
-                  : option?.image?.url;
+                  : typeof option.image === "string"
+                    ? undefined
+                    : option.image?.url;
 
               const optionType = product.choices.choiceType;
               const quantity = Number(item.quantity) || 0;
               const itemTotal = roundMoney(convertedPrice * quantity);
+
               return {
                 ...item,
                 price: convertedPrice,
@@ -474,8 +503,9 @@ export const Orders: CollectionConfig = {
           );
 
           const itemsTotal = roundMoney(
-            data.items?.reduce(
-              (sum, item) => sum + Number(item.total || 0),
+            (data.items as OrderItemData[] | undefined)?.reduce(
+              (sum: number, item: OrderItemData) =>
+                sum + Number(item.total || 0),
               0,
             ) || 0,
           );
@@ -521,17 +551,16 @@ export const Orders: CollectionConfig = {
       async ({ doc, req }) => {
         if (
           doc.payment?.method === "stripe" &&
-          doc.payment?.status === "pending"
+          (doc.payment?.status === "pending" ||
+            doc.payment?.status === "failed")
         ) {
-          await req.payload.jobs.queue({
+          const job = await req.payload.jobs.queue({
             task: "cancelUnpaidOrder",
             input: {
               orderId: doc.id,
             },
-            waitUntil: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            waitUntil: new Date(Date.now() + 3 * 60 * 1000),
           });
-
-          console.log("⏰ 24H CANCELLATION JOB QUEUED:", doc.id);
         }
 
         const paymentMethod =

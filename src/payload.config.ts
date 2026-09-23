@@ -64,6 +64,13 @@ export default buildConfig({
   },
   jobs: {
     tasks: [CancelUnpaidOrder],
+    autoRun: [
+      {
+        cron: "* * * * *",
+        queue: "default",
+        limit: 10,
+      },
+    ],
   },
   collections: [
     Users,

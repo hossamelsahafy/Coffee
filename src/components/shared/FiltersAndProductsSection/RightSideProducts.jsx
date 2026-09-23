@@ -136,6 +136,7 @@ const RightSideProducts = ({
                 currency={currency}
                 onAddToCart={onAddToCart}
                 exchangeRate={exchangeRate}
+                isFavorite={product.isFavorite}
               />
             )}
           />

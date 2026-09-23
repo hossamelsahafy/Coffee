@@ -37,13 +37,13 @@ const Orders = ({
   const [openModule, setOpenModule] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const { openSidebar } = useDashboard();
-
+  const [hasNewOrderData, setHasNewOrderData] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
   const [sseOrderId, setSseOrderId] = useState("");
-
+  const [isFailed, setIsFailed] = useState(false);
   useEffect(() => {
     const fromPayment = searchParams.get("payment");
     if (
@@ -134,7 +134,9 @@ const Orders = ({
     if (newPage === currentPage || isPending) return;
     fetchFilteredOrders(newPage, debouncedSearch, statusFilter, paymentFilter);
   };
-
+  useEffect(() => {
+    console.log("🔥 Orders isFailed changed:", isFailed);
+  }, [isFailed]);
   const showSkeleton = isLoadingPage || isPending;
 
   useEffect(() => {
@@ -160,7 +162,7 @@ const Orders = ({
     const handleStatusUpdate = (event) => {
       try {
         const updatedOrder = JSON.parse(event.data);
-
+        setHasNewOrderData(true);
         console.log("📥 SSE ORDER EVENT RECEIVED:", {
           id: updatedOrder.id,
           paymentStatus: updatedOrder.payment?.status,
@@ -184,6 +186,9 @@ const Orders = ({
         console.log("💳 CURRENT PAYMENT STATUS FROM SSE:", paymentStatus);
 
         if (paymentStatus === "failed") {
+          console.log("🚨 SSE FAILED RECEIVED");
+
+          setIsFailed(true);
           setUpdatingOrderId(null);
 
           setToast({
@@ -193,6 +198,10 @@ const Orders = ({
                 ? "Payment failed or was declined. Please try another card."
                 : "فشلت عملية الدفع أو تم رفضها. يرجى تجربة بطاقة أخرى.",
           });
+
+          clearTimeout(sseTimeout);
+          eventSource.close();
+          setSseOrderId("");
 
           return;
         }
@@ -256,10 +265,14 @@ const Orders = ({
       eventSource.close();
     };
   }, [sseOrderId, locale]);
-  const handleStripeClose = (reason = "cancel") => {
+  const handleStripeClose = (reason) => {
     setStripeOpen(false);
     setStripeOrderId("");
-    return;
+
+    if (reason === "cancel" || (reason === "failed" && !hasNewOrderData)) {
+      setSseOrderId("");
+      setUpdatingOrderId(null);
+    }
   };
 
   return (
@@ -316,9 +329,11 @@ const Orders = ({
                   paymentT={paymentT}
                   paymentM={paymentM}
                   setStripeOrderId={(id) => {
+                    setIsFailed(false);
                     setStripeOrderId(id);
                     setSseOrderId(id);
                     setUpdatingOrderId(id);
+                    setHasNewOrderData(false);
                   }}
                   setStripeOpen={setStripeOpen}
                   cash={cash}
@@ -345,6 +360,8 @@ const Orders = ({
               setStripeOpen={handleStripeClose}
               isEndPoint={isendPoint}
               setToast={setToast}
+              isFailed={isFailed}
+              setIsFailed={setIsFailed}
             />
           </div>
         </div>

@@ -11,11 +11,13 @@ import LoadingSpiner from "@/components/shared/Spiner/LoadingSpiner";
 
 type CheckoutFormProps = {
   locale?: "en" | "ar";
-  setStripeOpen: (reason: "success" | "cancel") => void;
+  setStripeOpen: (reason: "success" | "cancel" | "failed") => void;
   isEndPoint: boolean;
   orderID: string;
   clientSecret: string;
   clearCart?: () => void;
+  isFailed: boolean;
+  setIsFailed: React.Dispatch<React.SetStateAction<boolean>>;
 
   setToast: React.Dispatch<
     React.SetStateAction<{
@@ -32,10 +34,13 @@ export default function CheckoutForm({
   setToast,
   orderID,
   clientSecret,
+  isFailed,
+  setIsFailed,
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
+  console.log(isFailed);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -75,6 +80,7 @@ export default function CheckoutForm({
         const { paymentIntent, error: stripeError } = result;
 
         if (stripeError) {
+          setIsFailed(true);
           setToast({
             type: "error",
             message:
@@ -143,7 +149,11 @@ export default function CheckoutForm({
 
       setTimeout(() => {
         if (isEndPoint) {
-          setStripeOpen("cancel");
+          if (isFailed) {
+            setStripeOpen("failed");
+          } else {
+            setStripeOpen("cancel");
+          }
         }
 
         router.push("/users/dashboard/orders?payment=pending");
@@ -160,7 +170,11 @@ export default function CheckoutForm({
           : "تم إلغاء عملية الدفع. يمكنك إكمالها لاحقًا.",
     });
     if (isEndPoint) {
-      setStripeOpen("cancel");
+      if (isFailed) {
+        setStripeOpen("failed");
+      } else {
+        setStripeOpen("cancel");
+      }
     }
 
     setCancelLoading(false);
