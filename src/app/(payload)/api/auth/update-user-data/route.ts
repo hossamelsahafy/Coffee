@@ -131,6 +131,9 @@ export async function PATCH(req: Request) {
     }
   }
   try {
+    if (!token) {
+      throw new Error("Verification token is missing");
+    }
     await payload.update({
       collection: "users",
       id: user.id,

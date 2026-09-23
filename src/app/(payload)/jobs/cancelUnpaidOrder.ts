@@ -22,13 +22,12 @@ const cancelUnpaidOrderHandler: TaskHandler<"cancelUnpaidOrder"> = async ({
     id: orderId,
     overrideAccess: true,
   });
-  console.log("🔎 CANCEL JOB ORDER:", {
-    orderId: order.id,
-    status: order.status,
-    paymentMethod: order.payment?.method,
-    paymentStatus: order.payment?.status,
-  });
-  // Order was already cancelled.
+  // console.log("🔎 CANCEL JOB ORDER:", {
+  //   orderId: order.id,
+  //   status: order.status,
+  //   paymentMethod: order.payment?.method,
+  //   paymentStatus: order.payment?.status,
+  // });
   if (order.status === "cancelled") {
     return {
       output: {
