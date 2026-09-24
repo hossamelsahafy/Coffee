@@ -572,7 +572,7 @@ export const Orders: CollectionConfig = {
             input: {
               orderId: doc.id,
             },
-            waitUntil: new Date(Date.now() + 3 * 60 * 1000),
+            waitUntil: new Date(Date.now() + 24 * 60 * 60 * 1000),
           });
 
           // console.log("✅ CANCEL JOB QUEUED:", doc.id);
