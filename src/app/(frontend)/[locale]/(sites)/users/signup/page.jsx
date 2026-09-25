@@ -83,9 +83,9 @@ const page = async ({ params }) => {
       placeholderAr: "كلمة المرور",
       validationType: "password",
       error:
-        "Password must be at least 8 characters and include uppercase, lowercase, number and special character",
+        "Password must be at least 8 characters and include uppercase, lowercase, number, and one of these special characters: @$!%*?&",
       errorAr:
-        "كلمة المرور يجب أن تكون 8 أحرف على الأقل وتحتوي على حرف كبير وصغير ورقم ورمز خاص",
+        "كلمة المرور يجب أن تكون 8 أحرف على الأقل وتحتوي على حرف كبير وحرف صغير ورقم ورمز خاص من الرموز التالية: @$!%*?&",
       required: true,
     },
   ];

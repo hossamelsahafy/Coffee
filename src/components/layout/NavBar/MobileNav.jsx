@@ -48,13 +48,15 @@ const MobileNav = ({
   return (
     <div className="w-full flex items-center justify-between gap-5 p-4 bg-base-dark text-base-light overflow-hidden">
       <div className="flex">
-        <Image
-          alt="Coffe And Tea"
-          src="/assets/Logo.png"
-          className="max-w-16 object-contain"
-          width={200}
-          height={200}
-        />
+        <Link href={"/"}>
+          <Image
+            alt="Coffe And Tea"
+            src="/assets/Logo.png"
+            className="max-w-16 object-contain"
+            width={200}
+            height={200}
+          />
+        </Link>
       </div>
       <div className="flex justify-center items-center gap-4">
         <div className="flex gap-2">
