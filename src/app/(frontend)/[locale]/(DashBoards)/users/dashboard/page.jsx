@@ -9,6 +9,7 @@ export default async function ({ params }) {
   const user = await getUser();
 
   const currency = user?.SelectedCurrency?.trim().toUpperCase();
+  console.log(currency);
 
   const orderData = await GetDataServerSide(
     `auth/order/analytics?currency=${encodeURIComponent(currency)}&locale=${locale}`,

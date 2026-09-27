@@ -17,6 +17,7 @@ type Currency = {
   symbol?: string;
   flag?: string;
 };
+
 type CurrencyUser = {
   id?: string | number | null;
   SelectedCurrency?: string | null;
@@ -106,57 +107,29 @@ export function SiteSettingsProvider({
   const [exchangeRate, setExchangeRate] = useState(1);
 
   const initializedRef = useRef(false);
-  const wasGuestRef = useRef(false);
+
   const lastSyncedCurrencyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const currentUserId = user?.id || null;
+    if (initializedRef.current) {
+      return;
+    }
 
-    if (!initializedRef.current) {
-      initializedRef.current = true;
+    initializedRef.current = true;
 
-      if (currentUserId) {
-        wasGuestRef.current = false;
+    if (user?.id) {
+      const userCurrencyCode = user.SelectedCurrency?.trim().toUpperCase();
 
-        const userCurrencyCode = user?.SelectedCurrency?.trim().toUpperCase();
+      const userCurrency = currencies.find(
+        (currency) => currency.value === userCurrencyCode,
+      );
 
-        const userCurrencyObject = currencies.find(
-          (currency) => currency.value === userCurrencyCode,
-        );
+      if (userCurrency) {
+        setSelectedCurrencyState(userCurrency);
 
-        if (userCurrencyObject) {
-          setSelectedCurrencyState(userCurrencyObject);
-
-          localStorage.setItem(STORAGE_KEY, userCurrencyObject.value);
-
-          return;
-        }
-
-        setSelectedCurrencyState(defaultCurrency);
-
-        localStorage.setItem(STORAGE_KEY, defaultCurrency.value);
+        localStorage.setItem(STORAGE_KEY, userCurrency.value);
 
         return;
-      }
-
-      wasGuestRef.current = true;
-
-      const savedCurrency = localStorage.getItem(STORAGE_KEY);
-
-      if (savedCurrency) {
-        const savedCurrencyCode = savedCurrency.trim().toUpperCase();
-
-        const savedCurrencyObject = currencies.find(
-          (currency) => currency.value === savedCurrencyCode,
-        );
-
-        if (savedCurrencyObject) {
-          setSelectedCurrencyState(savedCurrencyObject);
-
-          return;
-        }
-
-        localStorage.removeItem(STORAGE_KEY);
       }
 
       setSelectedCurrencyState(defaultCurrency);
@@ -166,14 +139,26 @@ export function SiteSettingsProvider({
       return;
     }
 
-    if (wasGuestRef.current && currentUserId) {
-      wasGuestRef.current = false;
-      return;
+    const savedCurrency = localStorage.getItem(STORAGE_KEY);
+
+    if (savedCurrency) {
+      const savedCurrencyCode = savedCurrency.trim().toUpperCase();
+
+      const savedCurrencyObject = currencies.find(
+        (currency) => currency.value === savedCurrencyCode,
+      );
+
+      if (savedCurrencyObject) {
+        setSelectedCurrencyState(savedCurrencyObject);
+        return;
+      }
+
+      localStorage.removeItem(STORAGE_KEY);
     }
 
-    if (!currentUserId) {
-      wasGuestRef.current = true;
-    }
+    setSelectedCurrencyState(defaultCurrency);
+
+    localStorage.setItem(STORAGE_KEY, defaultCurrency.value);
   }, [user?.id, user?.SelectedCurrency, currencies, defaultCurrency]);
 
   const setSelectedCurrency = (currency: Currency) => {
@@ -181,17 +166,40 @@ export function SiteSettingsProvider({
       return;
     }
 
-    const normalizedCurrency = {
+    const value = currency.value.trim().toUpperCase();
+
+    const normalizedCurrency: Currency = {
       ...currency,
-      value: currency.value.trim().toUpperCase(),
-      label:
-        currency.label?.trim().toUpperCase() ||
-        currency.value.trim().toUpperCase(),
+      value,
+      label: currency.label?.trim().toUpperCase() || value,
     };
 
     setSelectedCurrencyState(normalizedCurrency);
 
-    localStorage.setItem(STORAGE_KEY, normalizedCurrency.value);
+    localStorage.setItem(STORAGE_KEY, value);
+
+    if (!user?.id) {
+      return;
+    }
+
+    if (lastSyncedCurrencyRef.current === value) {
+      return;
+    }
+
+    const userCurrencyCode = user.SelectedCurrency?.trim().toUpperCase();
+
+    if (userCurrencyCode === value) {
+      lastSyncedCurrencyRef.current = value;
+      return;
+    }
+
+    lastSyncedCurrencyRef.current = value;
+
+    void SlugMethods("auth/update-user-data", "PATCH", {
+      SelectedCurrency: value,
+    }).catch(() => {
+      lastSyncedCurrencyRef.current = null;
+    });
   };
 
   useEffect(() => {
@@ -204,7 +212,7 @@ export function SiteSettingsProvider({
 
     let cancelled = false;
 
-    const handleCurrencyChange = async () => {
+    const getExchangeRate = async () => {
       try {
         let rate = 1;
 
@@ -226,31 +234,11 @@ export function SiteSettingsProvider({
           }
         }
 
-        if (cancelled) {
-          return;
+        if (!cancelled) {
+          setExchangeRate(rate);
         }
-
-        setExchangeRate(rate);
-
-        const userCurrencyCode = user?.SelectedCurrency?.trim().toUpperCase();
-
-        if (!user?.id || targetCurrency === userCurrencyCode) {
-          return;
-        }
-
-        if (lastSyncedCurrencyRef.current === targetCurrency) {
-          return;
-        }
-
-        lastSyncedCurrencyRef.current = targetCurrency;
-
-        void SlugMethods("auth/update-user-data", "PATCH", {
-          SelectedCurrency: targetCurrency,
-        }).catch(() => {
-          lastSyncedCurrencyRef.current = null;
-        });
       } catch (error) {
-        console.error("Failed to initialize currency:", error);
+        console.error("Failed to fetch exchange rate:", error);
 
         if (!cancelled) {
           setExchangeRate(1);
@@ -258,12 +246,12 @@ export function SiteSettingsProvider({
       }
     };
 
-    void handleCurrencyChange();
+    void getExchangeRate();
 
     return () => {
       cancelled = true;
     };
-  }, [baseCurrency, selectedCurrency?.value, user?.id, user?.SelectedCurrency]);
+  }, [baseCurrency, selectedCurrency?.value]);
 
   return (
     <SiteSettingsContext.Provider
