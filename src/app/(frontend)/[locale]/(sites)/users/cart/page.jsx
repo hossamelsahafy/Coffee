@@ -14,7 +14,7 @@ const Page = async ({ params }) => {
 
   return (
     <div className="mt-28 w-full border-t border-base-border">
-      <CartPageHeader />
+      <CartPageHeader locale={locale} />
       <CartData locale={locale} />
     </div>
   );

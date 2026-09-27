@@ -134,7 +134,6 @@ export default function MediaGrid() {
 
       const responses = await Promise.all(deletePromises);
 
-      // Check if any of the requests failed
       for (const res of responses) {
         if (!res.ok) {
           throw new Error("Failed to delete one or more media items");

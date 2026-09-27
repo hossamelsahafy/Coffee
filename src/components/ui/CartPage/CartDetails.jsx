@@ -8,6 +8,8 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useSiteSettings } from "@/Context/CurrencyContext";
 import { convertPrice } from "@/lib/currency/convertPrice";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
+
 const CartDetails = ({ locale }) => {
   const { cart, increaseQuantity, decreaseQuantity, removeFromCart } =
     useCart();
@@ -32,10 +34,10 @@ const CartDetails = ({ locale }) => {
   }
   const { selectedCurrency, exchangeRate } = useSiteSettings();
   const symbol = selectedCurrency.symbol;
-
+  const backToHome = locale === "en" ? "Back To Home" : "الرجوع للرئيسية";
   return (
     <div className="container-custom p-8 relative">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="flex flex-col gap-5">
           {cart.map((c) => (
             <div
