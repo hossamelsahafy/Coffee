@@ -12,6 +12,7 @@ const NotesCard = ({ item, locale }) => {
   const slug = isArabic ? item.slugAr : item.slug;
 
   let imageUrl = "";
+
   if (item.ImageSource === "Url" && item.ImageUrl) {
     imageUrl = item.ImageUrl;
   } else if (item.ImageSource === "upload" && item.ImageUpload) {
@@ -20,8 +21,11 @@ const NotesCard = ({ item, locale }) => {
   }
 
   return (
-    <div className="group flex flex-col justify-between bg-base-Cards border border-base-border rounded-2xl overflow-hidden transition-all duration-300 hover:border-base-coffe hover:shadow-xl hover:shadow-[#a7897b10] h-full">
-      <div className="relative w-full h-52 overflow-hidden bg-base-nav">
+    <Link
+      href={`/${locale}/notes/${slug}`}
+      className="group flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-base-border bg-base-Cards transition-all duration-300 hover:border-base-coffe hover:shadow-xl hover:shadow-[#a7897b10]"
+    >
+      <div className="relative h-52 w-full overflow-hidden bg-base-nav">
         <Image
           src={imageUrl}
           alt={title || "Note Image"}
@@ -29,33 +33,35 @@ const NotesCard = ({ item, locale }) => {
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
+
         {brandName && (
-          <span className="absolute top-3 start-3 bg-base-dark/80 backdrop-blur-md text-base-coffe border border-base-borderTwo px-3 py-1 rounded-full text-xs font-medium tracking-wide">
+          <span className="absolute start-3 top-3 rounded-full border border-base-borderTwo bg-base-dark/80 px-3 py-1 text-xs font-medium tracking-wide text-base-coffe backdrop-blur-md">
             {brandName}
           </span>
         )}
       </div>
 
-      <div className="p-5 flex flex-col flex-grow justify-between">
+      <div className="flex flex-grow flex-col justify-between p-5">
         <div>
           {item.isImportant && (
-            <span className="inline-block text-[10px] uppercase tracking-wider bg-[#603808]/40 text-base-lighter border border-[#603808] px-2 py-0.5 rounded mb-2 font-semibold">
+            <span className="mb-2 inline-block rounded bg-[#603808]/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-base-lighter border border-[#603808]">
               {isArabic ? "مميز" : "Featured"}
             </span>
           )}
 
-          <h3 className="text-base-light font-semibold text-lg line-clamp-1 group-hover:text-base-coffe transition-colors mb-2">
+          <h3 className="mb-2 line-clamp-1 text-lg font-semibold text-base-light transition-colors group-hover:text-base-coffe">
             {title}
           </h3>
 
-          <p className="text-base-coffe/80 text-sm line-clamp-2 leading-relaxed mb-4">
+          <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-base-coffe/80">
             {description}
           </p>
         </div>
 
-        <div className="pt-4 border-t border-base-border flex items-center justify-between text-xs">
+        <div className="flex items-center justify-between border-t border-base-border pt-4 text-xs">
           <div className="flex items-center gap-1.5 text-base-coffe/60">
-            <Calendar className="w-3.5 h-3.5" />
+            <Calendar className="h-3.5 w-3.5" />
+
             <span>
               {new Date(item.createdAt || Date.now()).toLocaleDateString(
                 locale === "ar" ? "ar-EG" : "en-US",
@@ -68,18 +74,20 @@ const NotesCard = ({ item, locale }) => {
             </span>
           </div>
 
-          <Link
-            href={`/${locale}/notes/${slug}`}
-            className="inline-flex items-center gap-1 text-base-lighter font-medium hover:text-base-light transition-colors group/link"
-          >
+          <div className="inline-flex items-center gap-1 font-medium text-base-lighter transition-colors group-hover:text-base-light">
             <span>{isArabic ? "اقرأ المزيد" : "Read More"}</span>
+
             <ArrowRight
-              className={`w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1 ${isArabic ? "rotate-180 group-hover/link:-translate-x-1" : ""}`}
+              className={`h-3.5 w-3.5 transition-transform ${
+                isArabic
+                  ? "rotate-180 group-hover:-translate-x-1"
+                  : "group-hover:translate-x-1"
+              }`}
             />
-          </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

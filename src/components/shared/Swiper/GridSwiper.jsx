@@ -110,7 +110,19 @@ const GridSwiper = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="w-full relative"
           >
-            <div className="relative w-full">
+            <div
+              className="relative w-full"
+              onMouseEnter={() => {
+                if (loop) {
+                  swiperRef.current?.autoplay?.stop();
+                }
+              }}
+              onMouseLeave={() => {
+                if (loop) {
+                  swiperRef.current?.autoplay?.start();
+                }
+              }}
+            >
               {showBlockLoader && (
                 <div className="absolute inset-0 z-50 bg-black flex items-start md:items-center justify-center transition-opacity duration-200 p-4">
                   <CoffeeLoader />

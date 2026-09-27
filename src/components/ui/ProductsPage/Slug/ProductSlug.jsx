@@ -21,6 +21,7 @@ const ProductSlug = ({
   setToast,
   countriesData,
   currency,
+  exchangeRate,
 }) => {
   const t = useTranslations("productSlug");
   const options = data?.choices?.options || [];
@@ -90,6 +91,7 @@ const ProductSlug = ({
         toggleFavorite={onToggleFavorite}
         loadingProductId={loadingProductId}
         currency={currency}
+        exchangeRate={exchangeRate}
       />
       <ReviewsSection
         productID={data.id}

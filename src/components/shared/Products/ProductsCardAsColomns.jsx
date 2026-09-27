@@ -104,8 +104,16 @@ const ProductsCardAsColomns = ({
 
   return (
     <div
-      className={`flex flex-col items-stretch gap-4 w-full h-full ${isCustom ? `${customBgColor} ${customHoverBgColor} duration-300 transition-all cursor-pointer` : "bg-coffeText"} rounded-lg p-4 mt-4`}
+      className={`group flex relative flex-col items-stretch gap-4 w-full h-full ${isCustom ? `${customBgColor} ${customHoverBgColor} duration-300 transition-all cursor-pointer` : "bg-coffeText"} rounded-lg p-4 mt-4`}
     >
+      <Link
+        onClick={() => handleViewed()}
+        href={`/${locale}/products/${
+          locale === "en" ? product.slug : product.slugAr
+        }`}
+        aria-label={locale === "en" ? product.title : product.titleAr}
+        className="absolute inset-0 z-10 rounded-lg"
+      />
       <div className="flex justify-between w-full items-start gap-2">
         <div className="flex flex-col gap-2 items-center">
           <DiscountBadge
@@ -137,7 +145,7 @@ const ProductsCardAsColomns = ({
               e.stopPropagation();
               if (toggleFavorite) toggleFavorite();
             }}
-            className="cursor-pointer block my-2 disabled:opacity-50"
+            className="cursor-pointer block relative z-20 my-2 disabled:opacity-50"
             aria-label="Toggle Favorite"
           >
             {isLoading ? (
@@ -157,19 +165,16 @@ const ProductsCardAsColomns = ({
               setSelectedProduct(product);
               setOpenModel(true);
             }}
-            className="text-lg font-bold cursor-pointer"
+            className="text-lg font-bold cursor-pointer relative z-20"
           />
         </div>
       </div>
-      <Link
-        onClick={() => handleViewed()}
-        href={`/${locale}/products/${locale === "en" ? product.slug : product.slugAr}`}
-      >
-        <p className="font-bold text-2xl line-clamp-1 hover:text-base-light/70 duration-300 transition-all">
-          {locale === "en" ? product.title : product.titleAr}
-        </p>
-      </Link>
-      <div className="relative w-full">
+
+      <p className="font-bold text-2xl line-clamp-1 transition-all duration-300 group-hover:text-base-light/70">
+        {" "}
+        {locale === "en" ? product.title : product.titleAr}
+      </p>
+      <div className="relative z-10  w-full">
         <select
           value={
             safeSelectedOption?.value?.id ||
@@ -235,7 +240,7 @@ const ProductsCardAsColomns = ({
             await addToCart(product, selectedOption);
             onAddToCart?.(true);
           }}
-          className={`relative pb-1 whitespace-nowrap
+          className={`relative z-10 pb-1 whitespace-nowrap
     after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full
     after:bg-base-light after:transition-all after:duration-300
     hover:text-base-dark duration-300 transition-all

@@ -274,9 +274,7 @@ const ProductModal = ({ selectedProduct, locale, setOpenModel, openModel }) => {
                   )}
                 </div>
 
-                {/* Cart Controls */}
-                <div className="flex flex-wrap justify-start items-center gap-4 w-full">
-                  {/* Add To Cart / Sold Out */}
+                <div className="flex flex-wrap justify-between md:justify-center items-center gap-4 w-full">
                   <button
                     type="button"
                     onClick={handleAddToCart}

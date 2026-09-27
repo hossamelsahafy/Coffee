@@ -12,6 +12,7 @@ const RecentlyProducts = ({
   toggleFavorite,
   loadingProductId,
   currency,
+  exchangeRate,
 }) => {
   const t = useTranslations("RecentlySection");
 
@@ -59,6 +60,8 @@ const RecentlyProducts = ({
                   toggleFavorite={() => toggleFavorite(itemId, isFav)}
                   isLoading={isLoading}
                   currency={currency}
+                  isFavorite={isFav}
+                  exchangeRate={exchangeRate}
                 />
               </div>
             );

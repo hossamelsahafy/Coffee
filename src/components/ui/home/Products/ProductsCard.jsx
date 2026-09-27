@@ -28,6 +28,7 @@ const ProductCard = ({
   const { addToCart } = useCart();
   const options = product?.choices?.options || [];
   const { user } = useUser();
+  console.log(product);
 
   const getInitialOption = () => {
     return options.find((o) => o.availability === "inStock") || options[0];
@@ -71,8 +72,16 @@ const ProductCard = ({
   return (
     <>
       <div
-        className={`${bg ? "backdrop-blur-sm bg-forTra" : "bg-highlightedProductsbg"} flex md:flex-row flex-col justify-center w-full gap-4 p-4 rounded-lg h-full min-h-25 min-w-0`}
+        className={`${bg ? "backdrop-blur-sm bg-forTra" : "bg-highlightedProductsbg"} flex md:flex-row flex-col justify-center w-full gap-4 p-4 rounded-lg h-full min-h-25 min-w-0 relative`}
       >
+        <Link
+          onClick={() => handleViewed()}
+          href={`/${locale}/products/${
+            locale === "en" ? product.slug : product.slugAr
+          }`}
+          aria-label={locale === "en" ? product.title : product.titleAr}
+          className="absolute inset-0 z-10 rounded-lg"
+        />
         <div className="flex justify-center w-full relative gap-4 ">
           <div className="flex justify-between items-center overflow-hidden">
             {selectedOption && (
@@ -103,7 +112,7 @@ const ProductCard = ({
                 }}
                 disabled={isLoading}
                 aria-label="Toggle Favorite"
-                className="cursor-pointer block my-2 disabled:cursor-wait items-center"
+                className="cursor-pointer block my-2 disabled:cursor-wait items-center relative z-10"
               >
                 {isLoading ? (
                   <CgSpinner className="text-sm animate-spin text-base-lighter" />
@@ -130,23 +139,19 @@ const ProductCard = ({
           </div>
         </div>
         <div className="flex flex-col gap-2 min-w-0 w-full">
-          <Link
-            onClick={() => handleViewed()}
-            href={`/${locale}/products/${locale === "en" ? product.slug : product.slugAr}`}
-          >
-            <p className="text-coffeText font-bold line-clamp-1 mwhitespace-nowrap overflow-hidden">
-              {locale === "en" ? product.title : product.titleAr}
-            </p>
-            <p className="font-semibold text-lg overflow-hidden line-clamp-1">
-              {locale === "en" ? product.subtitle : product.subtitleAr}
-            </p>
-            <p className="whitespace-nowrap overflow-hidden">
-              {locale === "en"
-                ? product.BrandName?.name
-                : product.BrandName?.nameAr}
-            </p>
-          </Link>
-          <div className="relative w-full">
+          <p className="text-coffeText font-bold line-clamp-1 mwhitespace-nowrap overflow-hidden">
+            {locale === "en" ? product.title : product.titleAr}
+          </p>
+          <p className="font-semibold text-lg overflow-hidden line-clamp-1">
+            {locale === "en" ? product.subtitle : product.subtitleAr}
+          </p>
+          <p className="whitespace-nowrap overflow-hidden">
+            {locale === "en"
+              ? product.BrandName?.name
+              : product.BrandName?.nameAr}
+          </p>
+
+          <div className="relative w-full z-10">
             <select
               value={getOptionKey(selectedOption)}
               onChange={(e) => {
@@ -210,7 +215,7 @@ const ProductCard = ({
                 onAddToCart?.(true);
               }}
               disabled={false}
-              className="relative pb-1 whitespace-nowrap
+              className="relative z-10 pb-1 whitespace-nowrap
             after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-full 
             after:bg-base-light after:transition-all after:duration-300 text-sm
             hover:after:bg-base-coffe cursor-pointer uppercase flex items-center font-bold transition-all duration-300 hover:text-base-coffe"

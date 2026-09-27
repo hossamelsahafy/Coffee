@@ -215,6 +215,7 @@ const ProductSlugClient = ({
           setToast={setToast}
           countriesData={countriesData}
           currency={currency}
+          exchangeRate={exchangeRate}
         />
 
         <div className="h-full w-full">

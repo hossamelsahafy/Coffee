@@ -24,6 +24,7 @@ const NormalSwiper = ({
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const [swiperInstance, setSwiperInstance] = useState(null);
+  const swiperContainerRef = useRef(null);
 
   useEffect(() => {
     if (swiperInstance && prevRef.current && nextRef.current) {
@@ -44,10 +45,33 @@ const NormalSwiper = ({
         <FiChevronsLeft size={24} />
       </div>
 
-      <div className={px}>
+      <div
+        className={px}
+        ref={swiperContainerRef}
+        onMouseEnter={() => {
+          if (enableAutoplay && swiperInstance) {
+            swiperInstance.autoplay.stop();
+          }
+        }}
+        onMouseLeave={() => {
+          if (enableAutoplay && swiperInstance) {
+            swiperInstance.autoplay.start();
+          }
+        }}
+      >
         <Swiper
           slidesPerView={slides || 4}
           spaceBetween={30}
+          onMouseEnter={(swiper) => {
+            if (enableAutoplay) {
+              swiper.autoplay.stop();
+            }
+          }}
+          onMouseLeave={(swiper) => {
+            if (enableAutoplay) {
+              swiper.autoplay.start();
+            }
+          }}
           loop={loop}
           autoplay={
             enableAutoplay
