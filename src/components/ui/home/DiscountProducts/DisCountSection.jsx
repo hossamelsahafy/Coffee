@@ -56,7 +56,7 @@ const DisCountSection = ({
             <p className="Coffetitle">{websiteName}</p>
             <p className="CoffeDiscription font-bold">{discountTitle}</p>
           </div>
-          <Links text={t("showMoreProducts")} />
+          <Links text={t("showMoreProducts")} targetLink={"products"} />
         </div>
         <NormalSwiper
           breakpoints={defaultBreakpoints}

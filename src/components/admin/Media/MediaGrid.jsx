@@ -126,19 +126,31 @@ export default function MediaGrid() {
     try {
       setIsDeleting(true);
 
-      const res = await fetch(
-        `/api/media?where[id][in]=${idsToDelete.join(",")}`,
-        {
+      const deletePromises = idsToDelete.map((id) =>
+        fetch(`/api/media/${id}`, {
           method: "DELETE",
-        },
+        }),
       );
 
-      if (!res.ok) {
-        throw new Error("Failed to delete selected media");
+      const responses = await Promise.all(deletePromises);
+
+      // Check if any of the requests failed
+      for (const res of responses) {
+        if (!res.ok) {
+          throw new Error("Failed to delete one or more media items");
+        }
       }
 
-      setHiddenIds((prev) => [...new Set([...prev, ...idsToDelete])]);
+      // Remove deleted items completely from the current docs state
+      setDocs((prevDocs) =>
+        prevDocs.filter((doc) => !idsToDelete.includes(doc.id)),
+      );
+
       setSelectedIds([]);
+      setHiddenIds([]);
+
+      fetchMedia(page, search);
+
       showToast(`Successfully deleted ${idsToDelete.length} media item(s).`);
     } catch (error) {
       console.error("Error bulk deleting media:", error);
