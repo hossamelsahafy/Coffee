@@ -17,12 +17,12 @@ export default function ShowOrderDetailsModule({
 
   return (
     <div
-      className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-2"
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-3xl overflow-hidden rounded-3xl border border-white/20 bg-white/10 backdrop-blur-md shadow-2xl"
+        className="w-full max-w-3xl overflow-hidden rounded-3xl border border-white/20 bg-white/10 backdrop-blur-md shadow-2xl p-2"
       >
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
           <div>
@@ -43,7 +43,7 @@ export default function ShowOrderDetailsModule({
           </button>
         </div>
 
-        <div className="max-h-[65vh] overflow-y-auto p-6">
+        <div className="custom-scrollbar max-h-[65vh] overflow-y-auto p-8 my-2">
           <div className="space-y-4">
             {order.items?.map((item, index) => (
               <div
@@ -82,21 +82,21 @@ export default function ShowOrderDetailsModule({
 
                     <span className="font-medium">
                       {t("total")}: {order.currencySymbol}
-                      {order.total}
+                      {item.total}
                     </span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <div className="flex justify-center items-center border-t border-white/10 my-4">
-            <Link
-              href={`/users/dashboard/track-orders?order=${order.orderNumber}`}
-              className="rounded-xl border border-white/20 mt-4 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/20"
-            >
-              {t("trackOrder")}
-            </Link>
-          </div>
+        </div>
+        <div className="flex justify-center items-center border-t border-white/10 my-4">
+          <Link
+            href={`/users/dashboard/track-orders?order=${order.orderNumber}`}
+            className="rounded-xl border border-white/20 mt-4 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/20"
+          >
+            {t("trackOrder")}
+          </Link>
         </div>
         <div />
       </div>

@@ -28,7 +28,6 @@ const ProductCard = ({
   const { addToCart } = useCart();
   const options = product?.choices?.options || [];
   const { user } = useUser();
-  console.log(product);
 
   const getInitialOption = () => {
     return options.find((o) => o.availability === "inStock") || options[0];

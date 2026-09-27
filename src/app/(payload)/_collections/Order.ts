@@ -4,12 +4,12 @@ import {
   orderAdminHTML,
   orderAdminSubject,
 } from "@/lib/Emails/OrderAdminConfirmation";
-
 import {
   orderConfirmationHTML,
   orderConfirmationSubject,
 } from "@/lib/Emails/OrderConfirmation";
 import { createCurrencySnapshot } from "@/lib/currency/createCurrencySnapshot";
+import { orderStatusSubject, orderStatusHTML } from "@/lib/Emails/OrderUpdates";
 type OrderItemData = {
   product: string | { id: string };
   optionValue: string | { id: string };
@@ -369,18 +369,17 @@ export const Orders: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ req, data, operation, originalDoc }) => {
-        if (!req.user) return data;
-
-        data.user = req.user.id;
-
-        data.customer = {
-          firstName: req.user.firstName,
-          lastName: req.user.lastName,
-          phone: req.user.phoneNumber,
-          email: req.user.email,
-        };
-
         if (operation === "create") {
+          if (!req.user) return data;
+
+          data.user = req.user.id;
+
+          data.customer = {
+            firstName: req.user.firstName,
+            lastName: req.user.lastName,
+            phone: req.user.phoneNumber,
+            email: req.user.email,
+          };
           const siteSettings = await req.payload.findGlobal({
             slug: "site-settings",
             depth: 0,
@@ -548,75 +547,80 @@ export const Orders: CollectionConfig = {
     ],
 
     afterChange: [
-      async ({ doc, req, operation }) => {
-        // console.log("🔥 ORDERS afterChange:", {
-        //   operation,
-        //   orderId: doc.id,
-        //   paymentMethod: doc.payment?.method,
-        //   paymentStatus: doc.payment?.status,
-        // });
+      async ({ doc, req, operation, previousDoc }) => {
+        // Create order emails
+        if (operation === "create") {
+          if (
+            doc.payment?.method === "stripe" &&
+            (doc.payment?.status === "pending" ||
+              doc.payment?.status === "failed")
+          ) {
+            await req.payload.jobs.queue({
+              task: "cancelUnpaidOrder",
+              input: {
+                orderId: doc.id,
+              },
+              waitUntil: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            });
+          }
 
-        if (
-          operation === "create" &&
-          doc.payment?.method === "stripe" &&
-          (doc.payment?.status === "pending" ||
-            doc.payment?.status === "failed")
-        ) {
-          // console.log("⏰ QUEUING CANCEL JOB:", {
-          //   orderId: doc.id,
-          //   runAt: new Date(Date.now() + 3 * 60 * 1000),
-          // });
+          const paymentMethod =
+            doc.payment?.method === "stripe" ? "Stripe" : "Cash";
 
-          await req.payload.jobs.queue({
-            task: "cancelUnpaidOrder",
-            input: {
-              orderId: doc.id,
-            },
-            waitUntil: new Date(Date.now() + 24 * 60 * 60 * 1000),
-          });
+          const orderState =
+            doc.payment?.method === "stripe" ? "pending_payment" : "confirmed";
 
-          // console.log("✅ CANCEL JOB QUEUED:", doc.id);
+          await Promise.all([
+            req.payload.sendEmail({
+              to: doc.customer.email,
+              subject: orderConfirmationSubject(doc.orderNumber, orderState),
+              html: orderConfirmationHTML({
+                firstName: doc.customer.firstName,
+                orderNumber: doc.orderNumber,
+                total: doc.total,
+                paymentMethod,
+                orderState,
+                currencySymbol: doc.currencySymbol,
+              }),
+            }),
+
+            req.payload.sendEmail({
+              to: process.env.ADMIN_EMAIL!,
+              subject: orderAdminSubject(doc.orderNumber),
+              html: orderAdminHTML({
+                firstName: doc.customer.firstName,
+                lastName: doc.customer.lastName,
+                email: doc.customer.email,
+                phone: doc.customer.phone,
+                orderNumber: doc.orderNumber,
+                paymentMethod,
+                total: doc.total,
+                currency: doc.currency,
+              }),
+            }),
+          ]);
+
+          return;
         }
 
-        const paymentMethod =
-          doc.payment?.method === "stripe" ? "Stripe" : "Cash";
-
-        const orderState =
-          doc.payment?.method === "stripe" ? "pending_payment" : "confirmed";
-
-        await Promise.all([
-          req.payload.sendEmail({
+        if (
+          operation === "update" &&
+          req.user?.role === "admin" &&
+          previousDoc?.status !== doc.status &&
+          (doc.status === "shipped" || doc.status === "delivered")
+        ) {
+          await req.payload.sendEmail({
             to: doc.customer.email,
 
-            subject: orderConfirmationSubject(doc.orderNumber, orderState),
+            subject: orderStatusSubject(doc.orderNumber, doc.status),
 
-            html: orderConfirmationHTML({
+            html: orderStatusHTML({
               firstName: doc.customer.firstName,
               orderNumber: doc.orderNumber,
-              total: doc.total,
-              paymentMethod,
-              orderState,
-              currencySymbol: doc.currencySymbol,
+              status: doc.status,
             }),
-          }),
-
-          req.payload.sendEmail({
-            to: process.env.ADMIN_EMAIL!,
-
-            subject: orderAdminSubject(doc.orderNumber),
-
-            html: orderAdminHTML({
-              firstName: doc.customer.firstName,
-              lastName: doc.customer.lastName,
-              email: doc.customer.email,
-              phone: doc.customer.phone,
-              orderNumber: doc.orderNumber,
-              paymentMethod,
-              total: doc.total,
-              currency: doc.currency,
-            }),
-          }),
-        ]);
+          });
+        }
       },
     ],
   },

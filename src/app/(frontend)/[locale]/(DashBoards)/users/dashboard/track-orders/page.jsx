@@ -29,13 +29,13 @@ export default async function TrackOrderPage({ params, searchParams }) {
         {
           title: s("totalAmount"),
           value: data.total,
-          suffix: "USD",
+          suffix: data.currency,
           type: "money",
         },
         {
           title: s("shippingCost"),
           value: data.shipping?.price || 0,
-          suffix: "USD",
+          suffix: data.currency,
           type: "money",
         },
         {
