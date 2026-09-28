@@ -55,7 +55,7 @@ const ReviewsSection = ({
         <p className="font-bold text-3xl text-base-coffe">{title}</p>
         <p className="font-semibold text-3xl text-base-coffe">{subtitle}</p>
         <p className="w-full text-base">{describe}</p>
-        <Links text={t("show_products")} targetLink={"collection"} />
+        <Links text={t("show_products")} targetLink={"collections"} />
       </div>
 
       <div
