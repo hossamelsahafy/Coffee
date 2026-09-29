@@ -97,7 +97,7 @@ const UserForm = ({
             : "تم تسجيل الدخول بنجاح! جاري التحويل...",
         );
 
-        router.push(`/${locale}/users/dashboard/account`);
+        router.replace(`/${locale}/users/dashboard/account`);
       } else if (endpoint === "auth/signup") {
         setSuccess(
           locale === "en"
