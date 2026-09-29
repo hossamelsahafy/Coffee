@@ -37,7 +37,7 @@ export default function DashboardShell({ locale }) {
       setMessage(t("success"));
 
       setTimeout(() => {
-        router.push("/");
+        router.push(`/${locale}`);
       }, 5000);
     }
   };
