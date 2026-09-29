@@ -48,12 +48,19 @@ const CheckoutClient = ({
           cash={cash}
           pendingOrders={pendingOrders}
           locale={locale}
+          hasPendingOrders={hasPendingOrders}
+          onBack={hasPendingOrders ? () => setCheckoutMode(null) : undefined}
         />
       )}
 
       {(!hasPendingOrders || checkoutMode === "new") &&
         (cart.length > 0 ? (
-          <CheckoutDetails locale={locale} shippingData={shippingData} />
+          <CheckoutDetails
+            locale={locale}
+            shippingData={shippingData}
+            hasPendingOrders={hasPendingOrders}
+            onBack={hasPendingOrders ? () => setCheckoutMode(null) : undefined}
+          />
         ) : (
           <NoItemsYet
             locale={locale}

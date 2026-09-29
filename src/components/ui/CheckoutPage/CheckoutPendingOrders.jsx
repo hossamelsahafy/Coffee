@@ -17,6 +17,8 @@ const CheckoutPendingOrders = ({
   cash,
   pendingOrders,
   shippingCost,
+  onBack,
+  hasPendingOrders,
 }) => {
   const t = useTranslations("OrderStatus");
   const paymentT = useTranslations("PaymentStatus");
@@ -43,6 +45,15 @@ const CheckoutPendingOrders = ({
           textAr="أكمل طلباتك المعلقة"
           locale={locale}
         />
+        {hasPendingOrders && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="mb-6 flex w-fit self-start cursor-pointer items-center gap-2 rounded-xl border border-base-border px-4 py-2 text-sm text-base-muted transition hover:border-amber-500 hover:text-amber-600"
+          >
+            ← {locale === "ar" ? "رجوع" : "Back"}
+          </button>
+        )}
         <GridSwiper
           filteredProducts={pendingOrders.docs}
           loop={false}

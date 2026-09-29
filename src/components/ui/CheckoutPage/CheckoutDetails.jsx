@@ -9,8 +9,14 @@ import StripeModule from "./StripeModule";
 import LoadingSpiner from "@/components/shared/Spiner/LoadingSpiner";
 import { useSiteSettings } from "@/Context/CurrencyContext";
 import { convertPrice } from "@/lib/currency/convertPrice";
-const CheckoutDetails = ({ locale, shippingData }) => {
+const CheckoutDetails = ({
+  locale,
+  shippingData,
+  hasPendingOrders,
+  onBack,
+}) => {
   const t = useTranslations("Checkout");
+  const checkout = t("header");
   const { cart, clearCart } = useCart();
   const [toast, setToast] = useState({
     message: null,
@@ -98,12 +104,23 @@ const CheckoutDetails = ({ locale, shippingData }) => {
   return (
     <>
       <div className="container-custom p-4">
+        <h2 className="text-4xl mb-4 font-bold text-center text-base-coffe">
+          {checkout}
+        </h2>
+        {hasPendingOrders && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="mb-6 flex w-fit self-start cursor-pointer items-center gap-2 rounded-xl border border-base-border px-4 py-2 text-sm text-base-muted transition hover:border-amber-500 hover:text-amber-600"
+          >
+            ← {locale === "ar" ? "رجوع" : "Back"}
+          </button>
+        )}
         <div className="flex md:flex-row flex-col gap-6 w-full relative">
           <div className="flex flex-col gap-6 w-full">
             <div className="bg-base-coffe/10 border border-base-border rounded-2xl p-5">
-              <h3 className="font-bold text-lg text-base-light mb-4">
-                {t("cartItems")}
-              </h3>
+              <h3 className="font-bold text-lg text-base-light mb-4"></h3>
+              {t("cartItems")}
 
               {cart.map((item) => (
                 <div
