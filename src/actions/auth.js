@@ -1,7 +1,5 @@
 export default async function auth(data, endpoint, options = {}) {
-  const url = process.env.NEXT_PUBLIC_URL;
-
-  const res = await fetch(`${url}/api/${endpoint}`, {
+  const res = await fetch(`/api/${endpoint}`, {
     method: "POST",
     headers: options.includeHeaders
       ? {
