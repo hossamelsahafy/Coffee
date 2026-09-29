@@ -216,6 +216,7 @@ const ProductSlugClient = ({
           countriesData={countriesData}
           currency={currency}
           exchangeRate={exchangeRate}
+          onAddToCart={handleAddToCart}
         />
 
         <div className="h-full w-full">

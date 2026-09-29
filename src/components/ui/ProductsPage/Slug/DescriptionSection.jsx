@@ -23,6 +23,7 @@ const DescriptionSection = ({
   toggleFavorite,
   loadingProductId,
   currency,
+  onAddToCart,
 }) => {
   const [Quantity, setQuantity] = useState(1);
   const increase = () => {
@@ -166,6 +167,7 @@ const DescriptionSection = ({
             Product={data}
             selectedOption={selectOption}
             quantity={Quantity}
+            onAddToCart={() => onAddToCart(isIn)}
           />
           <AddToCartButton
             addTocart={true}

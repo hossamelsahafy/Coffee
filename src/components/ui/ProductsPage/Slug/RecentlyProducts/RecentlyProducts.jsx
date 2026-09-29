@@ -13,6 +13,7 @@ const RecentlyProducts = ({
   loadingProductId,
   currency,
   exchangeRate,
+  onAddToCart,
 }) => {
   const t = useTranslations("RecentlySection");
 
@@ -62,6 +63,7 @@ const RecentlyProducts = ({
                   currency={currency}
                   isFavorite={isFav}
                   exchangeRate={exchangeRate}
+                  onAddToCart={onAddToCart}
                 />
               </div>
             );

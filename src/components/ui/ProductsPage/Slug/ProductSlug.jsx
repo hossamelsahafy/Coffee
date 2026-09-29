@@ -22,6 +22,7 @@ const ProductSlug = ({
   countriesData,
   currency,
   exchangeRate,
+  onAddToCart,
 }) => {
   const t = useTranslations("productSlug");
   const options = data?.choices?.options || [];
@@ -75,6 +76,7 @@ const ProductSlug = ({
             toggleFavorite={onToggleFavorite}
             loadingProductId={loadingProductId}
             currency={currency}
+            onAddToCart={onAddToCart}
           />
         </div>
       </div>
@@ -92,6 +94,7 @@ const ProductSlug = ({
         loadingProductId={loadingProductId}
         currency={currency}
         exchangeRate={exchangeRate}
+        onAddToCart={onAddToCart}
       />
       <ReviewsSection
         productID={data.id}
