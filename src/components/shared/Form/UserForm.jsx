@@ -98,6 +98,7 @@ const UserForm = ({
         );
 
         router.replace(`/${locale}/users/dashboard/account`);
+        router.refresh();
       } else if (endpoint === "auth/signup") {
         setSuccess(
           locale === "en"
