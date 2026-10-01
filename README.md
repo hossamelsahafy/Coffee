@@ -261,6 +261,8 @@ For project-specific questions or issues, use the support method provided with y
 
 ## License
 
-This project is provided under the license and usage terms specified on the Gumroad product page.
+This source code is provided for personal and commercial use by the purchaser.
 
-Please review those terms before using the source code in your own projects.
+You may use and modify the code for your own projects.
+
+Redistribution, resale, or repackaging of the source code as a standalone template or product is not permitted.
