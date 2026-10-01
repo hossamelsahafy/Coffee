@@ -1,67 +1,266 @@
-# Payload Blank Template
+# Fully Dynamic Website — Next.js & Payload CMS
 
-This template comes configured with the bare minimum to get started on anything you need.
+A full-stack, fully dynamic e-commerce website built with **Next.js and Payload CMS**.
 
-## Quick start
+The project is designed so that most of the website content and functionality can be managed through the Payload CMS admin panel without changing the source code.
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+---
 
-## Quick Start - local setup
+## Demo
 
-To spin up this template locally, follow these steps:
+**Live Website:**
+`[LIVE_WEBSITE_URL]`
 
-### Clone
+> Replace `[LIVE_WEBSITE_URL]` with the live website URL when available.
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+---
 
-### Development
+## Setup & Installation
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+### Requirements
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+Before starting, make sure you have:
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+- Node.js 20+
+- npm, pnpm, or yarn
+- MongoDB database
+- Git
+- A code editor such as VS Code
 
-#### Docker (Optional)
+### 1. Install dependencies
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+After extracting the project, open the project folder in your terminal and run:
 
-To do so, follow these steps:
+```bash
+npm install
+```
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+### 2. Configure environment variables
 
-## How it works
+Create a `.env` file in the root of the project.
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+Use the provided `.env.example` file as a reference:
 
-### Collections
+```bash
+cp .env.example .env
+```
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+You will need to add the required values for services such as:
 
-- #### Users (Authentication)
+- MongoDB
+- Payload CMS
+- Authentication
+- Stripe
+- Cloudinary
+- Email
+- Other project-specific configuration
 
-  Users are auth-enabled collections that have access to the admin panel.
+**Do not share your production secret keys publicly.**
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/main/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+---
 
-- #### Media
+## Environment Variables
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+A complete explanation of how to obtain and configure the required environment variables will be available in the setup video.
 
-### Docker
+### Setup Video
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+**Environment Variables & Secret Keys:**
+`[VIDEO_URL_ENV_SETUP]`
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
+> Replace this placeholder with the YouTube video link when the video is published.
 
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
+---
 
-## Questions
+## Running the Project
 
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+After configuring your `.env` file:
+
+```bash
+npm run dev
+```
+
+The application will normally be available at:
+
+```text
+http://localhost:3000
+```
+
+To create a production build:
+
+```bash
+npm run build
+```
+
+Then start the production server:
+
+```bash
+npm start
+```
+
+---
+
+## Payload CMS
+
+The project uses **Payload CMS** as the backend and admin panel.
+
+From the admin panel, you can manage things such as:
+
+- Products
+- Categories
+- Collections
+- Reviews
+- Homepage content
+- Partners
+- Notes / blog-style content
+- Orders
+- Users
+- Shipping zones
+- Currencies
+- Site settings
+- Media
+
+### Admin Setup Video
+
+**Payload CMS & Admin Panel Setup:**
+`[VIDEO_URL_ADMIN_SETUP]`
+
+> Replace this placeholder with the YouTube video link when the video is published.
+
+---
+
+## Main Features
+
+### E-Commerce
+
+- Product catalog
+- Dynamic categories and collections
+- Product filtering
+- Shopping cart
+- Checkout
+- Favorites
+- Product reviews
+- Order management
+- Order tracking
+
+### Authentication
+
+- User registration
+- Email verification
+- Login
+- Password reset
+- Protected pages
+- Role-based access
+
+### Payments
+
+- Stripe payments
+- Cash orders
+- Payment status handling
+- Payment retry for failed payments
+
+### Real-Time Updates
+
+The application uses **Server-Sent Events (SSE)** to deliver order and payment status updates to the user without requiring a page refresh.
+
+### Multi-Currency
+
+- Admin-configured base currency
+- Multiple customer currencies
+- Automatic exchange-rate conversion
+- Historical order currency preservation
+
+### Dashboards
+
+Users can view:
+
+- Orders
+- Spending
+- Activity
+- Product views
+- Category spending
+
+Admins can manage and monitor:
+
+- Orders
+- Users
+- Activity
+- Product views
+- Analytics
+- Payment statuses
+- Website content
+
+---
+
+## Full Setup Guide
+
+The complete setup process will be explained through the following videos:
+
+### 1. Project Installation
+
+`[VIDEO_URL_INSTALLATION]`
+
+### 2. Environment Variables & Secret Keys
+
+`[VIDEO_URL_ENV_SETUP]`
+
+### 3. Payload CMS Setup
+
+`[VIDEO_URL_PAYLOAD_SETUP]`
+
+### 4. Stripe Setup
+
+`[VIDEO_URL_STRIPE_SETUP]`
+
+### 5. Cloudinary Setup
+
+`[VIDEO_URL_CLOUDINARY_SETUP]`
+
+### 6. Email Configuration
+
+`[VIDEO_URL_EMAIL_SETUP]`
+
+### 7. Admin Panel & Website Configuration
+
+`[VIDEO_URL_ADMIN_SETUP]`
+
+> Video links will be added as they are published.
+
+---
+
+## Important
+
+This project contains configuration for third-party services. You will need to create your own accounts and use your own API keys and credentials.
+
+**Never commit your `.env` file or expose your private API keys.**
+
+The included `.env.example` file contains the required variable names without your private credentials.
+
+---
+
+## Tech Stack
+
+- Next.js
+- Payload CMS
+- TypeScript
+- MongoDB
+- Stripe
+- Tailwind CSS
+- Next-intl
+- Server-Sent Events (SSE)
+
+---
+
+## Support
+
+If you encounter an issue during installation, first check the setup videos and make sure all required environment variables are configured correctly.
+
+For project-specific questions or issues, use the support method provided with your purchase.
+
+---
+
+## License
+
+This project is provided under the license and usage terms specified on the Gumroad product page.
+
+Please review those terms before using the source code in your own projects.
